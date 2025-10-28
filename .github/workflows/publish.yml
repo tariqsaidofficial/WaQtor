@@ -48,3 +48,7 @@ jobs:
     
     - name: Publish to npm with provenance
       run: npm publish --provenance --access public
+      env:
+        # Fallback to NPM_TOKEN if OIDC is not yet configured
+        # After first publish and Trusted Publisher setup, OIDC will be used automatically
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
