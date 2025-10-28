@@ -14,6 +14,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Template library with variables
 - Analytics & CSV export
 
+## [1.0.3] - 2025-10-28
+
+### Fixed
+- 🐛 **npm README Display** - Fixed README not appearing on npm package page
+- 📄 **Package Metadata** - Added explicit `readme` field to package.json
+
+### Changed
+- Updated package.json to include `readme` field pointing to README.md
+- Ensured README.md is properly included in npm package
+
+### Package Info
+- **npm Package**: [waqtor@1.0.3](https://www.npmjs.com/package/waqtor)
+- **Package Size**: 113.8 kB (compressed)
+- **Unpacked Size**: 493.3 kB
+- **Files**: 73
+
+## [1.0.2] - 2025-10-28
+
+### Changed
+- 📝 **Documentation** - Updated README with improved formatting
+- 🔧 **Version Bump** - Attempted to sync README to npm (authentication required)
+
+### Package Info
+- **npm Package**: [waqtor@1.0.2](https://www.npmjs.com/package/waqtor)
+
 ## [1.0.1] - 2025-10-28
 
 ### Fixed

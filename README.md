@@ -5,7 +5,7 @@
     <p><strong>"A new vector for intelligent communication."</strong></p>
     <br />
     <p>
-        <a href="https://github.com/tariqsaidofficial/WaQtor"><img src="https://img.shields.io/badge/WaQtor-v1.0.1-blue.svg" alt="WaQtor v1.0.1" /></a>
+        <a href="https://github.com/tariqsaidofficial/WaQtor"><img src="https://img.shields.io/badge/WaQtor-v1.0.3-blue.svg" alt="WaQtor v1.0.3" /></a>
         <a href="https://www.npmjs.com/package/waqtor"><img src="https://img.shields.io/npm/v/waqtor.svg?color=blue" alt="npm version" /></a>
         <a href="https://github.com/tariqsaidofficial/WaQtor/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
         <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen" alt="Node" /></a>
@@ -16,7 +16,7 @@
 
 ## 🎯 About
 
-**WaQtor v1.0.1** is a **smart automation framework** that empowers developers and teams to build scalable communication systems over WhatsApp.
+**WaQtor v1.0.3** is a **smart automation framework** that empowers developers and teams to build scalable communication systems over WhatsApp.
 
 Built on top of [**whatsapp-web.js v1.34.1**](https://github.com/pedroslopez/whatsapp-web.js) by [Pedro S. Lopez](https://github.com/pedroslopez), WaQtor extends the core library with enterprise-grade features including REST API, campaign management, and database integration.
 
@@ -39,9 +39,9 @@ Designed for performance and simplicity, WaQtor helps you:
 
 ## 📋 Version Information
 
-**Current Version:** v1.0.1  
+**Current Version:** v1.0.3  
 **npm Package:** [waqtor](https://www.npmjs.com/package/waqtor)  
-**Latest Release:** [v1.0.1](https://github.com/tariqsaidofficial/WaQtor/releases/tag/v1.0.1)
+**Latest Release:** [v1.0.3](https://github.com/tariqsaidofficial/WaQtor/releases/tag/v1.0.3)
 
 WaQtor follows [Semantic Versioning](https://semver.org/) (SemVer) for clear version management.
 
@@ -51,7 +51,19 @@ WaQtor follows [Semantic Versioning](https://semver.org/) (SemVer) for clear ver
 - **Original Author:** [Pedro S. Lopez](https://github.com/pedroslopez)
 - **Last Upstream Sync:** October 28, 2025
 
-### What's New in WaQtor v1.0.1
+### What's New in WaQtor v1.0.3
+
+**Bug Fixes:**
+- 🐛 **npm README Display** - Fixed README not appearing on npm package page
+- 📄 **Package Metadata** - Added explicit `readme` field to package.json
+- 🔧 **npm Publishing** - Ensured proper README display on npmjs.com
+
+**Package Info:**
+- **Size:** 113.8 kB (compressed) / 493.3 kB (unpacked)
+- **Files:** 73
+- **npm:** [waqtor@1.0.3](https://www.npmjs.com/package/waqtor)
+
+### WaQtor v1.0.1 - Package Optimization
 
 **Bug Fixes:**
 - 🐛 Fixed npm package size (reduced from 76.6 MB to 489.4 kB)
@@ -512,9 +524,9 @@ READONLY_FORK=true
 ### Package Stats
 
 - **Package Name:** [waqtor](https://www.npmjs.com/package/waqtor)
-- **Current Version:** 1.0.1
-- **Package Size:** 112.7 kB (compressed)
-- **Unpacked Size:** 489.4 kB
+- **Current Version:** 1.0.3
+- **Package Size:** 113.8 kB (compressed)
+- **Unpacked Size:** 493.3 kB
 - **Total Files:** 73
 - **License:** Apache-2.0
 - **Dependencies:** 15
@@ -543,7 +555,8 @@ pnpm add waqtor
 
 ### Version History
 
-- **v1.0.1** (Latest) - Package size optimization, session files removed
+- **v1.0.3** (Latest) - Fixed README display on npm, added readme field to package.json
+- **v1.0.1** - Package size optimization, session files removed
 - **v1.0.0** - Initial release with full feature set
 
 ### Links

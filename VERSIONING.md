@@ -49,7 +49,12 @@ Therefore, WaQtor uses **independent versioning** starting from `v1.0.0`.
 
 ## 📊 Version History
 
-### **Current Version: 1.0.0** (October 28, 2025)
+### **Current Version: 1.0.3** (October 28, 2025)
+
+#### **Latest Changes:**
+- 🐛 Fixed README display on npm package page
+- 📄 Added explicit `readme` field to package.json
+- 🔧 Ensured proper README rendering on npmjs.com
 
 #### **What's Included:**
 - ✅ Full whatsapp-web.js v1.34.1 core functionality
@@ -94,7 +99,7 @@ WaQtor maintains a connection with the original **whatsapp-web.js** project to r
 ┌─────────────────────────────────────┐
 │  WaQtor                             │
 │  By: Tariq Said                     │
-│  Current: v1.0.0                    │
+│  Current: v1.0.3                    │
 └─────────────────────────────────────┘
 ```
 
