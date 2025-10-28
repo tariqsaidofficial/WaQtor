@@ -13,6 +13,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Multi-session management
 - Template library with variables
 - Analytics & CSV export
+- Image compression before sending
+- Cloud storage integration (S3, GCS)
+
+## [2.0.0] - 2025-10-29
+
+### 🎉 Major Release - File Management System
+
+#### Added
+- 🖼️ **Smart Image Handling** - Images arrive as media with preview (not documents)
+- 📁 **Date-Based Organization** - Files organized in `uploads/YYYY-MM-DD/` folders
+- 📏 **Custom Size Limits** - Different limits per file type (Images: 3MB, PDF: 5MB, Video: 60MB)
+- 🗑️ **Auto Cleanup** - Files deleted after 30 days with 3-day warning
+- 👁️ **File Preview** - Preview images/video/audio in web interface
+- 🧪 **Test Suite** - 5 comprehensive test files with 100% pass rate
+- 📚 **Complete Documentation** - [See documentation/](documentation/) for details
+
+#### Changed
+- Updated multer storage to use date-based folders
+- Enhanced `/send-file` endpoint with proper MIME type handling
+- Improved error messages and validation
+
+#### Technical Details
+For complete implementation details, see:
+- [FILE_MANAGEMENT_SYSTEM.md](documentation/FILE_MANAGEMENT_SYSTEM.md)
+- [IMAGE_SEND_FIX.md](documentation/IMAGE_SEND_FIX.md)
+- [TESTING_GUIDE.md](tests/TESTING_GUIDE.md)
 
 ## [1.0.4] - 2025-10-28
 

@@ -5,7 +5,7 @@
     <p><strong>"A new vector for intelligent communication."</strong></p>
     <br />
     <p>
-        <a href="https://github.com/tariqsaidofficial/WaQtor"><img src="https://img.shields.io/badge/WaQtor-v1.0.4-blue.svg" alt="WaQtor v1.0.4" /></a>
+        <a href="https://github.com/tariqsaidofficial/WaQtor"><img src="https://img.shields.io/badge/WaQtor-v2.0.0-blue.svg" alt="WaQtor v2.0.0" /></a>
         <a href="https://www.npmjs.com/package/waqtor"><img src="https://img.shields.io/npm/v/waqtor.svg?color=blue" alt="npm version" /></a>
         <a href="https://github.com/tariqsaidofficial/WaQtor/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
         <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen" alt="Node" /></a>
@@ -13,6 +13,23 @@
     </p>
     <br />
 </div>
+
+---
+
+## 🆕 What's New in v2.0
+
+**October 29, 2025** - Major file management system release!
+
+- 🖼️ **Images arrive as media** with preview (not documents)
+- 📁 **Smart organization** - Files in `uploads/YYYY-MM-DD/` folders  
+- 📏 **Custom size limits** - Different per file type
+- 🗑️ **Auto cleanup** - Files deleted after 30 days
+- 👁️ **File preview** - In web interface
+- 🧪 **100% tested** - All features verified
+
+**[📖 See full changelog](CHANGELOG.md) • [📚 Documentation](DOCS.md)**
+
+---
 
 ## 🎯 About
 

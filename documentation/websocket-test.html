@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WaQtor WebSocket Test Client</title>
+    <!-- QRCode.js library - Multiple sources for reliability -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" 
+            integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" 
+            crossorigin="anonymous" 
+            referrerpolicy="no-referrer"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        button.disconnect {
+            background: #e74c3c;
+        }
+
+        button.disconnect:hover {
+            background: #c0392b;
+        }
+
+        button.send {
+            background: #27ae60;
+        }
+
+        button.send:hover {
+            background: #229954;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .messages {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .message {
+            padding: 8px;
+            margin-bottom: 8px;
+            border-left: 3px solid #667eea;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .message.received {
+            border-left-color: #27ae60;
+        }
+
+        .message.sent {
+            border-left-color: #3498db;
+        }
+
+        .message.error {
+            border-left-color: #e74c3c;
+            background: #fee;
+        }
+
+        .message-time {
+            color: #999;
+            font-size: 11px;
+            margin-right: 10px;
+        }
+
+        .message-type {
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .state-display {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .state-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .state-item:last-child {
+            border-bottom: none;
+        }
+
+        .state-key {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .state-value {
+            color: #667eea;
+            font-family: monospace;
+        }
+
+        .qr-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        #qrCode {
+            max-width: 100%;
+            height: auto;
+            margin: 20px 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔌 WaQtor WebSocket Test Client</h1>
+
+        <div class="card">
+            <h2>Connection Settings</h2>
+            <div class="input-group">
+                <label for="wsUrl">WebSocket URL:</label>
+                <input type="text" id="wsUrl" value="ws://localhost:8080/ws" placeholder="ws://localhost:8080/ws">
+            </div>
+            <div class="input-group">
+                <label for="apiKey">API Key:</label>
+                <input type="text" id="apiKey" value="waqtor_default_key_change_me_in_production" placeholder="Enter your API key">
+            </div>
+            <div>
+                <button id="connectBtn" onclick="connect()">Connect</button>
+                <button id="disconnectBtn" class="disconnect" onclick="disconnect()" disabled>Disconnect</button>
+                <button onclick="clearMessages()">Clear Messages</button>
+            </div>
+            <div style="margin-top: 15px;">
+                <span id="status" class="status disconnected">● Disconnected</span>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>Quick Commands</h2>
+                <button class="send" onclick="sendCommand('ping')">Ping</button>
+                <button class="send" onclick="sendCommand('get_state')">Get State</button>
+                <button class="send" onclick="sendCommand('get_qr')">Get QR Code</button>
+                <button class="send" onclick="sendCommand('subscribe', {events: ['all']})">Subscribe All</button>
+            </div>
+
+            <div class="card">
+                <h2>📤 Send Message</h2>
+                
+                <div class="input-group">
+                    <label for="messageTemplate">📋 رسائل جاهزة:</label>
+                    <select id="messageTemplate" onchange="loadTemplate()" style="padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; width: 100%;">
+                        <option value="">اختر رسالة جاهزة...</option>
+                        <option value="offer1">🎉 عرض خصم 50%</option>
+                        <option value="offer2">🆕 منتج جديد</option>
+                        <option value="offer3">🎊 دعوة لحدث</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="recipientPhone">Recipient Phone (with country code):</label>
+                    <input type="text" id="recipientPhone" placeholder="201229609292" value="201229609292">
+                </div>
+                <div class="input-group">
+                    <label for="messageText">Message Text:</label>
+                    <textarea id="messageText" rows="6" placeholder="اكتب رسالتك أو اختر رسالة جاهزة من القائمة أعلاه..."></textarea>
+                </div>
+                
+                <!-- New: Media Upload -->
+                <div class="input-group">
+                    <label for="mediaFile">📎 إرفاق ملف (اختياري):</label>
+                    <input type="file" id="mediaFile" accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt" onchange="previewFile()" style="padding: 8px; border: 2px dashed #e0e0e0; border-radius: 8px; width: 100%; cursor: pointer;">
+                    <small style="color: #666; display: block; margin-top: 5px;">
+                        📊 حدود الأحجام: صور (3MB) • PDF (5MB) • فيديو (60MB) • مستندات (10MB)<br>
+                        📁 الملفات تُحفظ لمدة 30 يوم ثم تُحذف تلقائياً
+                    </small>
+                    <div id="filePreview" style="margin-top: 10px;"></div>
+                </div>
+
+                <button class="send" onclick="sendWhatsAppMessage()">📨 Send WhatsApp Message</button>
+                <div id="sendMessageStatus" style="margin-top: 10px; font-size: 14px;"></div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>Custom WebSocket Message</h2>
+                <div class="input-group">
+                    <label for="customMessage">JSON Message:</label>
+                    <textarea id="customMessage" rows="4" placeholder='{"type": "ping"}'></textarea>
+                </div>
+                <button class="send" onclick="sendCustom()">Send Custom</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Session State</h2>
+            <div id="stateDisplay" class="state-display">
+                <p style="color: #999;">Not connected. Connect to see session state.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>QR Code</h2>
+            <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 12px; margin-bottom: 15px;">
+                <p style="margin: 0; color: #856404; font-size: 14px;">
+                    <strong>ℹ️ ملاحظة:</strong> QR code يظهر فقط عند إنشاء جلسة جديدة وقبل المصادقة.
+                    <br>إذا كانت الجلسة موجودة ومصادقة (authenticated)، لن يكون هناك QR code.
+                    <br><strong>الحل:</strong> احذف مجلد <code>.wwebjs_auth</code> وأعد تشغيل الخادم لرؤية QR code.
+                </p>
+            </div>
+            <div id="qrContainer" class="qr-container">
+                <p style="color: #999;">No QR code available - Session is already authenticated ✅</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Messages Log</h2>
+            <div id="messages" class="messages"></div>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        let sessionState = null;
+
+        function connect() {
+            const url = document.getElementById('wsUrl').value;
+            const apiKey = document.getElementById('apiKey').value;
+
+            if (!apiKey) {
+                alert('Please enter API key');
+                return;
+            }
+
+            const wsUrlWithKey = url + '?apiKey=' + encodeURIComponent(apiKey);
+
+            addMessage('Connecting to ' + url + '...', 'sent');
+
+            ws = new WebSocket(wsUrlWithKey);
+
+            ws.onopen = () => {
+                addMessage('✅ Connected successfully!', 'received');
+                updateStatus(true);
+                document.getElementById('connectBtn').disabled = true;
+                document.getElementById('disconnectBtn').disabled = false;
+
+                // Auto-request state
+                sendCommand('get_state');
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleMessage(data);
+                } catch (e) {
+                    addMessage('Error parsing message: ' + event.data, 'error');
+                }
+            };
+
+            ws.onerror = (error) => {
+                addMessage('❌ WebSocket error', 'error');
+                console.error('WebSocket error:', error);
+            };
+
+            ws.onclose = () => {
+                addMessage('Connection closed', 'received');
+                updateStatus(false);
+                document.getElementById('connectBtn').disabled = false;
+                document.getElementById('disconnectBtn').disabled = true;
+            };
+        }
+
+        function disconnect() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+        }
+
+        function sendCommand(type, data = {}) {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                alert('Not connected!');
+                return;
+            }
+
+            const message = { type, ...data };
+            ws.send(JSON.stringify(message));
+            addMessage('➡️ Sent: ' + JSON.stringify(message), 'sent');
+        }
+
+        function sendCustom() {
+            const message = document.getElementById('customMessage').value;
+            if (!message) return;
+
+            try {
+                JSON.parse(message); // Validate JSON
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(message);
+                    addMessage('➡️ Sent: ' + message, 'sent');
+                }
+            } catch (e) {
+                alert('Invalid JSON: ' + e.message);
+            }
+        }
+
+        function loadTemplate() {
+            const templateSelect = document.getElementById('messageTemplate');
+            const messageTextArea = document.getElementById('messageText');
+            const selectedTemplate = templateSelect.value;
+
+            const templates = {
+                offer1: `السلام عليكم! 🌟
+
+🎉 عرض خاص لعملائنا الكرام
+✨ خصم 50% على جميع المنتجات
+⏰ العرض ساري حتى نهاية الأسبوع
+
+📞 للطلب: 01234567890
+🚚 توصيل مجاني لجميع المحافظات
+💳 الدفع عند الاستلام
+
+⭐ لا تفوت الفرصة!`,
+
+                offer2: `مرحباً! 👋
+
+🆕 منتج جديد وصل للتو!
+✨ جودة عالية بأسعار تنافسية
+🎁 اطلب الآن واحصل على هدية مجانية
+
+📱 للطلب والاستفسار: 01234567890
+🌐 زوروا موقعنا: www.example.com
+⏰ كمية محدودة
+
+🔥 اطلب قبل نفاد الكمية!`,
+
+                offer3: `أهلاً بك! 🎊
+
+📅 ندعوكم لحضور:
+🎯 معرض المنتجات الجديدة 2025
+📍 المكان: القاهرة - وسط البلد
+⏰ الموعد: الجمعة القادمة - 10 صباحاً
+
+✨ مفاجآت وجوائز قيمة
+🎁 هدايا مجانية لأول 100 زائر
+☕ ضيافة مميزة
+
+📞 للتأكيد: 01234567890
+🎉 بانتظاركم!`
+            };
+
+            if (selectedTemplate && templates[selectedTemplate]) {
+                messageTextArea.value = templates[selectedTemplate];
+                addMessage(`📋 تم تحميل قالب: ${templateSelect.options[templateSelect.selectedIndex].text}`, 'received');
+            }
+        }
+
+        async function sendWhatsAppMessage() {
+            const recipientPhone = document.getElementById('recipientPhone').value.trim();
+            const messageText = document.getElementById('messageText').value.trim();
+            const statusDiv = document.getElementById('sendMessageStatus');
+            const mediaFile = document.getElementById('mediaFile').files[0];
+
+            if (!recipientPhone) {
+                statusDiv.innerHTML = '<span style="color: red;">⚠️ Please enter recipient phone number</span>';
+                return;
+            }
+
+            if (!messageText && !mediaFile) {
+                statusDiv.innerHTML = '<span style="color: red;">⚠️ Please enter message text or attach a file</span>';
+                return;
+            }
+
+            statusDiv.innerHTML = '<span style="color: blue;">📤 Sending message...</span>';
+
+            try {
+                const apiUrl = document.getElementById('wsUrl').value.replace('ws://', 'http://').replace('/ws', '');
+                const apiKey = document.getElementById('apiKey').value;
+                
+                let response;
+                
+                if (mediaFile) {
+                    // Send message with file
+                    statusDiv.innerHTML = '<span style="color: blue;">📎 Uploading file and sending...</span>';
+                    
+                    const formData = new FormData();
+                    formData.append('file', mediaFile);
+                    formData.append('phone', recipientPhone);
+                    if (messageText) {
+                        formData.append('caption', messageText);
+                    }
+                    
+                    response = await fetch(`${apiUrl}/api/messages/send-file`, {
+                        method: 'POST',
+                        headers: {
+                            'x-api-key': apiKey
+                        },
+                        body: formData
+                    });
+                } else {
+                    // Send text only message
+                    response = await fetch(`${apiUrl}/api/messages/send-text`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-api-key': apiKey
+                        },
+                        body: JSON.stringify({
+                            phone: recipientPhone,
+                            message: messageText
+                        })
+                    });
+                }
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    const fileInfo = mediaFile ? ` with file: ${mediaFile.name}` : '';
+                    statusDiv.innerHTML = `<span style="color: green;">✅ Message sent successfully${fileInfo}!</span>`;
+                    addMessage(`✅ Message sent to ${recipientPhone}${fileInfo}`, 'sent');
+                    
+                    // Clear file input and preview
+                    document.getElementById('mediaFile').value = '';
+                    document.getElementById('filePreview').innerHTML = '';
+                    
+                    // Also send via WebSocket for real-time updates
+                    if (ws && ws.readyState === WebSocket.OPEN) {
+                        ws.send(JSON.stringify({
+                            type: 'send_message',
+                            data: {
+                                chatId: `${recipientPhone}@c.us`,
+                                message: messageText,
+                                hasMedia: !!mediaFile
+                            }
+                        }));
+                    }
+                } else {
+                    statusDiv.innerHTML = `<span style="color: red;">❌ Failed: ${result.error || result.message || 'Unknown error'}</span>`;
+                    addMessage(`❌ Failed to send message: ${result.error || result.message}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error sending message:', error);
+                statusDiv.innerHTML = `<span style="color: red;">❌ Error: ${error.message}</span>`;
+                addMessage(`❌ Error sending message: ${error.message}`, 'error');
+            }
+        }
+
+        function previewFile() {
+            const fileInput = document.getElementById('mediaFile');
+            const preview = document.getElementById('filePreview');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                preview.innerHTML = '';
+                return;
+            }
+            
+            // Check file size (16MB max)
+            const maxSize = 16 * 1024 * 1024;
+            if (file.size > maxSize) {
+                preview.innerHTML = '<p style="color: red;">❌ File too large! Maximum size: 16MB</p>';
+                fileInput.value = '';
+                return;
+            }
+            
+            // Create preview
+            const fileSize = (file.size / 1024).toFixed(2);
+            const fileType = file.type;
+            
+            // Get appropriate icon based on file type
+            let icon = '📁';
+            if (file.type.startsWith('image/')) icon = '🖼️';
+            else if (file.type.startsWith('video/')) icon = '🎬';
+            else if (file.type.startsWith('audio/')) icon = '🎵';
+            else if (file.type.includes('pdf')) icon = '📄';
+            else if (file.type.includes('word') || file.name.endsWith('.doc') || file.name.endsWith('.docx')) icon = '📝';
+            else if (file.type.includes('excel') || file.name.endsWith('.xls') || file.name.endsWith('.xlsx')) icon = '📊';
+            else if (file.type.includes('powerpoint') || file.name.endsWith('.ppt') || file.name.endsWith('.pptx')) icon = '📊';
+            else if (file.type.includes('text') || file.name.endsWith('.txt')) icon = '📃';
+            
+            let previewHTML = `
+                <div style="background: #f8f9fa; border: 2px solid #667eea; border-radius: 8px; padding: 15px; margin-top: 10px;">
+                    <p style="margin: 0; font-weight: 600; color: #667eea;">📎 File selected:</p>
+                    <p style="margin: 5px 0; color: #333;"><strong>Name:</strong> ${file.name}</p>
+                    <p style="margin: 5px 0; color: #333;"><strong>Size:</strong> ${fileSize} KB</p>
+                    <p style="margin: 5px 0; color: #333;"><strong>Type:</strong> ${fileType || 'Unknown'}</p>
+            `;
+            
+            // If it's an image, show preview
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = previewHTML + `
+                        <img src="${e.target.result}" alt="Preview" style="max-width: 300px; max-height: 300px; margin-top: 10px; border-radius: 8px; border: 2px solid #667eea; display: block;">
+                    </div>`;
+                };
+                reader.readAsDataURL(file);
+            } else if (file.type.startsWith('video/')) {
+                // For videos, show video preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = previewHTML + `
+                        <video controls style="max-width: 300px; max-height: 300px; margin-top: 10px; border-radius: 8px; border: 2px solid #667eea; display: block;">
+                            <source src="${e.target.result}" type="${file.type}">
+                            Your browser does not support video preview.
+                        </video>
+                    </div>`;
+                };
+                reader.readAsDataURL(file);
+            } else if (file.type.startsWith('audio/')) {
+                // For audio, show audio player
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = previewHTML + `
+                        <audio controls style="width: 100%; margin-top: 10px;">
+                            <source src="${e.target.result}" type="${file.type}">
+                            Your browser does not support audio preview.
+                        </audio>
+                    </div>`;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                // For other files, just show icon
+                previewHTML += `
+                    <p style="margin: 10px 0; font-size: 48px; text-align: center;">${icon}</p>
+                </div>`;
+                preview.innerHTML = previewHTML;
+            }
+            
+            addMessage(`📎 File selected: ${file.name} (${fileSize} KB)`, 'received');
+        }
+
+        async function uploadFile(file, apiUrl, apiKey) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch(`${apiUrl}/api/uploadFile`, {
+                    method: 'POST',
+                    headers: {
+                        'x-api-key': apiKey
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (response.ok && result.success) {
+                    addMessage(`📎 File uploaded: ${result.url}`, 'received');
+                    return { url: result.url };
+                } else {
+                    addMessage(`❌ File upload error: ${result.error || result.message}`, 'error');
+                    return null;
+                }
+            } catch (error) {
+                console.error('File upload error:', error);
+                addMessage(`❌ File upload error: ${error.message}`, 'error');
+                return null;
+            }
+        }
+
+        function handleMessage(data) {
+            addMessage('⬅️ Received: ' + JSON.stringify(data, null, 2), 'received');
+
+            switch (data.type) {
+                case 'session_state':
+                case 'session_update':
+                    sessionState = data.data;
+                    updateStateDisplay();
+                    break;
+                case 'qr_code':
+                    displayQRCode(data.data.qr);
+                    break;
+                case 'pong':
+                    // Just log
+                    break;
+            }
+        }
+
+        function updateStateDisplay() {
+            if (!sessionState) return;
+
+            const html = `
+                <div class="state-item">
+                    <span class="state-key">Status:</span>
+                    <span class="state-value">${sessionState.status || 'unknown'}</span>
+                </div>
+                <div class="state-item">
+                    <span class="state-key">Ready:</span>
+                    <span class="state-value">${sessionState.ready ? '✅ Yes' : '❌ No'}</span>
+                </div>
+                <div class="state-item">
+                    <span class="state-key">Authenticated:</span>
+                    <span class="state-value">${sessionState.authenticated ? '✅ Yes' : '❌ No'}</span>
+                </div>
+                <div class="state-item">
+                    <span class="state-key">Has QR:</span>
+                    <span class="state-value">${sessionState.hasQR ? '✅ Yes' : '❌ No'}</span>
+                </div>
+                <div class="state-item">
+                    <span class="state-key">Uptime:</span>
+                    <span class="state-value">${formatUptime(sessionState.uptime)}</span>
+                </div>
+                ${sessionState.info ? `
+                <div class="state-item">
+                    <span class="state-key">Push Name:</span>
+                    <span class="state-value">${sessionState.info.pushname || 'N/A'}</span>
+                </div>
+                <div class="state-item">
+                    <span class="state-key">Platform:</span>
+                    <span class="state-value">${sessionState.info.platform || 'N/A'}</span>
+                </div>
+                ` : ''}
+                ${sessionState.stats ? `
+                <div class="state-item">
+                    <span class="state-key">Messages Sent:</span>
+                    <span class="state-value">${sessionState.stats.messagesSent || 0}</span>
+                </div>
+                <div class="state-item">
+                    <span class="state-key">Messages Received:</span>
+                    <span class="state-value">${sessionState.stats.messagesReceived || 0}</span>
+                </div>
+                ` : ''}
+                <div class="state-item">
+                    <span class="state-key">Last Update:</span>
+                    <span class="state-value">${sessionState.lastUpdate || 'N/A'}</span>
+                </div>
+            `;
+
+            document.getElementById('stateDisplay').innerHTML = html;
+        }
+
+        function displayQRCode(qr) {
+            const container = document.getElementById('qrContainer');
+            if (!qr) {
+                container.innerHTML = '<p style="color: #999;">No QR code available. Please wait for QR generation...</p>';
+                return;
+            }
+
+            console.log('📱 QR Code received:', qr.substring(0, 50) + '...');
+            
+            // Clear previous QR code
+            container.innerHTML = '<h3 style="color: #667eea; margin-bottom: 15px;">📱 Scan this QR code with WhatsApp:</h3><div id="qrcodeDiv" style="background: white; padding: 20px; border-radius: 12px; display: inline-block; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></div>';
+            
+            // Small delay to ensure DOM is ready
+            setTimeout(() => {
+                try {
+                    // Check if QRCode library is loaded
+                    if (typeof QRCode === 'undefined') {
+                        throw new Error('QRCode library not loaded');
+                    }
+                    
+                    const qrcodeDiv = document.getElementById("qrcodeDiv");
+                    if (!qrcodeDiv) {
+                        throw new Error('QR code container not found');
+                    }
+                    
+                    // Create QR code
+                    new QRCode(qrcodeDiv, {
+                        text: qr,
+                        width: 280,
+                        height: 280,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.M
+                    });
+                    
+                    // Add instructions
+                    const instructions = document.createElement('p');
+                    instructions.style.cssText = 'margin-top: 20px; color: #667eea; font-size: 16px; font-weight: 600;';
+                    instructions.innerHTML = '📲 Open WhatsApp → Settings → Linked Devices → Link a Device';
+                    container.appendChild(instructions);
+                    
+                    addMessage('✅ QR Code displayed successfully!', 'received');
+                    
+                } catch (e) {
+                    console.error('QRCode generation error:', e);
+                    // Fallback: Use Google Charts QR API
+                    container.innerHTML = `
+                        <h3 style="color: #667eea; margin-bottom: 15px;">📱 Scan this QR code with WhatsApp:</h3>
+                        <div style="background: white; padding: 20px; border-radius: 12px; display: inline-block; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(qr)}" 
+                                 alt="QR Code" 
+                                 style="display: block; width: 280px; height: 280px;" />
+                        </div>
+                        <p style="margin-top: 20px; color: #667eea; font-size: 16px; font-weight: 600;">
+                            📲 Open WhatsApp → Settings → Linked Devices → Link a Device
+                        </p>
+                    `;
+                    addMessage('✅ QR Code displayed (using fallback method)', 'received');
+                }
+            }, 100);
+        }
+
+        function formatUptime(seconds) {
+            if (!seconds) return '0s';
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = seconds % 60;
+            return `${h}h ${m}m ${s}s`;
+        }
+
+        function addMessage(text, type = 'received') {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ' + type;
+            
+            const time = new Date().toLocaleTimeString();
+            messageDiv.innerHTML = `
+                <span class="message-time">${time}</span>
+                <span class="message-type">${type.toUpperCase()}</span>
+                ${text}
+            `;
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function clearMessages() {
+            document.getElementById('messages').innerHTML = '';
+        }
+
+        function updateStatus(connected) {
+            const statusEl = document.getElementById('status');
+            if (connected) {
+                statusEl.textContent = '● Connected';
+                statusEl.className = 'status connected';
+            } else {
+                statusEl.textContent = '● Disconnected';
+                statusEl.className = 'status disconnected';
+            }
+        }
+
+        // Auto-connect if API key is pre-filled
+        window.addEventListener('load', () => {
+            addMessage('🚀 WaQtor WebSocket Test Client loaded', 'received');
+            addMessage('ℹ️  Enter API key and click Connect to start', 'received');
+        });
+    </script>
+</body>
+</html>

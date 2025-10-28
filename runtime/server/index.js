@@ -9,23 +9,34 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 const path = require('path');
+const http = require('http');
 
 const waClient = require('./waClient');
 const logger = require('./utils/logger');
 const { rateLimiter } = require('./middlewares/limiter');
 const { apiKeyAuth } = require('./middlewares/auth');
 
+// Services
+const SessionMonitor = require('./services/sessionMonitor');
+const WebSocketBridge = require('./services/websocketBridge');
+
 // Routes
 const messageRoutes = require('./routes/message');
 const campaignRoutes = require('./routes/campaign');
 const statusRoutes = require('./routes/status');
 const testRoutes = require('./routes/test');
+const sessionRoutes = require('./routes/session');
 
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '../config/.env') });
 
 const app = express();
+const server = http.createServer(app);
 const PORT = process.env.PORT || 8080;
+
+// Initialize services
+let sessionMonitor = null;
+let websocketBridge = null;
 
 // Middleware
 app.use(helmet());
@@ -64,17 +75,34 @@ app.get('/api', (req, res) => {
                 list: 'GET /api/campaigns/list',
                 get: 'GET /api/campaigns/:id',
                 updateStatus: 'PUT /api/campaigns/:id/status',
-                delete: 'DELETE /api/campaigns/:id'
+                delete: 'DELETE /api/campaigns/:id',
+                execute: 'POST /api/campaigns/:id/execute'
             },
             status: {
                 client: 'GET /api/status/client',
                 info: 'GET /api/status/info',
                 logout: 'POST /api/status/logout',
-                chats: 'GET /api/status/chats'
+                chats: 'GET /api/status/chats',
+                version: 'GET /api/status/version'
+            },
+            session: {
+                state: 'GET /api/session/state',
+                qr: 'GET /api/session/qr',
+                websocketInfo: 'GET /api/session/websocket/info',
+                resetStats: 'POST /api/session/stats/reset'
+            },
+            test: {
+                info: 'GET /api/test/info',
+                send: 'POST /api/test/send'
             }
         },
+        websocket: {
+            endpoint: 'ws://localhost:' + (process.env.PORT || 8080) + '/ws',
+            authentication: 'Required - use ?apiKey=YOUR_API_KEY',
+            info: 'GET /api/session/websocket/info for details'
+        },
         authentication: 'All /api/* endpoints require X-API-Key header',
-        documentation: 'See runtime/README.md for full API documentation'
+        documentation: 'See docs/api-reference.md for full API documentation'
     });
 });
 
@@ -83,6 +111,40 @@ app.use('/api/messages', apiKeyAuth, messageRoutes);
 app.use('/api/campaigns', apiKeyAuth, campaignRoutes);
 app.use('/api/status', apiKeyAuth, statusRoutes);
 app.use('/api/test', apiKeyAuth, testRoutes);
+app.use('/api/session', apiKeyAuth, sessionRoutes.router);
+
+// Quick send message endpoint (for compatibility)
+app.post('/api/sendMessage', apiKeyAuth, async (req, res) => {
+    try {
+        const { chatId, message } = req.body;
+        if (!chatId || !message) {
+            return res.status(400).json({
+                success: false,
+                error: 'Missing required fields: chatId and message'
+            });
+        }
+
+        const client = waClient.getClient();
+        const sentMessage = await client.sendMessage(chatId, message);
+
+        logger.info(`Message sent to ${chatId}`);
+        res.json({
+            success: true,
+            message: 'Message sent successfully',
+            data: {
+                id: sentMessage.id._serialized,
+                timestamp: sentMessage.timestamp
+            }
+        });
+    } catch (error) {
+        logger.error('Error sending message:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to send message',
+            message: error.message
+        });
+    }
+});
 
 // 404 Handler
 app.use((req, res) => {
@@ -104,15 +166,32 @@ app.use((err, req, res) => {
 // Start Server
 async function startServer() {
     try {
+        logger.info('Starting Waqtor Server...');
+
         // Initialize WhatsApp Client
-        logger.info('Initializing WhatsApp Client...');
+        logger.info('Initializing WhatsApp client...');
         await waClient.initialize();
-        
-        // Start Express Server
-        app.listen(PORT, () => {
+
+        // Initialize Session Monitor
+        logger.info('Initializing session monitor...');
+        sessionMonitor = new SessionMonitor(waClient);
+        await sessionMonitor.initialize();
+
+        // Initialize WebSocket Bridge
+        logger.info('Initializing WebSocket bridge...');
+        websocketBridge = new WebSocketBridge(server, sessionMonitor);
+        websocketBridge.initialize();
+
+        // Initialize session routes with services
+        sessionRoutes.initializeRoutes(sessionMonitor, websocketBridge);
+
+        // Start HTTP Server
+        server.listen(PORT, () => {
             logger.info(`🚀 Waqtor Server running on port ${PORT}`);
-            logger.info('📱 WhatsApp Client initialized and ready');
-            logger.info(`🌐 API available at http://localhost:${PORT}/api`);
+            logger.info(`� REST API: http://localhost:${PORT}/api`);
+            logger.info(`🔌 WebSocket: ws://localhost:${PORT}/ws`);
+            logger.info(`� Health Check: http://localhost:${PORT}/health`);
+            logger.info('✅ Server is ready to accept requests');
         });
     } catch (error) {
         logger.error('Failed to start server:', error);
@@ -123,13 +202,39 @@ async function startServer() {
 // Graceful Shutdown
 process.on('SIGINT', async () => {
     logger.info('Shutting down gracefully...');
+    
+    // Close WebSocket connections
+    if (websocketBridge) {
+        websocketBridge.shutdown();
+    }
+    
+    // Stop session monitor
+    if (sessionMonitor) {
+        await sessionMonitor.destroy();
+    }
+    
+    // Destroy WhatsApp client
     await waClient.destroy();
+    
     process.exit(0);
 });
 
 process.on('SIGTERM', async () => {
     logger.info('Shutting down gracefully...');
+    
+    // Close WebSocket connections
+    if (websocketBridge) {
+        websocketBridge.shutdown();
+    }
+    
+    // Stop session monitor
+    if (sessionMonitor) {
+        await sessionMonitor.destroy();
+    }
+    
+    // Destroy WhatsApp client
     await waClient.destroy();
+    
     process.exit(0);
 });
 
