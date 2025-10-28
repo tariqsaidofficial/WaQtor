@@ -7,8 +7,6 @@
     <p>
         <a href="https://github.com/tariqsaidofficial/WaQtor"><img src="https://img.shields.io/badge/WaQtor-v1.0.1-blue.svg" alt="WaQtor v1.0.1" /></a>
         <a href="https://www.npmjs.com/package/waqtor"><img src="https://img.shields.io/npm/v/waqtor.svg?color=blue" alt="npm version" /></a>
-        <a href="https://www.npmjs.com/package/waqtor"><img src="https://img.shields.io/npm/dt/waqtor.svg" alt="npm downloads" /></a>
-        <a href="https://github.com/pedroslopez/whatsapp-web.js"><img src="https://img.shields.io/badge/Based_on-whatsapp--web.js_v1.34.1-brightgreen.svg" alt="Based on whatsapp-web.js v1.34.1" /></a>
         <a href="https://github.com/tariqsaidofficial/WaQtor/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
         <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen" alt="Node" /></a>
         <a href="https://github.com/tariqsaidofficial/WaQtor/actions"><img src="https://img.shields.io/github/workflow/status/tariqsaidofficial/WaQtor/Publish%20to%20npm?label=build" alt="Build Status" /></a>
