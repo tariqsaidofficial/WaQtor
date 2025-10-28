@@ -26,6 +26,10 @@ yarn-error.log*
 .wwebjs_auth/
 .wwebjs_cache/
 chrome/
+runtime/server/session/
+runtime/logs/
+runtime/server/db/*.db
+runtime/server/db/*.db-*
 
 # Environment
 .env
