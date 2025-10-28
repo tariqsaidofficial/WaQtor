@@ -5,7 +5,7 @@
     <p><strong>"A new vector for intelligent communication."</strong></p>
     <br />
     <p>
-        <a href="https://github.com/tariqsaidofficial/Waqtor"><img src="https://img.shields.io/badge/WhatsApp_Web-2.3000.1017054665-brightgreen.svg" alt="WhatsApp_Web 2.3000.1017054665" /></a>
+        <a href="https://github.com/tariqsaidofficial/Waqtor"><img src="https://img.shields.io/badge/WhatsApp_Web-2.3000.1029037448-brightgreen.svg" alt="WhatsApp_Web 2.3000.1029037448" /></a>
         <a href="https://github.com/tariqsaidofficial/Waqtor/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
         <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen" alt="Node" /></a>
         <a href="https://www.npmjs.com/package/waqtor"><img src="https://img.shields.io/npm/v/waqtor.svg" alt="npm" /></a>
