@@ -1,6 +1,6 @@
-# Contributing to Waqtor
+# Contributing to WaQtor
 
-First off, thank you for considering contributing to Waqtor! 🎉
+First off, thank you for considering contributing to WaQtor! 🎉
 
 ## Code of Conduct
 
@@ -169,9 +169,12 @@ Contributors will be:
 ## Questions?
 
 Feel free to:
+
 - Open a **GitHub Discussion**
 - Create an **Issue** with the `question` label
-- Contact the maintainers
+- Contact the maintainers:
+  - Technical Support: [support@dxbmark.com](mailto:support@dxbmark.com)
+  - General Inquiries: [info@dxbmark.com](mailto:info@dxbmark.com)
 
 ## License
 
@@ -179,7 +182,7 @@ By contributing, you agree that your contributions will be licensed under the Ap
 
 ---
 
-**Thank you for contributing to Waqtor!** 🚀
+**Thank you for contributing to WaQtor!** 🚀
 
-Maintained by Tariq Said (DXBMark)  
+Maintained by Tariq Said (DXBMark)
 Based on whatsapp-web.js by Pedro S. Lopez

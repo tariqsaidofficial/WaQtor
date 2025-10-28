@@ -1,7 +1,7 @@
 {
   "name": "waqtor",
   "version": "1.34.1",
-  "description": "Smart Automation Engine for WhatsApp - A new vector for intelligent communication",
+  "description": "WaQtor - Smart Automation Engine for WhatsApp. A new vector for intelligent communication",
   "main": "./index.js",
   "typings": "./index.d.ts",
   "scripts": {
@@ -18,10 +18,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tariqsaidofficial/Waqtor.git"
+    "url": "git+https://github.com/tariqsaidofficial/WaQtor.git"
   },
   "keywords": [
     "waqtor",
+    "WaQtor",
     "whatsapp",
     "whatsapp-web",
     "whatsapp-api",
@@ -32,7 +33,7 @@
     "rest-api",
     "campaigns"
   ],
-  "author": "Tariq Said (DXBMark) <tariq@dxbmark.com>",
+  "author": "Tariq Said (DXBMark) <info@dxbmark.com>",
   "contributors": [
     {
       "name": "Pedro S Lopez",
@@ -42,9 +43,9 @@
   ],
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/tariqsaidofficial/Waqtor/issues"
+    "url": "https://github.com/tariqsaidofficial/WaQtor/issues"
   },
-  "homepage": "https://github.com/tariqsaidofficial/Waqtor#readme",
+  "homepage": "https://github.com/tariqsaidofficial/WaQtor#readme",
   "dependencies": {
     "@pedroslopez/moduleraid": "^5.0.2",
     "fluent-ffmpeg": "2.1.3",

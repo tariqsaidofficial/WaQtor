@@ -1,12 +1,12 @@
 <div align="center">
     <br />
-    <h1>🚀 Waqtor</h1>
+    <h1>🚀 WaQtor</h1>
     <h3>Smart Automation Engine for WhatsApp</h3>
     <p><strong>"A new vector for intelligent communication."</strong></p>
     <br />
     <p>
-        <a href="https://github.com/tariqsaidofficial/Waqtor"><img src="https://img.shields.io/badge/WhatsApp_Web-2.3000.1017054665-brightgreen.svg" alt="WhatsApp_Web 2.3000.1017054665" /></a>
-        <a href="https://github.com/tariqsaidofficial/Waqtor/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
+        <a href="https://github.com/tariqsaidofficial/WaQtor"><img src="https://img.shields.io/badge/WhatsApp_Web-2.3000.1017054665-brightgreen.svg" alt="WhatsApp_Web 2.3000.1017054665" /></a>
+        <a href="https://github.com/tariqsaidofficial/WaQtor/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
         <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen" alt="Node" /></a>
         <a href="https://www.npmjs.com/package/waqtor"><img src="https://img.shields.io/npm/v/waqtor.svg" alt="npm" /></a>
     </p>
@@ -15,19 +15,19 @@
 
 ## 🎯 About
 
-**Waqtor** is a **smart automation framework** that empowers developers and teams to build scalable communication systems over WhatsApp.
+**WaQtor** is a **smart automation framework** that empowers developers and teams to build scalable communication systems over WhatsApp.
 
 It connects seamlessly through the **official WhatsApp Web browser app**, ensuring secure, real-time interactions — without requiring access to Meta's Business API.
 
 The library launches the WhatsApp Web browser app via Puppeteer, accessing its internal functions and creating a managed instance to reduce the risk of being blocked. This gives the API client nearly all WhatsApp Web features for dynamic use in a Node.js application.
 
-Designed for performance and simplicity, Waqtor helps you:
+Designed for performance and simplicity, WaQtor helps you:
 - 🤖 Automate message workflows and campaigns
 - ⏰ Schedule and manage outbound communication
 - 📊 Track message delivery, response rates, and engagement
 - 🔌 Integrate WhatsApp into existing dashboards or SaaS tools
 
-> **In essence, Waqtor acts as your intelligent bridge between automation logic and the WhatsApp Web interface — combining reliability, control, and extensibility within one open-source framework.**
+> **In essence, WaQtor acts as your intelligent bridge between automation logic and the WhatsApp Web interface — combining reliability, control, and extensibility within one open-source framework.**
 
 > [!IMPORTANT]
 > **It is not guaranteed you will not be blocked by using this method. WhatsApp does not allow bots or unofficial clients on their platform, so this shouldn't be considered totally safe.**
@@ -36,7 +36,7 @@ Designed for performance and simplicity, Waqtor helps you:
 
 ## 🧱 Core Architecture
 
-The Waqtor engine follows a modular design that connects all layers seamlessly:
+The WaQtor engine follows a modular design that connects all layers seamlessly:
 
 ```
 ┌──────────────────────┐
@@ -77,17 +77,17 @@ The Waqtor engine follows a modular design that connects all layers seamlessly:
 
 ## ⚡ Installation
 
-The module is available via npm:
+Install WaQtor via npm:
 
 ```bash
-npm i whatsapp-web.js
+npm install waqtor
 ```
 
-Or clone this repository:
+Or clone the repository:
 
 ```bash
-git clone https://github.com/tariqsaidofficial/Waqtor.git
-cd Waqtor
+git clone https://github.com/tariqsaidofficial/WaQtor.git
+cd WaQtor
 npm install
 ```
 
@@ -479,7 +479,13 @@ limitations under the License.
 
 Created & maintained by **Tariq Said (DXBMark)**
 
-**Waqtor** — built with precision, simplicity, and vision.
+**WaQtor** — built with precision, simplicity, and vision.
+
+### 📧 Contact & Support
+
+- **Technical Support**: [support@dxbmark.com](mailto:support@dxbmark.com)
+- **General Inquiries**: [info@dxbmark.com](mailto:info@dxbmark.com)
+- **GitHub Issues**: [Report a Bug](https://github.com/tariqsaidofficial/WaQtor/issues)
 
 ---
 
@@ -487,15 +493,15 @@ Created & maintained by **Tariq Said (DXBMark)**
 [guide-source]: https://github.com/wwebjs/wwebjs.dev/tree/main
 [documentation]: https://docs.wwebjs.dev/
 [documentation-source]: https://github.com/pedroslopez/whatsapp-web.js/tree/main/docs
-[gitHub]: https://github.com/tariqsaidofficial/Waqtor
+[gitHub]: https://github.com/tariqsaidofficial/WaQtor
 [original-repo]: https://github.com/pedroslopez/whatsapp-web.js
-[issues]: https://github.com/tariqsaidofficial/Waqtor/issues
-[examples]: https://github.com/tariqsaidofficial/Waqtor/blob/main/example.js
+[issues]: https://github.com/tariqsaidofficial/WaQtor/issues
+[examples]: https://github.com/tariqsaidofficial/WaQtor/blob/main/example.js
 [auth-strategies]: https://wwebjs.dev/guide/creating-your-bot/authentication.html
 [google-chrome]: https://wwebjs.dev/guide/creating-your-bot/handling-attachments.html#caveat-for-sending-videos-and-gifs
 [deprecated-video]: https://www.youtube.com/watch?v=hv1R1rLeVVE
 [gitHub-sponsors]: https://github.com/sponsors/tariqsaidofficial
 [buy-coffee]: https://buymeacoffee.com/tariqsaid
-[contributing]: https://github.com/tariqsaidofficial/Waqtor/blob/main/CODE_OF_CONDUCT.md
+[contributing]: https://github.com/tariqsaidofficial/WaQtor/blob/main/CODE_OF_CONDUCT.md
 [whatsapp]: https://whatsapp.com
 

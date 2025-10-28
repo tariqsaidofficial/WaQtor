@@ -14,10 +14,12 @@ We release patches for security vulnerabilities in the following versions:
 **Please do not report security vulnerabilities through public GitHub issues.**
 
 Instead, please report them via email to:
-- **Email:** security@dxbmark.com
-- **Subject:** [SECURITY] Waqtor - Brief description
+
+- **Email:** [support@dxbmark.com](mailto:support@dxbmark.com)
+- **Subject:** [SECURITY] WaQtor - Brief description
 
 Please include:
+
 - Type of vulnerability
 - Full paths of source file(s) related to the vulnerability
 - Location of the affected source code (tag/branch/commit or direct URL)
@@ -34,7 +36,7 @@ Please include:
 
 ## Security Best Practices
 
-When using Waqtor:
+When using WaQtor:
 
 1. **Never commit session files** - Keep `.wwebjs_auth/` and `server/session/` in `.gitignore`
 2. **Use environment variables** - Store sensitive data in `.env` files
@@ -73,9 +75,9 @@ We appreciate the security research community's efforts in responsibly disclosin
 - Keep researchers informed throughout the remediation process
 - Release security patches promptly
 
-Thank you for helping keep Waqtor and its users safe!
+Thank you for helping keep WaQtor and its users safe!
 
 ---
 
-**Waqtor Security Team**  
+**WaQtor Security Team**
 Maintained by Tariq Said (DXBMark)
