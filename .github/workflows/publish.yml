@@ -1,12 +1,11 @@
 name: Publish to npm
 
 on:
-  release:
-    types: [created, published]
+  # Only trigger manually to avoid conflicts with manual npm publish
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to publish (optional)'
+        description: 'Version to publish (leave empty to use package.json version)'
         required: false
         type: string
 
@@ -46,7 +45,21 @@ jobs:
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "📦 Publishing WaQtor v$VERSION"
     
+    - name: Check if version already published
+      id: check_version
+      run: |
+        VERSION=$(node -p "require('./package.json').version")
+        if npm view waqtor@$VERSION version 2>/dev/null; then
+          echo "Version $VERSION is already published on npm"
+          echo "published=true" >> $GITHUB_OUTPUT
+          exit 1
+        else
+          echo "Version $VERSION is not published yet"
+          echo "published=false" >> $GITHUB_OUTPUT
+        fi
+    
     - name: Publish to npm with provenance
+      if: steps.check_version.outputs.published == 'false'
       run: npm publish --provenance --access public
       env:
         # Fallback to NPM_TOKEN if OIDC is not yet configured
