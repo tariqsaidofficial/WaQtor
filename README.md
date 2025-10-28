@@ -75,6 +75,25 @@ The WaQtor engine follows a modular design that connects all layers seamlessly:
 - [API Documentation][documentation] ([source][documentation-source])
 - [Issues & Support][issues]
 
+---
+
+## 📚 Documentation
+
+### Git Workflow & Development Guide
+
+- **[📖 Complete Git Workflow Guide](documentation/GIT_WORKFLOW.md)** - دليل شامل لإدارة Git وسير العمل
+- **[⚡ Quick Reference](documentation/GIT_QUICK_REFERENCE.md)** - مرجع سريع للأوامر الأكثر استخداماً
+
+### Project Documentation
+
+For more detailed documentation, visit the `documentation/` folder:
+- [Getting Started](documentation/GETTING_STARTED.md)
+- [Architecture Implementation](documentation/ARCHITECTURE_IMPLEMENTATION.md)
+- [Testing Guide](documentation/TESTING_GUIDE.md)
+- [Campaign Guide](documentation/CAMPAIGN_GUIDE.md)
+
+---
+
 ## ⚡ Installation
 
 Install WaQtor via npm:
