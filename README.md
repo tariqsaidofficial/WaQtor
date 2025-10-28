@@ -5,7 +5,8 @@
     <p><strong>"A new vector for intelligent communication."</strong></p>
     <br />
     <p>
-        <a href="https://github.com/tariqsaidofficial/WaQtor"><img src="https://img.shields.io/badge/WhatsApp_Web-2.3000.1017054665-brightgreen.svg" alt="WhatsApp_Web 2.3000.1017054665" /></a>
+        <a href="https://github.com/tariqsaidofficial/WaQtor"><img src="https://img.shields.io/badge/WaQtor-v1.0.0-blue.svg" alt="WaQtor v1.0.0" /></a>
+        <a href="https://github.com/pedroslopez/whatsapp-web.js"><img src="https://img.shields.io/badge/Based_on-whatsapp--web.js_v1.34.1-brightgreen.svg" alt="Based on whatsapp-web.js v1.34.1" /></a>
         <a href="https://github.com/tariqsaidofficial/WaQtor/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
         <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen" alt="Node" /></a>
         <a href="https://www.npmjs.com/package/waqtor"><img src="https://img.shields.io/npm/v/waqtor.svg" alt="npm" /></a>
@@ -15,7 +16,9 @@
 
 ## 🎯 About
 
-**WaQtor** is a **smart automation framework** that empowers developers and teams to build scalable communication systems over WhatsApp.
+**WaQtor v1.0.0** is a **smart automation framework** that empowers developers and teams to build scalable communication systems over WhatsApp.
+
+Built on top of [**whatsapp-web.js v1.34.1**](https://github.com/pedroslopez/whatsapp-web.js) by [Pedro S. Lopez](https://github.com/pedroslopez), WaQtor extends the core library with enterprise-grade features including REST API, campaign management, and database integration.
 
 It connects seamlessly through the **official WhatsApp Web browser app**, ensuring secure, real-time interactions — without requiring access to Meta's Business API.
 
@@ -31,6 +34,43 @@ Designed for performance and simplicity, WaQtor helps you:
 
 > [!IMPORTANT]
 > **It is not guaranteed you will not be blocked by using this method. WhatsApp does not allow bots or unofficial clients on their platform, so this shouldn't be considered totally safe.**
+
+---
+
+## 📋 Version Information
+
+**Current Version:** v1.0.0
+
+WaQtor follows [Semantic Versioning](https://semver.org/) (SemVer) for clear version management.
+
+### Built On
+
+- **Base Library:** [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) v1.34.1
+- **Original Author:** [Pedro S. Lopez](https://github.com/pedroslopez)
+- **Last Upstream Sync:** October 28, 2025
+
+### What's New in WaQtor v1.0.0
+
+This is the first stable release of WaQtor, featuring:
+
+- ✨ **Full whatsapp-web.js v1.34.1 compatibility**
+- 🚀 **REST API Layer** - Express.js-based HTTP endpoints
+- 📊 **Campaign Management** - Create, track, and execute messaging campaigns
+- 🗄️ **SQLite Integration** - Persistent storage for campaigns and logs
+- 🐳 **Docker Support** - Production-ready containerization
+- 🔒 **API Authentication** - Secure API key-based access control
+- ⚡ **Rate Limiting** - Protect against API abuse
+- 📝 **Comprehensive Logging** - Winston-based logging system
+- 🏥 **Health Checks** - System monitoring endpoints
+
+### Versioning Strategy
+
+For detailed information about our versioning approach, see [VERSIONING.md](VERSIONING.md).
+
+Quick reference:
+- **MAJOR** (1.x.x): Breaking changes
+- **MINOR** (x.1.x): New features (backward-compatible)
+- **PATCH** (x.x.1): Bug fixes and security patches
 
 ---
 
@@ -74,6 +114,25 @@ The WaQtor engine follows a modular design that connects all layers seamlessly:
 - [Official Guide][guide] ([source][guide-source])
 - [API Documentation][documentation] ([source][documentation-source])
 - [Issues & Support][issues]
+
+---
+
+## 📚 Documentation
+
+### Git Workflow & Development Guide
+
+- **[📖 Complete Git Workflow Guide](documentation/GIT_WORKFLOW.md)** - دليل شامل لإدارة Git وسير العمل
+- **[⚡ Quick Reference](documentation/GIT_QUICK_REFERENCE.md)** - مرجع سريع للأوامر الأكثر استخداماً
+
+### Project Documentation
+
+For more detailed documentation, visit the `documentation/` folder:
+- [Getting Started](documentation/GETTING_STARTED.md)
+- [Architecture Implementation](documentation/ARCHITECTURE_IMPLEMENTATION.md)
+- [Testing Guide](documentation/TESTING_GUIDE.md)
+- [Campaign Guide](documentation/CAMPAIGN_GUIDE.md)
+
+---
 
 ## ⚡ Installation
 

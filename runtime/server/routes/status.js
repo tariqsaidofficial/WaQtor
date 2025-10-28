@@ -7,6 +7,8 @@ const express = require('express');
 const router = express.Router();
 const waClient = require('../waClient');
 const logger = require('../utils/logger');
+const { WAQtorVersion, UpstreamVersion, UpstreamAuthor } = require('../../../src/util/Constants');
+const packageJson = require('../../../package.json');
 
 /**
  * GET /api/status/client
@@ -129,6 +131,41 @@ router.get('/chats', async (req, res) => {
         res.status(500).json({
             success: false,
             error: 'Failed to get chats',
+            message: error.message
+        });
+    }
+});
+
+/**
+ * GET /api/status/version
+ * Get WaQtor version information
+ */
+router.get('/version', (req, res) => {
+    try {
+        res.json({
+            success: true,
+            data: {
+                waqtor: {
+                    version: WAQtorVersion,
+                    name: 'WaQtor',
+                    description: 'Smart Automation Engine for WhatsApp'
+                },
+                upstream: {
+                    version: UpstreamVersion,
+                    author: UpstreamAuthor,
+                    project: 'whatsapp-web.js',
+                    repo: 'https://github.com/pedroslopez/whatsapp-web.js'
+                },
+                node: process.version,
+                platform: process.platform,
+                arch: process.arch
+            }
+        });
+    } catch (error) {
+        logger.error('Error getting version:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to get version',
             message: error.message
         });
     }

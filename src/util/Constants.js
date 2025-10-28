@@ -1,5 +1,13 @@
 'use strict';
 
+/**
+ * WaQtor Version Information
+ */
+exports.WAQtorVersion = '1.0.0';
+exports.UpstreamVersion = '1.34.1';
+exports.UpstreamAuthor = 'Pedro S. Lopez';
+exports.UpstreamRepo = 'https://github.com/pedroslopez/whatsapp-web.js';
+
 exports.WhatsWebURL = 'https://web.whatsapp.com/';
 
 exports.DefaultOptions = {
@@ -7,7 +15,7 @@ exports.DefaultOptions = {
         headless: true,
         defaultViewport: null
     },
-    webVersion: '2.3000.1017054665',
+    webVersion: '2.3000.1029037448',
     webVersionCache: {
         type: 'local',
     },
