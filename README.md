@@ -5,18 +5,20 @@
     <p><strong>"A new vector for intelligent communication."</strong></p>
     <br />
     <p>
-        <a href="https://github.com/tariqsaidofficial/WaQtor"><img src="https://img.shields.io/badge/WaQtor-v1.0.0-blue.svg" alt="WaQtor v1.0.0" /></a>
+        <a href="https://github.com/tariqsaidofficial/WaQtor"><img src="https://img.shields.io/badge/WaQtor-v1.0.1-blue.svg" alt="WaQtor v1.0.1" /></a>
+        <a href="https://www.npmjs.com/package/waqtor"><img src="https://img.shields.io/npm/v/waqtor.svg?color=blue" alt="npm version" /></a>
+        <a href="https://www.npmjs.com/package/waqtor"><img src="https://img.shields.io/npm/dt/waqtor.svg" alt="npm downloads" /></a>
         <a href="https://github.com/pedroslopez/whatsapp-web.js"><img src="https://img.shields.io/badge/Based_on-whatsapp--web.js_v1.34.1-brightgreen.svg" alt="Based on whatsapp-web.js v1.34.1" /></a>
         <a href="https://github.com/tariqsaidofficial/WaQtor/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
         <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen" alt="Node" /></a>
-        <a href="https://www.npmjs.com/package/waqtor"><img src="https://img.shields.io/npm/v/waqtor.svg" alt="npm" /></a>
+        <a href="https://github.com/tariqsaidofficial/WaQtor/actions"><img src="https://img.shields.io/github/workflow/status/tariqsaidofficial/WaQtor/Publish%20to%20npm?label=build" alt="Build Status" /></a>
     </p>
     <br />
 </div>
 
 ## 🎯 About
 
-**WaQtor v1.0.0** is a **smart automation framework** that empowers developers and teams to build scalable communication systems over WhatsApp.
+**WaQtor v1.0.1** is a **smart automation framework** that empowers developers and teams to build scalable communication systems over WhatsApp.
 
 Built on top of [**whatsapp-web.js v1.34.1**](https://github.com/pedroslopez/whatsapp-web.js) by [Pedro S. Lopez](https://github.com/pedroslopez), WaQtor extends the core library with enterprise-grade features including REST API, campaign management, and database integration.
 
@@ -39,7 +41,9 @@ Designed for performance and simplicity, WaQtor helps you:
 
 ## 📋 Version Information
 
-**Current Version:** v1.0.0
+**Current Version:** v1.0.1  
+**npm Package:** [waqtor](https://www.npmjs.com/package/waqtor)  
+**Latest Release:** [v1.0.1](https://github.com/tariqsaidofficial/WaQtor/releases/tag/v1.0.1)
 
 WaQtor follows [Semantic Versioning](https://semver.org/) (SemVer) for clear version management.
 
@@ -49,9 +53,16 @@ WaQtor follows [Semantic Versioning](https://semver.org/) (SemVer) for clear ver
 - **Original Author:** [Pedro S. Lopez](https://github.com/pedroslopez)
 - **Last Upstream Sync:** October 28, 2025
 
-### What's New in WaQtor v1.0.0
+### What's New in WaQtor v1.0.1
 
-This is the first stable release of WaQtor, featuring:
+**Bug Fixes:**
+- 🐛 Fixed npm package size (reduced from 76.6 MB to 489.4 kB)
+- 🔒 Removed session files from published package
+- 📦 Optimized package contents for cleaner installation
+
+### WaQtor v1.0.0 - Initial Release
+
+The first stable release of WaQtor, featuring:
 
 - ✨ **Full whatsapp-web.js v1.34.1 compatibility**
 - 🚀 **REST API Layer** - Express.js-based HTTP endpoints
@@ -136,13 +147,24 @@ For more detailed documentation, visit the `documentation/` folder:
 
 ## ⚡ Installation
 
-Install WaQtor via npm:
+### Via npm (Recommended)
+
+Install WaQtor from npm registry:
 
 ```bash
+# Using npm
 npm install waqtor
+
+# Using yarn
+yarn add waqtor
+
+# Using pnpm
+pnpm add waqtor
 ```
 
-Or clone the repository:
+### From GitHub
+
+Clone and install from source:
 
 ```bash
 git clone https://github.com/tariqsaidofficial/WaQtor.git
@@ -150,8 +172,19 @@ cd WaQtor
 npm install
 ```
 
+### Verify Installation
+
+```bash
+# Check installed version
+npm list waqtor
+
+# Or check package info
+npm info waqtor
+```
+
 > [!NOTE]
 > **Node `v18` or higher is required.**  
+> Current npm package size: **489.4 kB** (unpacked)  
 > See the [Guide][guide] for quick upgrade instructions.
 
 ---
@@ -476,6 +509,55 @@ READONLY_FORK=true
 
 ---
 
+## 📦 npm Package Information
+
+### Package Stats
+
+- **Package Name:** [waqtor](https://www.npmjs.com/package/waqtor)
+- **Current Version:** 1.0.1
+- **Package Size:** 112.7 kB (compressed)
+- **Unpacked Size:** 489.4 kB
+- **Total Files:** 73
+- **License:** Apache-2.0
+- **Dependencies:** 15
+- **Node Version Required:** ≥18.0.0
+
+### Installation Methods
+
+```bash
+# Using npm
+npm install waqtor
+
+# Using yarn
+yarn add waqtor
+
+# Using pnpm
+pnpm add waqtor
+```
+
+### Package Quality
+
+- ✅ **Clean Package** - No session files or unnecessary data
+- ✅ **Type Definitions** - TypeScript declarations included (index.d.ts)
+- ✅ **Well Documented** - Comprehensive README and API docs
+- ✅ **Actively Maintained** - Regular updates and bug fixes
+- ✅ **Secure Publishing** - Published via GitHub Actions with provenance
+
+### Version History
+
+- **v1.0.1** (Latest) - Package size optimization, session files removed
+- **v1.0.0** - Initial release with full feature set
+
+### Links
+
+- 📦 [npm Package](https://www.npmjs.com/package/waqtor)
+- 📊 [npm Stats](https://npm-stat.com/charts.html?package=waqtor)
+- 🐛 [Report Issues](https://github.com/tariqsaidofficial/WaQtor/issues)
+- 📖 [Changelog](./CHANGELOG.md)
+- 🔖 [Releases](https://github.com/tariqsaidofficial/WaQtor/releases)
+
+---
+
 ## 🤝 Contributing
 
 Feel free to open pull requests; we welcome contributions! However, for significant changes, it's best to open an issue beforehand. Make sure to review our [contribution guidelines][contributing] before creating a pull request. Before creating your own issue or pull request, always check to see if one already exists!
@@ -542,9 +624,18 @@ Created & maintained by **Tariq Said (DXBMark)**
 
 ### 📧 Contact & Support
 
+- **npm Package**: [waqtor on npm](https://www.npmjs.com/package/waqtor)
 - **Technical Support**: [support@dxbmark.com](mailto:support@dxbmark.com)
 - **General Inquiries**: [info@dxbmark.com](mailto:info@dxbmark.com)
 - **GitHub Issues**: [Report a Bug](https://github.com/tariqsaidofficial/WaQtor/issues)
+- **GitHub Discussions**: [Ask Questions](https://github.com/tariqsaidofficial/WaQtor/discussions)
+- **LinkedIn**: [Tariq Said](https://linkedin.com/in/tariqsaidofficial)
+
+### 💝 Support the Project
+
+- ☕ [Buy Me a Coffee](https://buymeacoffee.com/tariqsaidofficial)
+- 💖 [GitHub Sponsors](https://github.com/sponsors/tariqsaidofficial)
+- 🌐 [DXBMark Support](https://dxbmark.com/support)
 
 ---
 
