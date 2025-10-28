@@ -1,0 +1,61 @@
+# Documentation
+docs/
+documentation/
+*.md
+!README.md
+!LICENSE
+!CHANGELOG.md
+
+# GitHub files
+.github/
+
+# Config files
+.eslintrc.json
+.jsdoc.json
+.editorconfig
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Sessions and cache
+*session.json
+.wwebjs_auth/
+.wwebjs_cache/
+chrome/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Development
+tools/
+tests/
+coverage/
+.nyc_output/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker/
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Other
+shell.js
+example.js
+

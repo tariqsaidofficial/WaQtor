@@ -1,0 +1,24 @@
+{
+  "server": {
+    "port": 8080,
+    "host": "0.0.0.0"
+  },
+  "api": {
+    "prefix": "/api",
+    "version": "v1"
+  },
+  "database": {
+    "path": "./runtime/server/db/waqtor.db"
+  },
+  "session": {
+    "path": "./runtime/server/session"
+  },
+  "rateLimit": {
+    "windowMs": 900000,
+    "max": 100
+  },
+  "logging": {
+    "level": "info",
+    "format": "json"
+  }
+}
