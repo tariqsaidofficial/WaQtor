@@ -1,33 +1,32 @@
 name: 🚀 Feature Request
-description: Suggest an idea for this project
+description: Suggest an idea for WaQtor
 labels: enhancement
 body:
   - type: markdown
     attributes:
       value: |
-        ### Thank you for suggesting a new idea for this project.
+        ### Thank you for suggesting a new idea for WaQtor.
         
         ### Here are some important points to consider before continuing:
         
-        - Please submit only feature requests that related to the `whatsapp-web.js` library.
+        - Please submit only feature requests that related to the `WaQtor` library.
         - Duplicate feature requests will be closed.
         - Any feature request opened as a question will be closed.
         
-        ### If you have any question about how to achieve something and are struggling, please post a question in our [Discord Server](https://discord.gg/wyKybbF) instead.
+        ### If you have any question about how to achieve something and are struggling, please post a question in our [Discussions](https://github.com/tariqsaidofficial/WaQtor/discussions) instead.
         
         ### Please check the links below to see if you can find a solution there:
         
-         - [Open Pull Requests](https://github.com/pedroslopez/whatsapp-web.js/pulls?q=is%3Apr+is%3Aopen+-author%3Aapp%2Fdependabot)
-         - [Merged Pull Requests](https://github.com/pedroslopez/whatsapp-web.js/pulls?q=is%3Apr+is%3Amerged+-author%3Aapp%2Fdependabot)
-         - [Library Documentation](https://docs.wwebjs.dev/)
-         - [Guide](https://wwebjs.dev/guide)
+         - [Open Pull Requests](https://github.com/tariqsaidofficial/WaQtor/pulls?q=is%3Apr+is%3Aopen)
+         - [Merged Pull Requests](https://github.com/tariqsaidofficial/WaQtor/pulls?q=is%3Apr+is%3Amerged)
+         - [Documentation](https://github.com/tariqsaidofficial/WaQtor/tree/main/documentation)
          - [JavaScript Guide](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide)
          - [Node.js Documentation](https://nodejs.org/en/docs/)
 
   - type: checkboxes
     attributes:
       label: Is the feature you are looking for already implemented in the library?
-      description: Please check to see if an issue related to this feature request has [already been implemented](https://github.com/pedroslopez/whatsapp-web.js/pulls?q=is%3Apr+is%3Amerged+-author%3Aapp%2Fdependabot).
+      description: Please check to see if an issue related to this feature request has [already been implemented](https://github.com/tariqsaidofficial/WaQtor/pulls?q=is%3Apr+is%3Amerged).
       options:
         - label: I have reviewed the implemented features.
           required: true
@@ -35,7 +34,7 @@ body:
   - type: checkboxes
     attributes:
       label: Is your "solution" already implemented in an opened pull request?
-      description: Please check the [open pull requests](https://github.com/pedroslopez/whatsapp-web.js/pulls?q=is%3Apr+is%3Aopen+-author%3Aapp%2Fdependabot) to see if there is already an issue related to this feature request.
+      description: Please check the [open pull requests](https://github.com/tariqsaidofficial/WaQtor/pulls?q=is%3Apr+is%3Aopen) to see if there is already an issue related to this feature request.
       options:
         - label: I have reviewed the existing pull requests.
           required: true

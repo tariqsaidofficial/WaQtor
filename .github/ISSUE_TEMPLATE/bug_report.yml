@@ -1,5 +1,5 @@
 name: '🐛 Bug Report'
-description: Create a report to help us improve
+description: Create a report to help us improve WaQtor
 labels: bug
 body:
   - type: markdown
@@ -9,18 +9,17 @@ body:
 
         ### Here are some important points to consider before submitting a new bug or issue:
         
-        - Please report only issues related to the `whatsapp-web.js` library.
+        - Please report only issues related to the `WaQtor` library.
         - Duplicate issues will be closed.
         - Any issue opened as a question will be closed.
         
-        ### If you have any question about how to achieve something and are struggling, please post a question in our [Discord Server](https://discord.gg/wyKybbF) instead.
+        ### If you have any question about how to achieve something and are struggling, please post a question in our [Discussions](https://github.com/tariqsaidofficial/WaQtor/discussions) instead.
         
         ### Please check the links below to see if you can find a solution there:
         
-         - [Open Issues](https://github.com/pedroslopez/whatsapp-web.js/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc)
-         - [Closed Issues](https://github.com/pedroslopez/whatsapp-web.js/issues?q=is%3Aissue+sort%3Aupdated-desc+is%3Aclosed)
-         - [Library Documentation](https://docs.wwebjs.dev/)
-         - [Guide](https://wwebjs.dev/guide)
+         - [Open Issues](https://github.com/tariqsaidofficial/WaQtor/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc)
+         - [Closed Issues](https://github.com/tariqsaidofficial/WaQtor/issues?q=is%3Aissue+sort%3Aupdated-desc+is%3Aclosed)
+         - [Documentation](https://github.com/tariqsaidofficial/WaQtor/tree/main/documentation)
          - [JavaScript Guide](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide)
          - [Node.js Documentation](https://nodejs.org/en/docs/)
 
@@ -104,7 +103,7 @@ body:
   - type: input
     id: lib_version
     attributes:
-      label: WhatsApp-Web.js Version
+      label: WaQtor Version
       description: What library version are you using? Check it in `package.json` file.
     validations:
         required: true
@@ -126,7 +125,7 @@ body:
     id: auth_type
     attributes:
       label: Authentication Strategy
-      description: What authenctication strategy are you using?
+      description: What authentication strategy are you using?
       options:
         - LocalAuth
         - RemoteAuth

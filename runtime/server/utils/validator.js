@@ -8,7 +8,7 @@
  */
 function isValidPhone(phone) {
     // Basic validation: should be digits, can include +, -, spaces
-    const phoneRegex = /^[\d\s\-\+]+$/;
+    const phoneRegex = /^[\d\s\-+]+$/;
     return phoneRegex.test(phone) && phone.replace(/\D/g, '').length >= 10;
 }
 
@@ -54,7 +54,7 @@ function validateMessage(req, res, next) {
  */
 function sanitizePhone(phone) {
     // Remove all non-digit characters except +
-    return phone.replace(/[^\d\+]/g, '');
+    return phone.replace(/[^\d+]/g, '');
 }
 
 module.exports = {

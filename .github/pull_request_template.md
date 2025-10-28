@@ -29,11 +29,11 @@
 <!-- Include details of your testing environment: -->
 - Machine OS: <!-- The operation system of a machine you tested the PR on. (Mac | Windows | Linux | Docker + Ubuntu | other (provide the type)) -->
 - Phone OS: <!-- The operation system of a phone you used to check the the PR functionality on. -->
-- Library Version: <!-- The whatsapp-web.js version you used to test the PR. -->
+- WaQtor Version: <!-- The WaQtor version you used to test the PR. -->
 - WhatsApp Web Version: <!-- Run `await client.getWWebVersion()` to see the WWeb version you used to test the PR. -->
 - Puppeteer Version:
 - Browser Type and Version: <!-- Chromium XX | Google Chrome XX | other (provide the type and version) -->
-- Node Version: <!-- Run `npm -v` in your terminal to see the version of Node.js being used. -->
+- Node Version: <!-- Run `node -v` in your terminal to see the version of Node.js being used. -->
 
 ## Types of changes
 
@@ -51,3 +51,5 @@
 - [ ] My code follows the code style of this project.
 - [ ] I have updated the documentation accordingly (index.d.ts).
 - [ ] I have updated the usage example accordingly (example.js)
+- [ ] I have run `npm run lint` and fixed any issues.
+- [ ] I have run `npm test` and all tests pass.

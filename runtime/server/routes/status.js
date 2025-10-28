@@ -8,7 +8,6 @@ const router = express.Router();
 const waClient = require('../waClient');
 const logger = require('../utils/logger');
 const { WAQtorVersion, UpstreamVersion, UpstreamAuthor } = require('../../../src/util/Constants');
-const packageJson = require('../../../package.json');
 
 /**
  * GET /api/status/client

@@ -39,7 +39,7 @@ router.post('/send', async (req, res) => {
         // Send message
         const sentMessage = await client.sendMessage(chatId, message);
 
-        logger.info(`Test message sent to configured test number`);
+        logger.info('Test message sent to configured test number');
 
         res.json({
             success: true,

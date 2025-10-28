@@ -93,7 +93,7 @@ app.use((req, res) => {
 });
 
 // Error Handler
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
     logger.error(err.stack);
     res.status(err.status || 500).json({
         error: err.message || 'Internal Server Error',
@@ -111,7 +111,7 @@ async function startServer() {
         // Start Express Server
         app.listen(PORT, () => {
             logger.info(`🚀 Waqtor Server running on port ${PORT}`);
-            logger.info(`📱 WhatsApp Client initialized and ready`);
+            logger.info('📱 WhatsApp Client initialized and ready');
             logger.info(`🌐 API available at http://localhost:${PORT}/api`);
         });
     } catch (error) {
