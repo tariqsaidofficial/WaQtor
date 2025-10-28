@@ -14,6 +14,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Template library with variables
 - Analytics & CSV export
 
+## [1.0.4] - 2025-10-28
+
+### Fixed
+- 🐛 **npm README Sync** - Ensured README is properly displayed on npm
+- 🔄 **Cache Clearing** - Cleared npm cache for clean publish
+
+### Changed
+- Updated all version references to v1.0.4
+- Re-published package to ensure README sync
+
+### Package Info
+- **npm Package**: [waqtor@1.0.4](https://www.npmjs.com/package/waqtor)
+- **Package Size**: 114.1 kB (compressed)
+- **Unpacked Size**: 494.6 kB
+- **Files**: 73
+
 ## [1.0.3] - 2025-10-28
 
 ### Fixed
