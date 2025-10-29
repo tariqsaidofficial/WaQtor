@@ -1,0 +1,42 @@
+{
+  "extends": ["next", "next/core-web-vitals"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "project": true
+      }
+    },
+    {
+      "files": ["*.js", "*.jsx"],
+      "parser": "@babel/eslint-parser",
+      "parserOptions": {
+        "requireConfigFile": true,
+        "ecmaVersion": 2020,
+        "sourceType": "module",
+        "ecmaFeatures": {
+          "jsx": true
+        }
+      }
+    }
+  ],
+  "rules": {
+    "@next/next/no-img-element": "off",
+    "indent": ["error", 4],
+    "quotes": ["error", "single"],
+    "no-unused-vars": ["warn"],
+    "react/no-unescaped-entities": ["off"],
+    "import/no-anonymous-default-export": ["warn"],
+    "no-unreachable": ["error"],
+    "no-dupe-else-if": ["error"],
+    "react-hooks/exhaustive-deps": ["warn"],
+    "no-undef": ["off"],
+    "no-duplicate-case": ["error"]
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
+}
