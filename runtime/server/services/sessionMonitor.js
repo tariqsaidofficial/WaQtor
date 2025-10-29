@@ -83,93 +83,112 @@ class SessionMonitor {
      * Setup WhatsApp client event listeners
      */
     setupEventListeners() {
-        const client = this.waClient.client;
+        // Try to get client, if not ready, wait for it
+        const setupListeners = () => {
+            const client = this.waClient.client;
 
-        if (!client) {
-            logger.warn('WhatsApp client not initialized yet');
-            return;
-        }
-
-        // QR Code received
-        client.on('qr', (qr) => {
-            this.updateState({
-                status: 'qr',
-                ready: false,
-                authenticated: false,
-                qrCode: qr
-            });
-            logger.info('QR code received and stored');
-            
-            // Broadcast QR code separately
-            if (this.websocketBroadcast) {
-                this.websocketBroadcast('qr_code', { qr });
+            if (!client) {
+                logger.warn('WhatsApp client not initialized yet, will retry in 2s');
+                setTimeout(setupListeners, 2000);
+                return;
             }
-        });
 
-        // Authenticated
-        client.on('authenticated', () => {
-            this.updateState({
-                status: 'authenticated',
-                authenticated: true,
-                qrCode: null
-            });
-            logger.info('Session authenticated');
-        });
+            logger.info('Setting up session monitor event listeners');
 
-        // Authentication failure
-        client.on('auth_failure', (msg) => {
-            this.updateState({
-                status: 'auth_failure',
-                ready: false,
-                authenticated: false,
-                qrCode: null
-            });
-            logger.error('Authentication failed:', msg);
-        });
-
-        // Client ready
-        client.on('ready', () => {
-            const info = client.info;
-            this.updateState({
-                status: 'connected',
-                ready: true,
-                authenticated: true,
-                qrCode: null,
-                info: {
-                    phone: info.wid.user,
-                    pushname: info.pushname,
-                    platform: info.platform
+            // QR Code received
+            client.on('qr', (qr) => {
+                this.updateState({
+                    status: 'qr',
+                    ready: false,
+                    authenticated: false,
+                    qrCode: qr
+                });
+                logger.info('QR code received and stored');
+                
+                // Broadcast QR code separately
+                if (this.websocketBroadcast) {
+                    this.websocketBroadcast('qr_code', { qr });
                 }
             });
-            logger.info('Client is ready');
-        });
 
-        // Message sent
-        client.on('message_create', (message) => {
-            if (message.fromMe) {
-                this.currentState.messagesSent++;
-                this.updateMessageCount('sent');
-            }
-        });
-
-        // Message received
-        client.on('message', (message) => {
-            if (!message.fromMe) {
-                this.currentState.messagesReceived++;
-                this.updateMessageCount('received');
-            }
-        });
-
-        // Disconnected
-        client.on('disconnected', (reason) => {
-            this.updateState({
-                status: 'disconnected',
-                ready: false,
-                authenticated: false,
-                qrCode: null
+            // Authenticated
+            client.on('authenticated', () => {
+                this.updateState({
+                    status: 'authenticated',
+                    authenticated: true,
+                    qrCode: null
+                });
+                logger.info('Session authenticated');
             });
-            logger.warn('Client disconnected:', reason);
-        });
+
+            // Authentication failure
+            client.on('auth_failure', (msg) => {
+                this.updateState({
+                    status: 'auth_failure',
+                    ready: false,
+                    authenticated: false,
+                    qrCode: null
+                });
+                logger.error('Authentication failed:', msg);
+            });
+
+            // Client ready
+            client.on('ready', () => {
+                const info = client.info;
+                this.updateState({
+                    status: 'connected',
+                    ready: true,
+                    authenticated: true,
+                    qrCode: null,
+                    info: {
+                        phone: info.wid.user,
+                        pushname: info.pushname,
+                        platform: info.platform
+                    }
+                });
+                logger.info('Client is ready');
+            });
+
+            // Message sent
+            client.on('message_create', (message) => {
+                if (message.fromMe) {
+                    this.currentState.messagesSent++;
+                    this.updateMessageCount('sent');
+                }
+            });
+
+            // Message received
+            client.on('message', (message) => {
+                if (!message.fromMe) {
+                    this.currentState.messagesReceived++;
+                    this.updateMessageCount('received');
+                }
+            });
+
+            // Disconnected
+            client.on('disconnected', (reason) => {
+                this.updateState({
+                    status: 'disconnected',
+                    ready: false,
+                    authenticated: false,
+                    qrCode: null
+                });
+                logger.warn('Client disconnected:', reason);
+                
+                // Auto-reconnect after 3 seconds
+                logger.info('Scheduling auto-reconnect in 3 seconds...');
+                setTimeout(async () => {
+                    try {
+                        logger.info('Attempting to reinitialize WhatsApp client...');
+                        await client.initialize();
+                    } catch (error) {
+                        logger.error('Failed to reinitialize client:', error);
+                    }
+                }, 3000);
+            });
+        };
+
+        setupListeners();
     }
 
     /**

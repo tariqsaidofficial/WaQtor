@@ -70,6 +70,9 @@ class WebSocketBridge {
 
             // Send initial session state
             this.sendSessionState(ws);
+            
+            // Send QR code if available
+            this.sendQRCode(ws);
 
             // Handle messages from client
             ws.on('message', (message) => {
