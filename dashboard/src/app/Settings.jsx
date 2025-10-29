@@ -241,7 +241,7 @@ export default function Settings() {
                         <div className="col-6">
                             <div className="text-500 mb-1">Status</div>
                             <div className="font-semibold">
-                                {status === 'ready' ? (
+                                {(status === 'ready' || status === 'authenticated' || status === 'connected') ? (
                                     <span className="text-green-500">
                                         <i className="pi pi-check-circle mr-2"></i>
                     Connected

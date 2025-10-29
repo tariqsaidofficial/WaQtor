@@ -24,7 +24,7 @@ const AppMenu = () => {
                 { 
                     label: 'Messages', 
                     icon: 'pi pi-fw pi-comments', 
-                    to: '/send-message' 
+                    to: '/messages' 
                 },
                 { 
                     label: 'Auto Reply', 

@@ -13,6 +13,15 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+// Enhanced handler reference (will be set by server)
+let enhancedHandler = null;
+
+// Export function to set enhanced handler
+router.setEnhancedHandler = (handler) => {
+    enhancedHandler = handler;
+    logger.info('✅ Enhanced handler set in message routes');
+};
+
 // File size limits (in bytes)
 const FILE_LIMITS = {
     IMAGE: 3 * 1024 * 1024,      // 3MB for images
@@ -275,7 +284,7 @@ router.post('/send-media', async (req, res) => {
 
 /**
  * POST /api/messages/send-bulk
- * Send bulk messages
+ * Send bulk messages (Hybrid: Instant for <=10, Queue for >10)
  */
 router.post('/send-bulk', async (req, res) => {
     try {
@@ -288,26 +297,211 @@ router.post('/send-bulk', async (req, res) => {
             });
         }
 
+        const INSTANT_THRESHOLD = 10;
+
+        // HYBRID MODE: Instant for small batches, Queue for large batches
+        if (recipients.length <= INSTANT_THRESHOLD) {
+            // ⚡ INSTANT MODE (<=10 recipients)
+            logger.info(`📤 Sending ${recipients.length} messages instantly (Instant Mode)`);
+            
+            const client = waClient.getClient();
+            const results = [];
+
+            for (const recipient of recipients) {
+                try {
+                    const chatId = recipient.phone.includes('@c.us') 
+                        ? recipient.phone 
+                        : `${recipient.phone}@c.us`;
+
+                    const sentMessage = await client.sendMessage(chatId, recipient.message);
+                    
+                    results.push({
+                        phone: recipient.phone,
+                        success: true,
+                        messageId: sentMessage.id._serialized
+                    });
+
+                    // Delay to avoid rate limiting (2 seconds)
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                } catch (error) {
+                    results.push({
+                        phone: recipient.phone,
+                        success: false,
+                        error: error.message
+                    });
+                }
+            }
+
+            logger.info(`✅ Bulk message sent instantly to ${recipients.length} recipients`);
+
+            return res.json({
+                success: true,
+                message: 'Bulk messages sent instantly',
+                mode: 'instant',
+                data: {
+                    total: recipients.length,
+                    successful: results.filter(r => r.success).length,
+                    failed: results.filter(r => !r.success).length,
+                    results
+                }
+            });
+
+        } else {
+            // 🔄 QUEUE MODE (>10 recipients)
+            logger.info(`📋 Queueing ${recipients.length} messages (Queue Mode)`);
+            
+            const { addBulkMessageJob } = require('../queue/messageQueue');
+            const job = await addBulkMessageJob(recipients, {
+                priority: 5
+            });
+
+            logger.info(`✅ Bulk message job created: ${job.id}`);
+
+            return res.json({
+                success: true,
+                message: 'Bulk messages queued for processing',
+                mode: 'queue',
+                data: {
+                    jobId: job.id,
+                    total: recipients.length,
+                    status: 'queued',
+                    estimatedTime: `~${Math.ceil(recipients.length * 2 / 60)} minutes`
+                }
+            });
+        }
+
+    } catch (error) {
+        logger.error('Error sending bulk messages:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to send bulk messages',
+            message: error.message
+        });
+    }
+});
+
+/**
+ * POST /api/messages/send-bulk-with-media
+ * Send bulk messages with optional media attachments
+ */
+router.post('/send-bulk-with-media', upload.array('attachments', 5), async (req, res) => {
+    const uploadedFiles = [];
+    
+    try {
+        const { recipients } = req.body; // Array of {phone, message} as JSON string
+        const files = req.files || [];
+
+        // Parse recipients if it's a string
+        const recipientsData = typeof recipients === 'string' 
+            ? JSON.parse(recipients) 
+            : recipients;
+
+        if (!Array.isArray(recipientsData) || recipientsData.length === 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'Recipients array is required'
+            });
+        }
+
+        logger.info(`📤 Sending bulk messages with ${files.length} attachments to ${recipientsData.length} recipients`);
+
         const client = waClient.getClient();
         const results = [];
 
-        for (const recipient of recipients) {
+        // Process attachments if any
+        let mediaObjects = [];
+        if (files.length > 0) {
+            for (const file of files) {
+                uploadedFiles.push(file.path);
+                
+                // Validate file size
+                const sizeValidation = validateFileSize(file);
+                if (!sizeValidation.valid) {
+                    // Delete uploaded files
+                    uploadedFiles.forEach(fp => {
+                        if (fs.existsSync(fp)) fs.unlinkSync(fp);
+                    });
+                    
+                    return res.status(400).json({
+                        success: false,
+                        error: sizeValidation.message
+                    });
+                }
+                
+                // Determine if file should be sent as document
+                const sendAsDocument = !file.mimetype.startsWith('image/') && 
+                                      !file.mimetype.startsWith('video/') && 
+                                      !file.mimetype.startsWith('audio/');
+                
+                const fileData = fs.readFileSync(file.path, { encoding: 'base64' });
+                const media = new MessageMedia(
+                    file.mimetype,
+                    fileData,
+                    file.originalname
+                );
+                
+                // Store media with metadata
+                mediaObjects.push({
+                    media: media,
+                    sendAsDocument: sendAsDocument,
+                    filename: file.originalname,
+                    mimetype: file.mimetype
+                });
+                
+                logger.info(`📎 Prepared attachment: ${file.originalname} (${file.mimetype}, sendAsDocument: ${sendAsDocument})`);
+            }
+        }
+
+        // Send to each recipient
+        for (const recipient of recipientsData) {
             try {
                 const chatId = recipient.phone.includes('@c.us') 
                     ? recipient.phone 
                     : `${recipient.phone}@c.us`;
 
-                const sentMessage = await client.sendMessage(chatId, recipient.message);
+                let sentMessage;
+                
+                // If there are attachments, send them WITH the message as caption
+                if (mediaObjects.length > 0) {
+                    // Send first attachment with the message as caption
+                    const firstMedia = mediaObjects[0];
+                    sentMessage = await client.sendMessage(chatId, firstMedia.media, {
+                        caption: recipient.message,
+                        sendMediaAsDocument: firstMedia.sendAsDocument
+                    });
+                    
+                    logger.info(`📎 Sent message with ${firstMedia.mimetype} to ${recipient.phone} (asDocument: ${firstMedia.sendAsDocument})`);
+                    
+                    // Send remaining attachments if any (without caption)
+                    for (let i = 1; i < mediaObjects.length; i++) {
+                        const mediaObj = mediaObjects[i];
+                        await client.sendMessage(chatId, mediaObj.media, {
+                            sendMediaAsDocument: mediaObj.sendAsDocument
+                        });
+                        logger.info(`📎 Sent additional ${mediaObj.mimetype} to ${recipient.phone}`);
+                        await new Promise(resolve => setTimeout(resolve, 1000)); // 1s delay between attachments
+                    }
+                } else {
+                    // No attachments, send text only
+                    sentMessage = await client.sendMessage(chatId, recipient.message);
+                }
+                
+                // Track message for status updates
+                if (enhancedHandler && sentMessage) {
+                    enhancedHandler.trackMessage(sentMessage.id._serialized, chatId);
+                }
                 
                 results.push({
                     phone: recipient.phone,
                     success: true,
-                    messageId: sentMessage.id._serialized
+                    messageId: sentMessage.id._serialized,
+                    attachmentsSent: mediaObjects.length
                 });
 
-                // Delay to avoid rate limiting
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                // Delay to avoid rate limiting (2 seconds)
+                await new Promise(resolve => setTimeout(resolve, 2000));
             } catch (error) {
+                logger.error(`Failed to send to ${recipient.phone}:`, error);
                 results.push({
                     phone: recipient.phone,
                     success: false,
@@ -316,23 +510,37 @@ router.post('/send-bulk', async (req, res) => {
             }
         }
 
-        logger.info(`Bulk message sent to ${recipients.length} recipients`);
+        logger.info(`✅ Bulk messages with media sent to ${recipientsData.length} recipients`);
 
         res.json({
             success: true,
-            message: 'Bulk messages processed',
+            message: 'Bulk messages with media sent successfully',
             data: {
-                total: recipients.length,
+                total: recipientsData.length,
                 successful: results.filter(r => r.success).length,
                 failed: results.filter(r => !r.success).length,
+                attachments: files.length,
                 results
             }
         });
+
     } catch (error) {
-        logger.error('Error sending bulk messages:', error);
+        logger.error('Error sending bulk messages with media:', error);
+        
+        // Clean up uploaded files on error
+        uploadedFiles.forEach(filePath => {
+            try {
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                }
+            } catch (cleanupError) {
+                logger.warn(`Failed to cleanup file: ${cleanupError.message}`);
+            }
+        });
+
         res.status(500).json({
             success: false,
-            error: 'Failed to send bulk messages',
+            error: 'Failed to send bulk messages with media',
             message: error.message
         });
     }

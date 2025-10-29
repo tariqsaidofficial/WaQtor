@@ -1,4 +1,22 @@
 services:
+  # Redis for Queue Management
+  redis:
+    image: redis:7-alpine
+    container_name: waqtor-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - waqtor-redis:/data
+    networks:
+      - waqtor-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    command: redis-server --appendonly yes
+
   # Backend API Service
   backend:
     build:
@@ -14,21 +32,28 @@ services:
       - API_KEY=${API_KEY:-your-api-key-here}
       - READONLY_FORK=false
       - CORS_ORIGIN=http://localhost:3000,http://dashboard:3000
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     volumes:
       # Source code (for hot reload)
       - ./runtime:/app/runtime
       - ./src:/app/src
       - ./index.js:/app/index.js
       - ./shell.js:/app/shell.js
-      # Persistent data
+      # Persistent data (use Docker volumes to avoid host conflicts)
       - waqtor-sessions:/app/.wwebjs_auth
       - waqtor-cache:/app/.wwebjs_cache
       - waqtor-logs:/app/runtime/logs
       - waqtor-uploads:/app/uploads
+      # Exclude session folder from runtime mount to avoid conflicts
+      - waqtor-runtime-session:/app/runtime/server/session
       # Node modules (avoid overwriting)
       - /app/node_modules
     networks:
       - waqtor-network
+    depends_on:
+      redis:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:8080/health')"]
       interval: 30s
@@ -94,6 +119,8 @@ services:
       - production
 
 volumes:
+  waqtor-redis:
+    driver: local
   waqtor-sessions:
     driver: local
   waqtor-cache:
@@ -101,6 +128,8 @@ volumes:
   waqtor-logs:
     driver: local
   waqtor-uploads:
+    driver: local
+  waqtor-runtime-session:
     driver: local
 
 networks:

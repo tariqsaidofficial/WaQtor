@@ -13,8 +13,20 @@ import { LayoutContext } from './context/layoutcontext';
 import { PrimeReactContext } from 'primereact/api';
 import { ChildContainerProps, LayoutState, AppTopbarRef } from '@/types';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { useWebSocket } from '../../hooks/useWebSocket';
 
 const Layout = ({ children }: ChildContainerProps) => {
+    // 🔌 Initialize WebSocket connection
+    const { isConnected, status, error } = useWebSocket();
+    
+    // 🔍 DEBUG: Log WebSocket status
+    useEffect(() => {
+        console.log('🔌 [Layout] WebSocket status:', {
+            isConnected,
+            status,
+            error
+        });
+    }, [isConnected, status, error]);
     const { layoutConfig, layoutState, setLayoutState } = useContext(LayoutContext);
     const { setRipple } = useContext(PrimeReactContext);
     const topbarRef = useRef<AppTopbarRef>(null);

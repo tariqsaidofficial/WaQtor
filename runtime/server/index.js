@@ -22,6 +22,11 @@ const {
     handleUncaughtException 
 } = require('./middleware/errorHandler');
 
+// Bull Board for Queue Monitoring
+const { createBullBoard } = require('@bull-board/api');
+const { BullAdapter } = require('@bull-board/api/bullAdapter');
+const { ExpressAdapter } = require('@bull-board/express');
+
 // Services
 const SessionMonitor = require('./services/sessionMonitor');
 const WebSocketBridge = require('./services/websocketBridge');
@@ -35,9 +40,10 @@ const statusRoutes = require('./routes/status');
 const testRoutes = require('./routes/test');
 const sessionRoutes = require('./routes/session');
 const errorRoutes = require('./routes/errors');
+const queueRoutes = require('./routes/queue');
 
-// Load environment variables
-dotenv.config({ path: path.join(__dirname, '../config/.env') });
+// Load environment variables from root .env file
+dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 const app = express();
 const server = http.createServer(app);
@@ -57,6 +63,19 @@ app.use(morgan('combined', { stream: logger.stream }));
 
 // Rate limiting
 app.use('/api/', rateLimiter);
+
+// Setup Bull Board for Queue Monitoring
+const { messageQueue } = require('./queue/messageQueue');
+const serverAdapter = new ExpressAdapter();
+serverAdapter.setBasePath('/admin/queues');
+
+createBullBoard({
+    queues: [new BullAdapter(messageQueue)],
+    serverAdapter: serverAdapter,
+});
+
+// Bull Board UI (requires authentication)
+app.use('/admin/queues', apiKeyAuth, serverAdapter.getRouter());
 
 // Health check (no auth required)
 app.get('/health', (req, res) => {
@@ -123,6 +142,7 @@ app.use('/api/status', apiKeyAuth, statusRoutes);
 app.use('/api/test', apiKeyAuth, testRoutes);
 app.use('/api/session', apiKeyAuth, sessionRoutes.router);
 app.use('/api/errors', apiKeyAuth, errorRoutes);
+app.use('/api/queue', apiKeyAuth, queueRoutes);
 
 // Quick send message endpoint (for compatibility)
 app.post('/api/sendMessage', apiKeyAuth, async (req, res) => {
@@ -194,8 +214,17 @@ async function startServer() {
         // Connect enhanced handler to WebSocket bridge
         enhancedWAClientHandler.setWebSocketBridge(websocketBridge);
 
+        // Set enhanced handler in message routes for tracking
+        messageRoutes.setEnhancedHandler(enhancedWAClientHandler);
+
         // Initialize session routes with services
         sessionRoutes.initializeRoutes(sessionMonitor, websocketBridge, enhancedWAClientHandler);
+
+        // Initialize Message Queue Processor
+        logger.info('Initializing message queue processor...');
+        const { initializeProcessor } = require('./queue/messageProcessor');
+        initializeProcessor();
+        logger.info('Message queue processor initialized');
 
         // Start error monitoring
         logger.info('Starting error monitoring...');

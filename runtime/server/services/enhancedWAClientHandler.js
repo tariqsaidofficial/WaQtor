@@ -12,6 +12,8 @@ class EnhancedWAClientHandler {
         this.qrAttempts = 0;
         this.maxQrAttempts = 5; // Changed to 5 as per requirements
         this.qrStartTime = null;
+        // Track sent messages for status updates
+        this.messageTracking = new Map(); // messageId -> { phone, timestamp, status }
     }
 
     /**
@@ -107,6 +109,16 @@ class EnhancedWAClientHandler {
         // Handle auth failure
         client.on('auth_failure', (message) => {
             this.handleAuthFailure(message);
+        });
+
+        // Handle message acknowledgment (delivery status)
+        client.on('message_ack', (message, ack) => {
+            this.handleMessageAck(message, ack);
+        });
+
+        // Handle message creation (sent messages)
+        client.on('message_create', (message) => {
+            this.handleMessageCreate(message);
         });
 
         logger.info('✅ Enhanced event handlers attached to client');
@@ -269,6 +281,138 @@ class EnhancedWAClientHandler {
         } catch (error) {
             logger.error('❌ Session refresh failed:', error);
             return { success: false, error: error.message };
+        }
+    }
+
+    /**
+     * Track a sent message
+     */
+    trackMessage(messageId, phone) {
+        this.messageTracking.set(messageId, {
+            phone: phone,
+            timestamp: Date.now(),
+            status: 'sent'
+        });
+        
+        // Auto-cleanup after 24 hours
+        setTimeout(() => {
+            this.messageTracking.delete(messageId);
+        }, 24 * 60 * 60 * 1000);
+        
+        console.log('\n🔵 ========== MESSAGE TRACKING START ==========');
+        console.log('📝 Tracking message:', {
+            messageId: messageId,
+            phone: phone,
+            timestamp: new Date().toISOString(),
+            totalTracked: this.messageTracking.size
+        });
+        console.log('🔵 ========== MESSAGE TRACKING END ==========\n');
+        
+        logger.info(`📝 Tracking message: ${messageId} to ${phone}`);
+    }
+
+    /**
+     * Handle message acknowledgment (delivery status)
+     * ACK values: 0 = pending, 1 = sent, 2 = delivered, 3 = read, 4 = played
+     */
+    handleMessageAck(message, ack) {
+        const ackStatus = {
+            0: 'pending',
+            1: 'sent',
+            2: 'delivered',
+            3: 'read',
+            4: 'played'
+        };
+
+        const status = ackStatus[ack] || 'unknown';
+        const messageId = message.id._serialized;
+        
+        console.log('\n🟢 ========== MESSAGE ACK RECEIVED ==========');
+        console.log('📨 Message ACK Details:', {
+            messageId: messageId,
+            status: status,
+            ackCode: ack,
+            to: message.to,
+            from: message.from,
+            timestamp: new Date().toISOString(),
+            isTracked: this.messageTracking.has(messageId)
+        });
+        
+        // Update tracking
+        if (this.messageTracking.has(messageId)) {
+            const tracking = this.messageTracking.get(messageId);
+            const oldStatus = tracking.status;
+            tracking.status = status;
+            console.log('✅ Tracking Updated:', {
+                phone: tracking.phone,
+                oldStatus: oldStatus,
+                newStatus: status
+            });
+        } else {
+            console.log('⚠️ Message NOT in tracking map!');
+            console.log('📋 Current tracking map size:', this.messageTracking.size);
+        }
+
+        // Broadcast to WebSocket clients
+        const broadcastData = {
+            type: 'message_ack',
+            data: {
+                messageId: messageId,
+                status: status,
+                ackCode: ack,
+                timestamp: Date.now(),
+                to: message.to,
+                from: message.from
+            }
+        };
+        
+        console.log('📡 Broadcasting to WebSocket:', broadcastData);
+        
+        if (this.websocketBridge) {
+            this.websocketBridge.broadcast(broadcastData);
+            console.log('✅ Broadcast sent successfully');
+        } else {
+            console.log('❌ WebSocket bridge not available!');
+        }
+        
+        console.log('🟢 ========== MESSAGE ACK END ==========\n');
+        
+        logger.info(`📨 Message ACK: ${messageId} - Status: ${status} (${ack})`);
+    }
+
+    /**
+     * Handle message creation (sent messages)
+     */
+    handleMessageCreate(message) {
+        // Only track messages sent by us
+        if (message.fromMe) {
+            console.log('\n🟡 ========== MESSAGE CREATE EVENT ==========');
+            console.log('📤 Message Created:', {
+                messageId: message.id._serialized,
+                to: message.to,
+                body: message.body?.substring(0, 50) + '...',
+                hasMedia: message.hasMedia,
+                timestamp: new Date().toISOString()
+            });
+
+            if (this.websocketBridge) {
+                const broadcastData = {
+                    type: 'message_sent',
+                    data: {
+                        messageId: message.id._serialized,
+                        to: message.to,
+                        body: message.body,
+                        hasMedia: message.hasMedia,
+                        timestamp: Date.now()
+                    }
+                };
+                console.log('📡 Broadcasting message_sent:', broadcastData);
+                this.websocketBridge.broadcast(broadcastData);
+            }
+            
+            console.log('🟡 ========== MESSAGE CREATE END ==========\n');
+            
+            logger.info(`📤 Message created: ${message.id._serialized} to ${message.to}`);
         }
     }
 

@@ -19,17 +19,55 @@ import { confirmDialog } from 'primereact/confirmdialog';
 interface MessageFormProps {
     onSend: (messageData: any) => Promise<void>;
     recipientCount: number;
+    selectedTemplate?: any;
+    onTemplateApplied?: () => void;
+    onMessageChange?: (msg: string) => void;
+    onAttachmentsChange?: (files: File[]) => void;
 }
 
-export default function MessageForm({ onSend, recipientCount }: MessageFormProps) {
+export default function MessageForm({ onSend, recipientCount, selectedTemplate, onTemplateApplied, onMessageChange, onAttachmentsChange }: MessageFormProps) {
     const toast = useRef<any>(null);
     const fileUploadRef = useRef<any>(null);
     
-    const [message, setMessage] = useState('');
+    const [message, setMessage] = useState('👋 Thank you for reaching out to WaQtor!\n\nWe are a digital solutions agency specializing in media production, IT, web design, and marketing services.\n\n📢 Looking for a Strong Visual Identity? A Professional Website? Unique Visual Content?\n\n🚀 Let\'s Elevate Your Business to the Next Level! 🚀');
     const [attachments, setAttachments] = useState<File[]>([]);
+    
+    // Notify parent of message changes
+    React.useEffect(() => {
+        if (onMessageChange) {
+            onMessageChange(message);
+        }
+    }, [message, onMessageChange]);
+    
+    // Notify parent of attachments changes
+    React.useEffect(() => {
+        if (onAttachmentsChange) {
+            onAttachmentsChange(attachments);
+        }
+    }, [attachments, onAttachmentsChange]);
     const [totalSize, setTotalSize] = useState(0);
     const [scheduleDialogVisible, setScheduleDialogVisible] = useState(false);
     const [scheduledDate, setScheduledDate] = useState<Date | null>(null);
+
+    // 🔍 DEBUG: Apply template when selected
+    React.useEffect(() => {
+        if (selectedTemplate) {
+            console.log('📄 [MessageForm] Applying template:', selectedTemplate);
+            setMessage(selectedTemplate.message);
+            
+            // Call callback to clear the template
+            if (onTemplateApplied) {
+                onTemplateApplied();
+            }
+            
+            toast.current?.show({
+                severity: 'success',
+                summary: 'Template Applied',
+                detail: `"${selectedTemplate.name}" template has been loaded`,
+                life: 3000
+            });
+        }
+    }, [selectedTemplate, onTemplateApplied]);
 
     // Available variables
     const variables = [
@@ -47,9 +85,50 @@ export default function MessageForm({ onSend, recipientCount }: MessageFormProps
 
     const handleFileSelect = (event: any) => {
         const files = event.files;
-        setAttachments(files);
+        
+        // Validate file sizes based on type
+        const invalidFiles: string[] = [];
+        const validFiles: File[] = [];
+        
+        files.forEach((file: File) => {
+            const sizeInMB = file.size / (1024 * 1024);
+            let maxSize = 20; // Default 20MB
+            let isValid = true;
+            
+            if (file.type.startsWith('image/')) {
+                maxSize = 5;
+                isValid = sizeInMB <= 5;
+            } else if (file.type.startsWith('video/')) {
+                maxSize = 20;
+                isValid = sizeInMB <= 20;
+            } else if (file.type.startsWith('audio/')) {
+                maxSize = 10;
+                isValid = sizeInMB <= 10;
+            } else {
+                // Documents
+                maxSize = 10;
+                isValid = sizeInMB <= 10;
+            }
+            
+            if (isValid) {
+                validFiles.push(file);
+            } else {
+                invalidFiles.push(`${file.name} (${sizeInMB.toFixed(1)}MB > ${maxSize}MB)`);
+            }
+        });
+        
+        if (invalidFiles.length > 0) {
+            toast.current?.show({
+                severity: 'warn',
+                summary: 'File Size Exceeded',
+                detail: `The following files exceed size limits:\n${invalidFiles.join('\n')}`,
+                life: 5000
+            });
+        }
+        
+        setAttachments(validFiles);
         let size = 0;
-        files.forEach((f: File) => size += f.size);
+        validFiles.forEach((f: File) => size += f.size);
         setTotalSize(size);
     };
 
@@ -199,28 +278,142 @@ export default function MessageForm({ onSend, recipientCount }: MessageFormProps
                 />
             </div>
 
-            {/* Message Text Area */}
-            <div className="mb-4">
-                <label htmlFor="message" className="block mb-2 font-semibold">
-                    Message *
-                </label>
-                <InputTextarea
-                    id="message"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Type your message here... Use variables like {name}, {phone}, etc."
-                    rows={8}
-                    autoResize
-                    className="w-full"
-                    aria-describedby="message-help"
-                />
-                <div className="flex justify-content-between align-items-center mt-2">
-                    <small id="message-help" className="text-500">
-                        {message.length} characters
+            {/* Message and Attachments - Side by Side */}
+            <div className="grid mb-4">
+                {/* Message Text Area - Left Side */}
+                <div className="col-12 lg:col-7">
+                    <label htmlFor="message" className="block mb-2 font-semibold">
+                        Message *
+                    </label>
+                    <InputTextarea
+                        id="message"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder="Type your message here... Use variables like {name}, {phone}, etc."
+                        rows={12}
+                        autoResize
+                        className="w-full"
+                        aria-describedby="message-help"
+                    />
+                    <div className="flex justify-content-between align-items-center mt-2">
+                        <small id="message-help" className="text-500">
+                            {message.length} characters
+                        </small>
+                        <small className="text-500">
+                            Estimated: {Math.ceil(message.length / 160)} SMS
+                        </small>
+                    </div>
+                </div>
+
+                {/* Attachments - Right Side */}
+                <div className="col-12 lg:col-5">
+                    <label className="block mb-2 font-semibold">
+                        <i className="pi pi-paperclip mr-2"></i>
+                        Attachments
+                    </label>
+                    <small className="text-500 block mb-2">
+                        📎 Images (5MB), Videos (20MB), Audio (10MB), Docs (10MB)
                     </small>
-                    <small className="text-500">
-                        Estimated: {Math.ceil(message.length / 160)} SMS
-                    </small>
+                    
+                    <Tooltip target=".custom-attachment-choose" content="Choose Files" position="bottom" />
+                    <Tooltip target=".custom-attachment-cancel" content="Clear" position="bottom" />
+                    
+                    <FileUpload
+                        ref={fileUploadRef}
+                        name="attachments[]"
+                        accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt"
+                        maxFileSize={20000000}
+                        multiple
+                        onSelect={handleFileSelect}
+                        onClear={() => {
+                            setAttachments([]);
+                            setTotalSize(0);
+                        }}
+                        headerTemplate={(options) => {
+                            const { className, chooseButton, cancelButton } = options;
+                            const formattedValue = fileUploadRef.current ? fileUploadRef.current.formatSize(totalSize) : '0 B';
+                            return (
+                                <div className={className} style={{ backgroundColor: 'transparent', display: 'flex', alignItems: 'center' }}>
+                                    {chooseButton}
+                                    {cancelButton}
+                                    {totalSize > 0 && (
+                                        <div className="flex align-items-center gap-2 ml-auto">
+                                            <span className="text-600 text-sm">{formattedValue}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        }}
+                        itemTemplate={(file: any, props) => {
+                            let icon = 'pi-file';
+                            let iconColor = 'text-600';
+                            
+                            if (file.type.startsWith('image/')) {
+                                icon = 'pi-image';
+                                iconColor = 'text-blue-500';
+                            } else if (file.type.startsWith('video/')) {
+                                icon = 'pi-video';
+                                iconColor = 'text-purple-500';
+                            } else if (file.type.startsWith('audio/')) {
+                                icon = 'pi-volume-up';
+                                iconColor = 'text-orange-500';
+                            } else if (file.type === 'application/pdf') {
+                                icon = 'pi-file-pdf';
+                                iconColor = 'text-red-500';
+                            } else if (file.type.includes('word') || file.name.endsWith('.doc') || file.name.endsWith('.docx')) {
+                                icon = 'pi-file-word';
+                                iconColor = 'text-blue-600';
+                            } else if (file.type.includes('excel') || file.name.endsWith('.xls') || file.name.endsWith('.xlsx')) {
+                                icon = 'pi-file-excel';
+                                iconColor = 'text-green-600';
+                            }
+                            
+                            return (
+                                <div className="flex align-items-center justify-content-between p-2 surface-50 border-round mb-2">
+                                    <div className="flex align-items-center gap-2">
+                                        {file.type.startsWith('image/') ? (
+                                            <img 
+                                                alt={file.name} 
+                                                role="presentation" 
+                                                src={file.objectURL} 
+                                                width={40}
+                                                className="border-round"
+                                            />
+                                        ) : (
+                                            <div className="flex align-items-center justify-content-center border-round" 
+                                                style={{ width: '40px', height: '40px', backgroundColor: '#f8f9fa' }}>
+                                                <i className={`pi ${icon} text-xl ${iconColor}`}></i>
+                                            </div>
+                                        )}
+                                        <div>
+                                            <div className="font-semibold text-900 text-sm" style={{maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>
+                                                {file.name}
+                                            </div>
+                                            <small className="text-500">{props.formatSize}</small>
+                                        </div>
+                                    </div>
+                                    <Tag value={file.type.split('/')[0].toUpperCase()} severity="info" className="text-xs" />
+                                </div>
+                            );
+                        }}
+                        emptyTemplate={() => (
+                            <div className="flex align-items-center flex-column p-3">
+                                <i className="pi pi-cloud-upload text-3xl text-400 mb-2"></i>
+                                <span className="text-600 text-sm text-center">Drag files here or click to browse</span>
+                            </div>
+                        )}
+                        chooseOptions={{ 
+                            icon: 'pi pi-paperclip', 
+                            iconOnly: false,
+                            label: 'Choose',
+                            className: 'custom-attachment-choose p-button-rounded p-button-outlined p-button-sm' 
+                        }}
+                        cancelOptions={{ 
+                            icon: 'pi pi-times', 
+                            iconOnly: true, 
+                            className: 'custom-attachment-cancel p-button-danger p-button-rounded p-button-outlined p-button-sm' 
+                        }}
+                    />
                 </div>
             </div>
 
@@ -244,86 +437,6 @@ export default function MessageForm({ onSend, recipientCount }: MessageFormProps
                         />
                     ))}
                 </div>
-            </div>
-
-            {/* Attachments */}
-            <div className="mb-4">
-                <label className="block mb-2 font-semibold">
-                    <i className="pi pi-paperclip mr-2"></i>
-                    Attachments (Images only)
-                </label>
-                
-                <Tooltip target=".custom-attachment-choose" content="Choose Images" position="bottom" />
-                <Tooltip target=".custom-attachment-cancel" content="Clear" position="bottom" />
-                
-                <FileUpload
-                    ref={fileUploadRef}
-                    name="attachments[]"
-                    accept="image/*"
-                    maxFileSize={5000000}
-                    multiple
-                    onSelect={handleFileSelect}
-                    onClear={() => {
-                        setAttachments([]);
-                        setTotalSize(0);
-                    }}
-                    headerTemplate={(options) => {
-                        const { className, chooseButton, cancelButton } = options;
-                        const formattedValue = fileUploadRef.current ? fileUploadRef.current.formatSize(totalSize) : '0 B';
-                        return (
-                            <div className={className} style={{ backgroundColor: 'transparent', display: 'flex', alignItems: 'center' }}>
-                                {chooseButton}
-                                {cancelButton}
-                                {totalSize > 0 && (
-                                    <div className="flex align-items-center gap-3 ml-auto">
-                                        <span className="text-600">{formattedValue} / 5 MB</span>
-                                        <ProgressBar 
-                                            value={(totalSize / 50000)} 
-                                            showValue={false} 
-                                            style={{ width: '10rem', height: '10px' }}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    }}
-                    itemTemplate={(file: any, props) => (
-                        <div className="flex align-items-center justify-content-between p-3 surface-50 border-round mb-2">
-                            <div className="flex align-items-center gap-3">
-                                <img 
-                                    alt={file.name} 
-                                    role="presentation" 
-                                    src={file.objectURL} 
-                                    width={60}
-                                    className="border-round"
-                                />
-                                <div>
-                                    <div className="font-semibold text-900">{file.name}</div>
-                                    <small className="text-500">{new Date().toLocaleDateString()}</small>
-                                </div>
-                            </div>
-                            <Tag value={props.formatSize} severity="info" />
-                        </div>
-                    )}
-                    emptyTemplate={() => (
-                        <div className="flex align-items-center flex-column p-4">
-                            <i className="pi pi-image text-4xl text-400 mb-3"></i>
-                            <span className="text-600">Drag and drop images here or click to browse</span>
-                            <small className="text-500 mt-2">Supported: Images (Max 5MB per file)</small>
-                        </div>
-                    )}
-                    chooseOptions={{ 
-                        icon: 'pi pi-images', 
-                        iconOnly: false,
-                        label: 'Choose Images',
-                        className: 'custom-attachment-choose p-button-rounded p-button-outlined' 
-                    }}
-                    cancelOptions={{ 
-                        icon: 'pi pi-times', 
-                        iconOnly: true, 
-                        className: 'custom-attachment-cancel p-button-danger p-button-rounded p-button-outlined p-button-sm' 
-                    }}
-                />
             </div>
 
             {/* Action Buttons */}

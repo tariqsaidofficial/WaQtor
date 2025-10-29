@@ -23,7 +23,7 @@ const getApiUrl = () => {
  * Main API client instance
  */
 export const api = axios.create({
-    baseURL: `${getApiUrl()}/api`,
+    baseURL: getApiUrl(),
     headers: {
         'x-api-key': process.env.NEXT_PUBLIC_API_KEY || '',
         'Content-Type': 'application/json',

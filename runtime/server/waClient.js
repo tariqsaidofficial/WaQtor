@@ -16,10 +16,36 @@ class WhatsAppClient {
     }
 
     /**
+     * Clean up lock files before initialization
+     */
+    cleanupLockFiles() {
+        try {
+            const fs = require('fs');
+            const lockPaths = [
+                path.join(this.sessionPath, 'SingletonLock'),
+                path.join(this.sessionPath, 'SingletonCookie'),
+                path.join(this.sessionPath, 'SingletonSocket')
+            ];
+            
+            lockPaths.forEach(lockPath => {
+                if (fs.existsSync(lockPath)) {
+                    fs.unlinkSync(lockPath);
+                    logger.info(`Removed lock file: ${lockPath}`);
+                }
+            });
+        } catch (error) {
+            logger.warn('Error cleaning lock files:', error.message);
+        }
+    }
+
+    /**
      * Initialize WhatsApp Client
      */
     async initialize() {
         try {
+            // Clean up any existing lock files
+            this.cleanupLockFiles();
+            
             this.client = new Client({
                 authStrategy: new LocalAuth({
                     dataPath: this.sessionPath
@@ -33,7 +59,12 @@ class WhatsAppClient {
                         '--disable-accelerated-2d-canvas',
                         '--no-first-run',
                         '--no-zygote',
-                        '--disable-gpu'
+                        '--single-process',
+                        '--disable-gpu',
+                        '--disable-features=IsolateOrigins,site-per-process',
+                        '--disable-blink-features=AutomationControlled',
+                        '--disable-web-security',
+                        '--disable-features=VizDisplayCompositor'
                     ]
                 }
             });

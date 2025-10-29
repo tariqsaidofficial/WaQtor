@@ -1,6 +1,24 @@
 version: '3.8'
 
 services:
+  # Redis for Queue Management
+  redis:
+    image: redis:7-alpine
+    container_name: waqtor-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - waqtor-redis:/data
+    networks:
+      - waqtor-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    command: redis-server --appendonly yes
+
   waqtor-api:
     build:
       context: ..
@@ -14,6 +32,8 @@ services:
       - PORT=8080
       - API_KEY=${API_KEY:-waqtor_change_me}
       - LOG_LEVEL=info
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     volumes:
       - waqtor-sessions:/app/runtime/server/session
       - waqtor-db:/app/runtime/server/db
@@ -22,6 +42,9 @@ services:
       - waqtor-cache:/app/.wwebjs_cache
     networks:
       - waqtor-network
+    depends_on:
+      redis:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
       interval: 30s
@@ -47,6 +70,8 @@ services:
   #     - waqtor-api
 
 volumes:
+  waqtor-redis:
+    driver: local
   waqtor-sessions:
     driver: local
   waqtor-db:

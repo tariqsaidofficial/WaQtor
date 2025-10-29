@@ -56,7 +56,7 @@ export function EnhancedQRStatusCard() {
     // Fallback: Poll for QR if not received via WebSocket
     useEffect(() => {
         // Poll if: no QR AND connected AND not in final states
-        if (!qrData && isConnected && sessionStatus !== 'connected' && sessionStatus !== 'authenticated') {
+        if (!qrData && isConnected && sessionStatus !== 'connected' && sessionStatus !== 'authenticated' && sessionStatus !== 'ready') {
             console.log('🔄 QR not received, polling API...');
             const pollQR = async () => {
                 try {
@@ -116,7 +116,7 @@ export function EnhancedQRStatusCard() {
         if (wsStatus) {
             setSessionStatus(wsStatus);
             // Clear QR when authenticated or connected
-            if (wsStatus === 'authenticated' || wsStatus === 'connected') {
+            if (wsStatus === 'authenticated' || wsStatus === 'connected' || wsStatus === 'ready') {
                 setQrData(null);
                 
                 // Show success toast
@@ -303,7 +303,7 @@ export function EnhancedQRStatusCard() {
     }
 
     // Session authenticated or connected - show success
-    if (sessionStatus === 'authenticated' || sessionStatus === 'connected') {
+    if (sessionStatus === 'authenticated' || sessionStatus === 'connected' || sessionStatus === 'ready') {
         // Get client info from sessionState
         const clientInfo = {
             phoneNumber: sessionState?.clientInfo?.phoneNumber || sessionState?.phoneNumber || 'N/A',

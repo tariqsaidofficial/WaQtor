@@ -112,6 +112,45 @@ export function useWebSocket() {
                         setQr(null);
                         break;
 
+                    case 'message_ack':
+                        console.log('\n🟣 ========== WEBSOCKET MESSAGE ACK ==========');
+                        console.log('📨 Message ACK received from backend:', data.data);
+                        console.log('📨 ACK Details:', {
+                            messageId: data.data?.messageId,
+                            status: data.data?.status,
+                            ackCode: data.data?.ackCode,
+                            to: data.data?.to,
+                            from: data.data?.from
+                        });
+                        
+                        // Emit custom event for message status update
+                        if (typeof window !== 'undefined') {
+                            console.log('📡 Dispatching waqtor:message_ack event to window');
+                            window.dispatchEvent(new CustomEvent('waqtor:message_ack', { 
+                                detail: data.data 
+                            }));
+                            console.log('✅ Event dispatched successfully');
+                        } else {
+                            console.log('❌ Window object not available!');
+                        }
+                        console.log('🟣 ========== WEBSOCKET MESSAGE ACK END ==========\n');
+                        break;
+
+                    case 'message_sent':
+                        console.log('\n🟤 ========== WEBSOCKET MESSAGE SENT ==========');
+                        console.log('📤 Message sent from backend:', data.data);
+                        
+                        // Emit custom event for message sent
+                        if (typeof window !== 'undefined') {
+                            console.log('📡 Dispatching waqtor:message_sent event to window');
+                            window.dispatchEvent(new CustomEvent('waqtor:message_sent', { 
+                                detail: data.data 
+                            }));
+                            console.log('✅ Event dispatched successfully');
+                        }
+                        console.log('🟤 ========== WEBSOCKET MESSAGE SENT END ==========\n');
+                        break;
+
                     case 'status':
                         console.log('📊 Status update:', data.data);
                         setStatus(data.data);

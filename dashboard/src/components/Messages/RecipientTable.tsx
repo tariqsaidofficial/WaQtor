@@ -21,7 +21,8 @@ interface Recipient {
     name?: string;
     custom1?: string;
     custom2?: string;
-    status: 'pending' | 'sent' | 'delivered' | 'failed';
+    status: 'pending' | 'sent' | 'delivered' | 'read' | 'failed';
+    messageId?: string;
 }
 
 interface RecipientTableProps {
@@ -207,6 +208,8 @@ export default function RecipientTable({ recipients, onRecipientsChange }: Recip
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
                 onRecipientsChange([]);
+                // Clear from localStorage
+                localStorage.removeItem('waqtor_recipients');
                 toast.current?.show({
                     severity: 'info',
                     summary: 'Cleared',
@@ -219,18 +222,48 @@ export default function RecipientTable({ recipients, onRecipientsChange }: Recip
         });
     };
 
+    const resetStatus = () => {
+        confirmDialog({
+            message: 'Reset all recipients status to pending?',
+            header: 'Confirm Reset',
+            icon: 'pi pi-refresh',
+            accept: () => {
+                const updated = recipients.map(r => ({ ...r, status: 'pending' as const }));
+                onRecipientsChange(updated);
+                toast.current?.show({
+                    severity: 'success',
+                    summary: 'Reset',
+                    detail: 'All statuses reset to pending',
+                    life: 3000
+                });
+            },
+            acceptClassName: 'p-button-warning',
+            rejectClassName: 'p-button-outlined'
+        });
+    };
+
     const statusBodyTemplate = (rowData: Recipient) => {
         const severityMap: Record<string, 'success' | 'info' | 'warning' | 'danger'> = {
             pending: 'warning',
             sent: 'info',
             delivered: 'success',
+            read: 'success',
             failed: 'danger'
+        };
+
+        const iconMap: Record<string, string> = {
+            pending: 'pi-clock',
+            sent: 'pi-send',
+            delivered: 'pi-check',
+            read: 'pi-check-circle',
+            failed: 'pi-times-circle'
         };
 
         return (
             <Tag 
                 value={rowData.status.toUpperCase()} 
                 severity={severityMap[rowData.status]}
+                icon={`pi ${iconMap[rowData.status]}`}
             />
         );
     };
@@ -277,6 +310,16 @@ export default function RecipientTable({ recipients, onRecipientsChange }: Recip
                     onClick={() => setImportDialogVisible(true)}
                 />
                 <Button
+                    label="Reset Status"
+                    icon="pi pi-refresh"
+                    severity="warning"
+                    outlined
+                    onClick={resetStatus}
+                    disabled={recipients.length === 0}
+                    tooltip="Reset all recipients status to pending"
+                    tooltipOptions={{ position: 'top' }}
+                />
+                <Button
                     label="Clear All"
                     icon="pi pi-trash"
                     severity="danger"
@@ -307,14 +350,41 @@ export default function RecipientTable({ recipients, onRecipientsChange }: Recip
                         <i className="pi pi-users mr-2 text-primary"></i>
                         Recipients
                     </h2>
-                    <p className="text-600 m-0">
+                    <p className="text-600 m-0 mb-2">
                         Manage target phone numbers for your messages
                     </p>
+                    <div className="flex gap-2 flex-wrap">
+                        <Chip 
+                            label={`${recipients.filter(r => r.status === 'pending').length} Pending`}
+                            icon="pi pi-clock"
+                            className="bg-orange-100 text-orange-700"
+                        />
+                        <Chip 
+                            label={`${recipients.filter(r => r.status === 'sent').length} Sent`}
+                            icon="pi pi-send"
+                            className="bg-blue-100 text-blue-700"
+                        />
+                        <Chip 
+                            label={`${recipients.filter(r => r.status === 'delivered').length} Delivered`}
+                            icon="pi pi-check"
+                            className="bg-green-100 text-green-700"
+                        />
+                        <Chip 
+                            label={`${recipients.filter(r => r.status === 'read').length} Read`}
+                            icon="pi pi-check-circle"
+                            className="bg-teal-100 text-teal-700"
+                        />
+                        <Chip 
+                            label={`${recipients.filter(r => r.status === 'failed').length} Failed`}
+                            icon="pi pi-times"
+                            className="bg-red-100 text-red-700"
+                        />
+                    </div>
                 </div>
                 <Chip 
                     label={`${recipients.length} Total`} 
                     icon="pi pi-users"
-                    className="bg-primary text-white"
+                    className="bg-primary text-white text-xl px-4 py-2"
                 />
             </div>
 

@@ -29,9 +29,10 @@ echo "Choose startup mode:"
 echo "1) Development (with hot reload)"
 echo "2) Production (optimized build)"
 echo "3) Stop services"
-echo "4) Rebuild"
+echo "4) Rebuild (no cache)"
+echo "5) Install dependencies & restart"
 echo ""
-read -p "Your choice (1-4): " choice
+read -p "Your choice (1-5): " choice
 
 case $choice in
     1)
@@ -67,12 +68,28 @@ case $choice in
         ;;
     4)
         echo ""
-        echo "🔨 Rebuilding..."
+        echo "🔨 Rebuilding (no cache)..."
         docker-compose down
         docker-compose build --no-cache
         docker-compose up -d
         echo ""
         echo "✅ Rebuild and restart completed!"
+        echo ""
+        echo "📱 Backend API: http://localhost:8080"
+        echo "🖥️  Dashboard: http://localhost:3000"
+        ;;
+    5)
+        echo ""
+        echo "📦 Installing dependencies in container..."
+        echo ""
+        docker-compose exec waqtor-backend npm install
+        echo ""
+        echo "🔄 Restarting backend..."
+        docker-compose restart waqtor-backend
+        echo ""
+        echo "✅ Dependencies installed and backend restarted!"
+        echo ""
+        echo "View logs: docker-compose logs -f waqtor-backend"
         ;;
     *)
         echo "❌ Invalid choice"
