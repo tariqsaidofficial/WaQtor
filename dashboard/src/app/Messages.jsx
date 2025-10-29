@@ -8,21 +8,87 @@ import { Toast } from 'primereact/toast';
 import { ConfirmDialog } from 'primereact/confirmdialog';
 import { Card } from 'primereact/card';
 import { messageService } from '../api/services';
-import { useAppStore } from '../store/useAppStore';
+import { useSession } from '../contexts/SessionContext';
 import MessageForm from '../components/Messages/MessageForm';
-import MessageTemplate from '../components/Messages/MessageTemplate';
 import RecipientTable from '../components/Messages/RecipientTable';
+import MessageTemplate from '../components/Messages/MessageTemplate';
 
 export default function Messages() {
     const toast = useRef(null);
-    const store = useAppStore();
-    const { status, sessionState, qr } = store;
+    const { status, isReady } = useSession();
+    
     const [recipients, setRecipients] = useState([]);
-    const [selectedTemplate, setSelectedTemplate] = useState(null);
-    const [previewMessage, setPreviewMessage] = useState('👋 Thank you for reaching out to WaQtor!\n\nWe are a digital solutions agency specializing in media production, IT, web design, and marketing services.\n\n📢 Looking for a Strong Visual Identity? A Professional Website? Unique Visual Content?\n\n🚀 Let\'s Elevate Your Business to the Next Level! 🚀');
+    const [selectedRecipients, setSelectedRecipients] = useState([]);
+    const [previewMessage, setPreviewMessage] = useState('');
     const [previewAttachments, setPreviewAttachments] = useState([]);
+    const [selectedTemplate, setSelectedTemplate] = useState(null);
 
-    const isConnected = status === 'ready' || status === 'authenticated' || status === 'connected';
+    // Convert WhatsApp formatting to HTML for preview
+    const formatWhatsAppText = (text) => {
+        if (!text) return text;
+        
+        let formatted = text;
+        
+        // Get first recipient data for preview (if available)
+        const firstRecipient = recipients.length > 0 ? recipients[0] : null;
+        const now = new Date();
+        
+        // Get signature from localStorage or use default
+        const signature = typeof window !== 'undefined' ? localStorage.getItem('companyName') || 'WaQtor' : 'WaQtor';
+        
+        // Replace variables with real data from first recipient or example values
+        const variableExamples = {
+            // Personal Info - from recipient data
+            '{name}': `<span style="background: #e3f2fd; padding: 2px 6px; border-radius: 4px; color: #1976d2; font-weight: 500;">${firstRecipient?.name || 'Example Name'}</span>`,
+            '{phone}': `<span style="background: #e3f2fd; padding: 2px 6px; border-radius: 4px; color: #1976d2; font-weight: 500;">${firstRecipient?.phone || '+966501234567'}</span>`,
+            '{email}': `<span style="background: #e3f2fd; padding: 2px 6px; border-radius: 4px; color: #1976d2; font-weight: 500;">${firstRecipient?.email || 'example@email.com'}</span>`,
+            
+            // Business Info - from recipient data
+            '{company}': `<span style="background: #e8f5e9; padding: 2px 6px; border-radius: 4px; color: #388e3c; font-weight: 500;">${firstRecipient?.company || 'Company Name'}</span>`,
+            '{position}': `<span style="background: #e8f5e9; padding: 2px 6px; border-radius: 4px; color: #388e3c; font-weight: 500;">${firstRecipient?.position || 'Position Title'}</span>`,
+            '{order_id}': '<span style="background: #e8f5e9; padding: 2px 6px; border-radius: 4px; color: #388e3c; font-weight: 500;">ORD-2025-001</span>',
+            '{amount}': '<span style="background: #e8f5e9; padding: 2px 6px; border-radius: 4px; color: #388e3c; font-weight: 500;">$299.99</span>',
+            '{product}': '<span style="background: #e8f5e9; padding: 2px 6px; border-radius: 4px; color: #388e3c; font-weight: 500;">Product Name</span>',
+            
+            // Date/Time - from system
+            '{date}': `<span style="background: #fff3e0; padding: 2px 6px; border-radius: 4px; color: #f57c00; font-weight: 500;">${now.toLocaleDateString()}</span>`,
+            '{time}': `<span style="background: #fff3e0; padding: 2px 6px; border-radius: 4px; color: #f57c00; font-weight: 500;">${now.toLocaleTimeString()}</span>`,
+            '{day}': `<span style="background: #fff3e0; padding: 2px 6px; border-radius: 4px; color: #f57c00; font-weight: 500;">${now.toLocaleDateString('en-US', { weekday: 'long' })}</span>`,
+            '{month}': `<span style="background: #fff3e0; padding: 2px 6px; border-radius: 4px; color: #f57c00; font-weight: 500;">${now.toLocaleDateString('en-US', { month: 'long' })}</span>`,
+            '{year}': `<span style="background: #fff3e0; padding: 2px 6px; border-radius: 4px; color: #f57c00; font-weight: 500;">${now.getFullYear()}</span>`,
+            
+            // Signature - from settings
+            '{signature}': `<span style="background: #e1f5fe; padding: 2px 6px; border-radius: 4px; color: #0277bd; font-weight: 600; font-style: italic;">${signature}</span>`,
+            
+            // Custom Fields - from recipient data
+            '{custom1}': `<span style="background: #f3e5f5; padding: 2px 6px; border-radius: 4px; color: #7b1fa2; font-weight: 500;">${firstRecipient?.custom1 || 'Custom Value 1'}</span>`,
+            '{custom2}': `<span style="background: #f3e5f5; padding: 2px 6px; border-radius: 4px; color: #7b1fa2; font-weight: 500;">${firstRecipient?.custom2 || 'Custom Value 2'}</span>`,
+            '{custom3}': `<span style="background: #f3e5f5; padding: 2px 6px; border-radius: 4px; color: #7b1fa2; font-weight: 500;">${firstRecipient?.custom3 || 'Custom Value 3'}</span>`,
+            '{link}': '<span style="background: #f3e5f5; padding: 2px 6px; border-radius: 4px; color: #7b1fa2; font-weight: 500;">https://example.com</span>'
+        };
+        
+        // Replace all variables with styled examples
+        Object.keys(variableExamples).forEach(variable => {
+            formatted = formatted.replace(new RegExp(variable.replace(/[{}]/g, '\\$&'), 'g'), variableExamples[variable]);
+        });
+        
+        // Bold: *text* -> <strong>text</strong>
+        formatted = formatted.replace(/\*([^*]+)\*/g, '<strong>$1</strong>');
+        
+        // Italic: _text_ -> <em>text</em>
+        formatted = formatted.replace(/_([^_]+)_/g, '<em>$1</em>');
+        
+        // Strikethrough: ~text~ -> <s>text</s>
+        formatted = formatted.replace(/~([^~]+)~/g, '<s>$1</s>');
+        
+        // Monospace: ```text``` -> <code>text</code>
+        formatted = formatted.replace(/```([^`]+)```/g, '<code style="font-family: monospace; background: #f0f0f0; padding: 2px 4px; border-radius: 3px;">$1</code>');
+        
+        // Inline code: `text` -> <code>text</code>
+        formatted = formatted.replace(/`([^`]+)`/g, '<code style="font-family: monospace; background: #f0f0f0; padding: 2px 4px; border-radius: 3px;">$1</code>');
+        
+        return formatted;
+    };
 
     // 💾 Load recipients from localStorage on mount
     useEffect(() => {
@@ -42,12 +108,8 @@ export default function Messages() {
             console.error('❌ [Messages] Failed to load recipients from localStorage:', error);
         }
         
-        console.log('📱 [Messages] Full store:', store);
         console.log('📱 [Messages] Initial status:', status);
-        console.log('📱 [Messages] Initial isConnected:', isConnected);
-        console.log('📱 [Messages] Session state:', sessionState);
-        console.log('📱 [Messages] QR data:', qr ? 'Present' : 'None');
-        console.log('📱 [Messages] All possible statuses: ready, authenticated, connected, disconnected');
+        console.log('📱 [Messages] Is ready:', isReady);
         
         // Listen for message acknowledgment events
         const handleMessageAck = (event) => {
@@ -136,9 +198,8 @@ export default function Messages() {
     // 🔍 DEBUG: Monitor status changes
     useEffect(() => {
         console.log('🔄 [Messages] Status changed:', status);
-        console.log('🔄 [Messages] isConnected:', isConnected);
-        console.log('🔄 [Messages] Session state:', sessionState);
-    }, [status, isConnected, sessionState]);
+        console.log('🔄 [Messages] Is ready:', isReady);
+    }, [status, isReady]);
 
     // 🔍 DEBUG: Monitor recipients changes
     useEffect(() => {
@@ -153,11 +214,11 @@ export default function Messages() {
         console.log('📤 [Messages] Message data:', messageData);
         console.log('📤 [Messages] Recipients count:', recipients.length);
         console.log('📤 [Messages] Current status:', status);
-        console.log('📤 [Messages] Is connected:', isConnected);
+        console.log('📤 [Messages] Is ready:', isReady);
 
         try {
             // Check connection status
-            if (!isConnected) {
+            if (!isReady) {
                 const errorMsg = 'Cannot send message: WhatsApp not connected';
                 console.error('❌ [Messages]', errorMsg);
                 console.error('❌ [Messages] Current status:', status);
@@ -187,8 +248,14 @@ export default function Messages() {
 
             console.log('✅ [Messages] Validation passed, preparing recipients data...');
 
+            // Use selected recipients if any, otherwise use all
+            const recipientsToSend = selectedRecipients.length > 0 ? selectedRecipients : recipients;
+            
+            console.log('📋 [Messages] Recipients to send:', recipientsToSend.length);
+            console.log('📋 [Messages] Selected:', selectedRecipients.length, 'Total:', recipients.length);
+
             // Prepare recipients data with variables
-            const recipientsData = recipients.map(r => ({
+            const recipientsData = recipientsToSend.map(r => ({
                 phone: r.phone,
                 variables: {
                     name: r.name || '',
@@ -299,7 +366,7 @@ export default function Messages() {
             console.error('❌ [Messages] Error stack:', error.stack);
             console.error('❌ [Messages] Error details:', {
                 status,
-                isConnected,
+                isReady,
                 recipientsCount: recipients.length,
                 messageData
             });
@@ -350,16 +417,16 @@ export default function Messages() {
                         </div>
                         <div className="flex align-items-center gap-2">
                             <span 
-                                className={`inline-block border-circle ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}
+                                className={`inline-block border-circle ${isReady ? 'bg-green-500' : 'bg-red-500'}`}
                                 style={{ 
                                     width: '8px', 
                                     height: '8px',
-                                    boxShadow: isConnected ? '0 0 4px 1px rgba(34, 197, 94, 0.4)' : 'none',
-                                    animation: isConnected ? 'pulse-green 2s ease-in-out infinite' : 'none'
+                                    boxShadow: isReady ? '0 0 4px 1px rgba(34, 197, 94, 0.4)' : 'none',
+                                    animation: isReady ? 'pulse-green 2s ease-in-out infinite' : 'none'
                                 }}
                             ></span>
                             <span className="text-sm text-600 font-semibold">
-                                {isConnected ? 'Connected' : 'Disconnected'}
+                                {isReady ? 'Connected' : 'Disconnected'}
                             </span>
                         </div>
                     </div>
@@ -367,7 +434,7 @@ export default function Messages() {
             </div>
 
             {/* Connection Warning */}
-            {!isConnected && (
+            {!isReady && (
                 <div className="col-12">
                     <Card className="bg-yellow-50 border-yellow-300">
                         <div className="flex align-items-center gap-3">
@@ -383,12 +450,21 @@ export default function Messages() {
                 </div>
             )}
 
-            {/* Message Templates & Preview */}
+            {/* Left Column: Templates & Recipients */}
             <div className="col-12 lg:col-7">
+                {/* Message Templates */}
                 <MessageTemplate onSelectTemplate={handleSelectTemplate} />
+                
+                {/* Recipients Table */}
+                <RecipientTable 
+                    recipients={recipients}
+                    onRecipientsChange={setRecipients}
+                    selectedRecipients={selectedRecipients}
+                    onSelectionChange={setSelectedRecipients}
+                />
             </div>
 
-            {/* Template Preview - Mobile Mockup */}
+            {/* Right Column: Template Preview - Mobile Mockup */}
             <div className="col-12 lg:col-5">
                 <Card>
                     <div className="mb-3">
@@ -563,17 +639,18 @@ export default function Messages() {
                                             {/* Message Content - Shows actual message or placeholder */}
                                             <div style={{ padding: '12px' }}>
                                                 {previewMessage ? (
-                                                    <div style={{ 
-                                                        fontSize: '14.2px',
-                                                        lineHeight: '19px',
-                                                        color: '#111b21',
-                                                        whiteSpace: 'pre-wrap',
-                                                        wordBreak: 'break-word',
-                                                        marginBottom: '4px',
-                                                        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
-                                                    }}>
-                                                        {previewMessage}
-                                                    </div>
+                                                    <div 
+                                                        style={{ 
+                                                            fontSize: '14.2px',
+                                                            lineHeight: '19px',
+                                                            color: '#111b21',
+                                                            whiteSpace: 'pre-wrap',
+                                                            wordBreak: 'break-word',
+                                                            marginBottom: '4px',
+                                                            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
+                                                        }}
+                                                        dangerouslySetInnerHTML={{ __html: formatWhatsAppText(previewMessage) }}
+                                                    />
                                                 ) : (
                                                     <div style={{ 
                                                         fontSize: '14.2px',
@@ -651,19 +728,11 @@ export default function Messages() {
                 </Card>
             </div>
 
-            {/* Recipients Table */}
-            <div className="col-12">
-                <RecipientTable 
-                    recipients={recipients}
-                    onRecipientsChange={setRecipients}
-                />
-            </div>
-
             {/* Message Form */}
             <div className="col-12">
                 <MessageForm 
                     onSend={handleSendMessage}
-                    recipientCount={recipients.length}
+                    recipientCount={selectedRecipients.length > 0 ? selectedRecipients.length : recipients.length}
                     selectedTemplate={selectedTemplate}
                     onTemplateApplied={() => setSelectedTemplate(null)}
                     onMessageChange={setPreviewMessage}

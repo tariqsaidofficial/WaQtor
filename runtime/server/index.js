@@ -31,6 +31,7 @@ const { ExpressAdapter } = require('@bull-board/express');
 const SessionMonitor = require('./services/sessionMonitor');
 const WebSocketBridge = require('./services/websocketBridge');
 const EnhancedWAClientHandler = require('./services/enhancedWAClientHandler');
+const SmartBotService = require('./services/smartbotService');
 const errorMonitor = require('./services/errorMonitor');
 
 // Routes
@@ -41,6 +42,8 @@ const testRoutes = require('./routes/test');
 const sessionRoutes = require('./routes/session');
 const errorRoutes = require('./routes/errors');
 const queueRoutes = require('./routes/queue');
+const smartbotRoutes = require('./routes/smartbot');
+const reportsRoutes = require('./routes/reports');
 
 // Load environment variables from root .env file
 dotenv.config({ path: path.join(__dirname, '../../.env') });
@@ -53,6 +56,7 @@ const PORT = process.env.PORT || 8080;
 let sessionMonitor = null;
 let websocketBridge = null;
 let enhancedWAClientHandler = null;
+let smartbotService = null;
 
 // Middleware
 app.use(helmet());
@@ -143,6 +147,8 @@ app.use('/api/test', apiKeyAuth, testRoutes);
 app.use('/api/session', apiKeyAuth, sessionRoutes.router);
 app.use('/api/errors', apiKeyAuth, errorRoutes);
 app.use('/api/queue', apiKeyAuth, queueRoutes);
+app.use('/api/smartbot', apiKeyAuth, smartbotRoutes.router);
+app.use('/api/reports', apiKeyAuth, reportsRoutes);
 
 // Quick send message endpoint (for compatibility)
 app.post('/api/sendMessage', apiKeyAuth, async (req, res) => {
@@ -220,6 +226,18 @@ async function startServer() {
         // Initialize session routes with services
         sessionRoutes.initializeRoutes(sessionMonitor, websocketBridge, enhancedWAClientHandler);
 
+        // Initialize SmartBot Service
+        logger.info('Initializing SmartBot service...');
+        smartbotService = new SmartBotService(waClient);
+        await smartbotService.initialize();
+        
+        // Initialize SmartBot routes storage
+        await smartbotRoutes.initializeRulesStorage();
+        
+        // Make smartbotService available to routes
+        app.set('smartbotService', smartbotService);
+        logger.info('SmartBot service initialized');
+
         // Initialize Message Queue Processor
         logger.info('Initializing message queue processor...');
         const { initializeProcessor } = require('./queue/messageProcessor');
@@ -273,6 +291,11 @@ process.on('SIGINT', async () => {
         enhancedWAClientHandler.destroy();
     }
     
+    // Stop SmartBot service
+    if (smartbotService) {
+        smartbotService.destroy();
+    }
+    
     // Stop session monitor
     if (sessionMonitor) {
         await sessionMonitor.destroy();
@@ -300,6 +323,11 @@ process.on('SIGTERM', async () => {
     // Stop enhanced handler
     if (enhancedWAClientHandler) {
         enhancedWAClientHandler.destroy();
+    }
+    
+    // Stop SmartBot service
+    if (smartbotService) {
+        smartbotService.destroy();
     }
     
     // Stop session monitor

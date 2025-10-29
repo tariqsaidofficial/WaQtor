@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { classNames } from 'primereact/utils';
-import React, { forwardRef, useContext, useImperativeHandle, useRef } from 'react';
+import React, { forwardRef, useContext, useImperativeHandle, useRef, useState, useEffect } from 'react';
 import { AppTopbarRef } from '@/types';
 import { LayoutContext } from './context/layoutcontext';
 
@@ -11,6 +11,35 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     const menubuttonRef = useRef(null);
     const topbarmenuRef = useRef(null);
     const topbarmenubuttonRef = useRef(null);
+    
+    const [logoUrl, setLogoUrl] = useState('/layout/images/logo-dark.svg');
+    const [logoText, setLogoText] = useState('SAKAI');
+    const [showLogoText, setShowLogoText] = useState(true);
+
+    useEffect(() => {
+        // Load branding settings from localStorage
+        const savedLogoUrl = localStorage.getItem('app_logo');
+        const savedLogoText = localStorage.getItem('app_logo_text');
+        const savedShowLogoText = localStorage.getItem('app_show_logo_text');
+        
+        if (savedLogoUrl) setLogoUrl(savedLogoUrl);
+        if (savedLogoText) setLogoText(savedLogoText);
+        if (savedShowLogoText !== null) setShowLogoText(savedShowLogoText !== 'false');
+
+        // Listen for branding updates
+        const handleBrandingUpdate = () => {
+            const updatedLogoUrl = localStorage.getItem('app_logo');
+            const updatedLogoText = localStorage.getItem('app_logo_text');
+            const updatedShowLogoText = localStorage.getItem('app_show_logo_text');
+            
+            if (updatedLogoUrl) setLogoUrl(updatedLogoUrl);
+            if (updatedLogoText) setLogoText(updatedLogoText);
+            if (updatedShowLogoText !== null) setShowLogoText(updatedShowLogoText !== 'false');
+        };
+
+        window.addEventListener('branding-updated', handleBrandingUpdate);
+        return () => window.removeEventListener('branding-updated', handleBrandingUpdate);
+    }, []);
 
     useImperativeHandle(ref, () => ({
         menubutton: menubuttonRef.current,
@@ -22,12 +51,12 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
         <div className='layout-topbar'>
             <Link href='/' className='layout-topbar-logo'>
                 <img
-                    src={`/layout/images/logo-${layoutConfig.colorScheme !== 'light' ? 'white' : 'dark'}.svg`}
+                    src={logoUrl}
                     width='47.22px'
                     height={'35px'}
                     alt='logo'
                 />
-                <span>SAKAI</span>
+                {showLogoText && <span>{logoText}</span>}
             </Link>
 
             <button

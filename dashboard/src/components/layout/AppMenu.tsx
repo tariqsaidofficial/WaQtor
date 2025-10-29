@@ -27,9 +27,9 @@ const AppMenu = () => {
                     to: '/messages' 
                 },
                 { 
-                    label: 'Auto Reply', 
-                    icon: 'pi pi-fw pi-reply', 
-                    to: '/auto-reply' 
+                    label: 'SmartBot', 
+                    icon: 'pi pi-fw pi-bolt', 
+                    to: '/smartbot' 
                 },
                 { 
                     label: 'Reports', 

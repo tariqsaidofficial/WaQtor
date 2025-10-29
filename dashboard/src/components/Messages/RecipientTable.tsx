@@ -19,8 +19,12 @@ interface Recipient {
     id: string;
     phone: string;
     name?: string;
+    email?: string;
+    company?: string;
+    position?: string;
     custom1?: string;
     custom2?: string;
+    custom3?: string;
     status: 'pending' | 'sent' | 'delivered' | 'read' | 'failed';
     messageId?: string;
 }
@@ -28,26 +32,42 @@ interface Recipient {
 interface RecipientTableProps {
     recipients: Recipient[];
     onRecipientsChange: (recipients: Recipient[]) => void;
+    selectedRecipients?: Recipient[];
+    onSelectionChange?: (selected: Recipient[]) => void;
 }
 
-export default function RecipientTable({ recipients, onRecipientsChange }: RecipientTableProps) {
+export default function RecipientTable({ 
+    recipients, 
+    onRecipientsChange,
+    selectedRecipients: externalSelected,
+    onSelectionChange
+}: RecipientTableProps) {
     const toast = useRef<any>(null);
     const fileUploadRef = useRef<any>(null);
     
     const [dialogVisible, setDialogVisible] = useState(false);
     const [importDialogVisible, setImportDialogVisible] = useState(false);
     const [editingRecipient, setEditingRecipient] = useState<Recipient | null>(null);
+    const [internalSelected, setInternalSelected] = useState<Recipient[]>([]);
+    
+    // Use external selection if provided, otherwise use internal
+    const selectedRecipients = externalSelected !== undefined ? externalSelected : internalSelected;
+    const setSelectedRecipients = onSelectionChange || setInternalSelected;
     const [formData, setFormData] = useState({
         phone: '',
         name: '',
+        email: '',
+        company: '',
+        position: '',
         custom1: '',
-        custom2: ''
+        custom2: '',
+        custom3: ''
     });
     const [globalFilter, setGlobalFilter] = useState('');
 
     const openNew = () => {
         setEditingRecipient(null);
-        setFormData({ phone: '', name: '', custom1: '', custom2: '' });
+        setFormData({ phone: '', name: '', email: '', company: '', position: '', custom1: '', custom2: '', custom3: '' });
         setDialogVisible(true);
     };
 
@@ -56,8 +76,12 @@ export default function RecipientTable({ recipients, onRecipientsChange }: Recip
         setFormData({
             phone: recipient.phone,
             name: recipient.name || '',
+            email: recipient.email || '',
+            company: recipient.company || '',
+            position: recipient.position || '',
             custom1: recipient.custom1 || '',
-            custom2: recipient.custom2 || ''
+            custom2: recipient.custom2 || '',
+            custom3: recipient.custom3 || ''
         });
         setDialogVisible(true);
     };
@@ -381,24 +405,41 @@ export default function RecipientTable({ recipients, onRecipientsChange }: Recip
                         />
                     </div>
                 </div>
-                <Chip 
-                    label={`${recipients.length} Total`} 
-                    icon="pi pi-users"
-                    className="bg-primary text-white text-xl px-4 py-2"
-                />
+                <div className="flex gap-2">
+                    <Chip 
+                        label={`${recipients.length} Total`} 
+                        icon="pi pi-users"
+                        className="bg-primary text-white text-xl px-4 py-2"
+                    />
+                    {selectedRecipients.length > 0 && (
+                        <Chip 
+                            label={`${selectedRecipients.length} Selected`} 
+                            icon="pi pi-check"
+                            className="bg-green-500 text-white text-xl px-4 py-2"
+                        />
+                    )}
+                </div>
             </div>
 
             <DataTable
                 value={recipients}
+                selection={selectedRecipients}
+                onSelectionChange={(e) => setSelectedRecipients(e.value)}
+                selectionMode="checkbox"
                 paginator
                 rows={10}
-                rowsPerPageOptions={[5, 10, 25, 50]}
                 dataKey="id"
                 globalFilter={globalFilter}
                 header={header}
+                className="p-datatable-gridlines"
                 emptyMessage="No recipients found. Add recipients manually or import from file."
                 stripedRows
             >
+                <Column 
+                    selectionMode="multiple" 
+                    headerStyle={{ width: '3rem' }}
+                    exportable={false}
+                />
                 <Column 
                     field="phone" 
                     header="Phone Number" 

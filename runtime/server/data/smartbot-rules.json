@@ -1,0 +1,20 @@
+[
+  {
+    "id": "1761770080105",
+    "name": "Welcome Message",
+    "keywords": [
+      "hi",
+      "hello",
+      "hey",
+      "مرحبا",
+      "السلام عليكم"
+    ],
+    "replyMessage": "مرحباً بك! 👋\n\nكيف يمكنني مساعدتك اليوم؟",
+    "enabled": true,
+    "matchType": "contains",
+    "caseSensitive": false,
+    "createdAt": "2025-10-29T20:34:40.105Z",
+    "triggerCount": 7,
+    "lastTriggered": "2025-10-29T20:42:39.134Z"
+  }
+]

@@ -333,6 +333,65 @@ export const queueService = {
     },
 };
 
+/**
+ * SmartBot Services
+ */
+export const smartbotService = {
+    // Get all rules
+    getRules: async () => {
+        const response = await api.get('/api/smartbot/rules');
+        return response.data;
+    },
+
+    // Get specific rule
+    getRule: async (id) => {
+        const response = await api.get(`/api/smartbot/rules/${id}`);
+        return response.data;
+    },
+
+    // Create rule
+    createRule: async (rule) => {
+        const response = await api.post('/api/smartbot/rules', rule);
+        return response.data;
+    },
+
+    // Update rule
+    updateRule: async (id, rule) => {
+        const response = await api.put(`/api/smartbot/rules/${id}`, rule);
+        return response.data;
+    },
+
+    // Delete rule
+    deleteRule: async (id) => {
+        const response = await api.delete(`/api/smartbot/rules/${id}`);
+        return response.data;
+    },
+
+    // Toggle rule
+    toggleRule: async (id) => {
+        const response = await api.post(`/api/smartbot/rules/${id}/toggle`);
+        return response.data;
+    },
+
+    // Get history
+    getHistory: async (limit = 50) => {
+        const response = await api.get(`/api/smartbot/history?limit=${limit}`);
+        return response.data;
+    },
+
+    // Clear history
+    clearHistory: async () => {
+        const response = await api.delete('/api/smartbot/history');
+        return response.data;
+    },
+
+    // Get stats
+    getStats: async () => {
+        const response = await api.get('/api/smartbot/stats');
+        return response.data;
+    },
+};
+
 export default {
     message: messageService,
     campaign: campaignService,
@@ -341,4 +400,5 @@ export default {
     test: testService,
     error: errorService,
     queue: queueService,
+    smartbot: smartbotService,
 };

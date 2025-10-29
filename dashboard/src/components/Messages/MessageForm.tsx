@@ -11,10 +11,11 @@ import { Chip } from 'primereact/chip';
 import { Calendar } from 'primereact/calendar';
 import { Dialog } from 'primereact/dialog';
 import { Toast } from 'primereact/toast';
-import { ProgressBar } from 'primereact/progressbar';
 import { Tag } from 'primereact/tag';
 import { Tooltip } from 'primereact/tooltip';
 import { confirmDialog } from 'primereact/confirmdialog';
+import { Divider } from 'primereact/divider';
+import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 
 interface MessageFormProps {
     onSend: (messageData: any) => Promise<void>;
@@ -28,6 +29,21 @@ interface MessageFormProps {
 export default function MessageForm({ onSend, recipientCount, selectedTemplate, onTemplateApplied, onMessageChange, onAttachmentsChange }: MessageFormProps) {
     const toast = useRef<any>(null);
     const fileUploadRef = useRef<any>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    
+    // Close emoji picker on ESC key
+    React.useEffect(() => {
+        const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && showEmojiPicker) {
+                setShowEmojiPicker(false);
+            }
+        };
+        
+        document.addEventListener('keydown', handleEscape);
+        return () => document.removeEventListener('keydown', handleEscape);
+    }, [showEmojiPicker]);
     
     const [message, setMessage] = useState('👋 Thank you for reaching out to WaQtor!\n\nWe are a digital solutions agency specializing in media production, IT, web design, and marketing services.\n\n📢 Looking for a Strong Visual Identity? A Professional Website? Unique Visual Content?\n\n🚀 Let\'s Elevate Your Business to the Next Level! 🚀');
     const [attachments, setAttachments] = useState<File[]>([]);
@@ -69,18 +85,137 @@ export default function MessageForm({ onSend, recipientCount, selectedTemplate, 
         }
     }, [selectedTemplate, onTemplateApplied]);
 
-    // Available variables
+    // Available variables - Dynamic placeholders for personalization
     const variables = [
-        { label: '{name}', description: 'Recipient name' },
-        { label: '{phone}', description: 'Phone number' },
-        { label: '{date}', description: 'Current date' },
-        { label: '{time}', description: 'Current time' },
-        { label: '{custom1}', description: 'Custom field 1' },
-        { label: '{custom2}', description: 'Custom field 2' }
+        { label: '{name}', description: 'Recipient name - e.g., "Example Name"', category: 'Personal' },
+        { label: '{phone}', description: 'Phone number - e.g., "+966501234567"', category: 'Personal' },
+        { label: '{email}', description: 'Email address - e.g., "example@email.com"', category: 'Personal' },
+        { label: '{company}', description: 'Company name - e.g., "Company Name"', category: 'Business' },
+        { label: '{position}', description: 'Job position/title - e.g., "Position Title"', category: 'Business' },
+        { label: '{date}', description: 'Current date - e.g., "29/10/2025"', category: 'DateTime' },
+        { label: '{time}', description: 'Current time - e.g., "10:30 PM"', category: 'DateTime' },
+        { label: '{day}', description: 'Day of week - e.g., "Tuesday"', category: 'DateTime' },
+        { label: '{month}', description: 'Month name - e.g., "October"', category: 'DateTime' },
+        { label: '{year}', description: 'Current year - e.g., "2025"', category: 'DateTime' },
+        { label: '{order_id}', description: 'Order/Invoice number - e.g., "ORD-2025-001"', category: 'Business' },
+        { label: '{amount}', description: 'Payment amount - e.g., "$299.99"', category: 'Business' },
+        { label: '{product}', description: 'Product/Service name - e.g., "Product Name"', category: 'Business' },
+        { label: '{signature}', description: 'Company signature - e.g., "WaQtor"', category: 'System' },
+        { label: '{link}', description: 'Custom URL/Link - e.g., "https://example.com"', category: 'Custom' },
+        { label: '{custom1}', description: 'Custom field 1 - Any data', category: 'Custom' },
+        { label: '{custom2}', description: 'Custom field 2 - Any data', category: 'Custom' },
+        { label: '{custom3}', description: 'Custom field 3 - Any data', category: 'Custom' }
     ];
 
     const insertVariable = (variable: string) => {
         setMessage(message + variable);
+    };
+
+    // Handle emoji selection - insert at cursor position
+    const handleEmojiClick = (emojiData: EmojiClickData) => {
+        const textarea = textareaRef.current;
+        if (!textarea) return;
+        
+        const start = textarea.selectionStart || 0;
+        const end = textarea.selectionEnd || 0;
+        
+        // Insert emoji at cursor position
+        const newMessage = message.substring(0, start) + emojiData.emoji + message.substring(end);
+        setMessage(newMessage);
+        
+        // Update cursor position after emoji
+        const newCursorPos = start + emojiData.emoji.length;
+        
+        // Focus textarea and set cursor position
+        setTimeout(() => {
+            textarea.focus();
+            textarea.setSelectionRange(newCursorPos, newCursorPos);
+        }, 0);
+    };
+    
+    // Track cursor position
+    const handleTextareaClick = () => {
+        // Just to maintain cursor position tracking
+    };
+    
+    const handleTextareaKeyUp = () => {
+        // Just to maintain cursor position tracking
+    };
+
+    // WhatsApp formatting functions
+    const applyFormat = (format: string) => {
+        const textarea = document.getElementById('message') as HTMLTextAreaElement;
+        if (!textarea) {
+            toast.current?.show({
+                severity: 'warn',
+                summary: 'Error',
+                detail: 'Please click in the message area first',
+                life: 2000
+            });
+            return;
+        }
+
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const selectedText = message.substring(start, end);
+
+        if (!selectedText) {
+            toast.current?.show({
+                severity: 'info',
+                summary: 'Select Text',
+                detail: 'Please select text to apply formatting',
+                life: 2000
+            });
+            return;
+        }
+
+        let formattedText = '';
+        switch (format) {
+            case 'bold':
+                formattedText = `*${selectedText}*`;
+                break;
+            case 'italic':
+                formattedText = `_${selectedText}_`;
+                break;
+            case 'strikethrough':
+                formattedText = `~${selectedText}~`;
+                break;
+            case 'monospace':
+                formattedText = '```' + selectedText + '```';
+                break;
+            case 'code':
+                formattedText = '`' + selectedText + '`';
+                break;
+            default:
+                formattedText = selectedText;
+        }
+
+        const newMessage = message.substring(0, start) + formattedText + message.substring(end);
+        setMessage(newMessage);
+
+        setTimeout(() => {
+            textarea.selectionStart = start;
+            textarea.selectionEnd = start + formattedText.length;
+            textarea.focus();
+        }, 0);
+    };
+
+    const insertListItem = (type: 'bullet' | 'number' | 'quote') => {
+        let prefix = '';
+        
+        switch (type) {
+            case 'bullet':
+                prefix = '\n• ';
+                break;
+            case 'number':
+                prefix = '\n1. ';
+                break;
+            case 'quote':
+                prefix = '\n> ';
+                break;
+        }
+
+        setMessage(message + prefix);
     };
 
     const handleFileSelect = (event: any) => {
@@ -285,10 +420,125 @@ export default function MessageForm({ onSend, recipientCount, selectedTemplate, 
                     <label htmlFor="message" className="block mb-2 font-semibold">
                         Message *
                     </label>
+                    
+                    {/* Formatting Toolbar */}
+                    <div className="flex gap-2 mb-2 p-3 surface-50 border-round" style={{ alignItems: 'center', position: 'relative' }}>
+                        <div style={{ position: 'relative' }}>
+                            <Button
+                                icon="pi pi-heart"
+                                rounded
+                                outlined
+                                size="small"
+                                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                                tooltip="Insert Emoji (ESC to close)"
+                                tooltipOptions={{ position: 'top' }}
+                            />
+                            
+                            {/* Emoji Picker - Next to emoji button */}
+                            {showEmojiPicker && (
+                                <div style={{ 
+                                    position: 'absolute', 
+                                    top: '45px',
+                                    left: 0,
+                                    zIndex: 9999,
+                                    boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                                    borderRadius: '8px'
+                                }}>
+                                    <EmojiPicker
+                                        onEmojiClick={handleEmojiClick}
+                                        width={400}
+                                        height={450}
+                                        searchPlaceHolder="Search emoji..."
+                                        previewConfig={{ showPreview: false }}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                        <Divider layout="vertical" />
+                        <Button
+                            label="B"
+                            rounded
+                            outlined
+                            size="small"
+                            onClick={() => applyFormat('bold')}
+                            tooltip="Bold *text*"
+                            tooltipOptions={{ position: 'top' }}
+                            style={{ fontWeight: 'bold' }}
+                        />
+                        <Button
+                            label="I"
+                            rounded
+                            outlined
+                            size="small"
+                            onClick={() => applyFormat('italic')}
+                            tooltip="Italic _text_"
+                            tooltipOptions={{ position: 'top' }}
+                            style={{ fontStyle: 'italic' }}
+                        />
+                        <Button
+                            icon="pi pi-minus"
+                            rounded
+                            outlined
+                            size="small"
+                            onClick={() => applyFormat('strikethrough')}
+                            tooltip="Strikethrough ~text~"
+                            tooltipOptions={{ position: 'top' }}
+                        />
+                        <Button
+                            icon="pi pi-code"
+                            rounded
+                            outlined
+                            size="small"
+                            onClick={() => applyFormat('code')}
+                            tooltip="Inline code `text`"
+                            tooltipOptions={{ position: 'top' }}
+                        />
+                        <Button
+                            icon="pi pi-file-edit"
+                            rounded
+                            outlined
+                            size="small"
+                            onClick={() => applyFormat('monospace')}
+                            tooltip="Monospace ```text```"
+                            tooltipOptions={{ position: 'top' }}
+                        />
+                        <Divider layout="vertical" />
+                        <Button
+                            icon="pi pi-list"
+                            rounded
+                            outlined
+                            size="small"
+                            onClick={() => insertListItem('bullet')}
+                            tooltip="Bullet list"
+                            tooltipOptions={{ position: 'top' }}
+                        />
+                        <Button
+                            label="1."
+                            rounded
+                            outlined
+                            size="small"
+                            onClick={() => insertListItem('number')}
+                            tooltip="Numbered list"
+                            tooltipOptions={{ position: 'top' }}
+                        />
+                        <Button
+                            icon="pi pi-angle-right"
+                            rounded
+                            outlined
+                            size="small"
+                            onClick={() => insertListItem('quote')}
+                            tooltip="Quote > text"
+                            tooltipOptions={{ position: 'top' }}
+                        />
+                    </div>
+
                     <InputTextarea
+                        ref={textareaRef}
                         id="message"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
+                        onClick={handleTextareaClick}
+                        onKeyUp={handleTextareaKeyUp}
                         placeholder="Type your message here... Use variables like {name}, {phone}, etc."
                         rows={12}
                         autoResize
@@ -417,25 +667,110 @@ export default function MessageForm({ onSend, recipientCount, selectedTemplate, 
                 </div>
             </div>
 
-            {/* Variables */}
+            {/* Variables - Organized by Category */}
             <div className="mb-4">
-                <label className="block mb-2 font-semibold">
+                <label className="block mb-3 font-semibold">
                     <i className="pi pi-code mr-2"></i>
-                    Insert Variables
+                    Insert Variables (Dynamic Placeholders)
                 </label>
-                <div className="flex flex-wrap gap-2">
-                    {variables.map((variable) => (
-                        <Button
-                            key={variable.label}
-                            label={variable.label}
-                            icon="pi pi-plus"
-                            size="small"
-                            outlined
-                            onClick={() => insertVariable(variable.label)}
-                            tooltip={variable.description}
-                            tooltipOptions={{ position: 'top' }}
-                        />
-                    ))}
+                
+                {/* Personal Variables */}
+                <div className="mb-3">
+                    <div className="text-sm font-semibold text-600 mb-2">👤 Personal Info</div>
+                    <div className="flex flex-wrap gap-2">
+                        {variables.filter(v => v.category === 'Personal').map((variable) => (
+                            <Button
+                                key={variable.label}
+                                label={variable.label}
+                                icon="pi pi-plus"
+                                size="small"
+                                outlined
+                                severity="info"
+                                onClick={() => insertVariable(variable.label)}
+                                tooltip={variable.description}
+                                tooltipOptions={{ position: 'top' }}
+                            />
+                        ))}
+                    </div>
+                </div>
+
+                {/* Business Variables */}
+                <div className="mb-3">
+                    <div className="text-sm font-semibold text-600 mb-2">💼 Business Info</div>
+                    <div className="flex flex-wrap gap-2">
+                        {variables.filter(v => v.category === 'Business').map((variable) => (
+                            <Button
+                                key={variable.label}
+                                label={variable.label}
+                                icon="pi pi-plus"
+                                size="small"
+                                outlined
+                                severity="success"
+                                onClick={() => insertVariable(variable.label)}
+                                tooltip={variable.description}
+                                tooltipOptions={{ position: 'top' }}
+                            />
+                        ))}
+                    </div>
+                </div>
+
+                {/* DateTime Variables */}
+                <div className="mb-3">
+                    <div className="text-sm font-semibold text-600 mb-2">📅 Date & Time</div>
+                    <div className="flex flex-wrap gap-2">
+                        {variables.filter(v => v.category === 'DateTime').map((variable) => (
+                            <Button
+                                key={variable.label}
+                                label={variable.label}
+                                icon="pi pi-plus"
+                                size="small"
+                                outlined
+                                severity="warning"
+                                onClick={() => insertVariable(variable.label)}
+                                tooltip={variable.description}
+                                tooltipOptions={{ position: 'top' }}
+                            />
+                        ))}
+                    </div>
+                </div>
+
+                {/* System Variables */}
+                <div className="mb-3">
+                    <div className="text-sm font-semibold text-600 mb-2">🏢 System</div>
+                    <div className="flex flex-wrap gap-2">
+                        {variables.filter(v => v.category === 'System').map((variable) => (
+                            <Button
+                                key={variable.label}
+                                label={variable.label}
+                                icon="pi pi-plus"
+                                size="small"
+                                outlined
+                                severity="help"
+                                onClick={() => insertVariable(variable.label)}
+                                tooltip={variable.description}
+                                tooltipOptions={{ position: 'top' }}
+                            />
+                        ))}
+                    </div>
+                </div>
+
+                {/* Custom Variables */}
+                <div>
+                    <div className="text-sm font-semibold text-600 mb-2">⚙️ Custom Fields</div>
+                    <div className="flex flex-wrap gap-2">
+                        {variables.filter(v => v.category === 'Custom').map((variable) => (
+                            <Button
+                                key={variable.label}
+                                label={variable.label}
+                                icon="pi pi-plus"
+                                size="small"
+                                outlined
+                                onClick={() => insertVariable(variable.label)}
+                                tooltip={variable.description}
+                                tooltipOptions={{ position: 'top' }}
+                            />
+                        ))}
+                    </div>
                 </div>
             </div>
 

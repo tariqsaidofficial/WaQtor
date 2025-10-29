@@ -60,7 +60,7 @@ export function EnhancedQRStatusCard() {
             console.log('🔄 QR not received, polling API...');
             const pollQR = async () => {
                 try {
-                    const response = await apiClient.get('/session/qr');
+                    const response = await apiClient.get('/api/session/qr');
                     if (response.data?.qr) {
                         setQrData(response.data.qr);
                         setSessionStatus('qr');

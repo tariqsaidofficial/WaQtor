@@ -15,9 +15,10 @@ const AppConfig = (props: AppConfigProps) => {
     const { layoutConfig, setLayoutConfig, layoutState, setLayoutState } = useContext(LayoutContext);
     const { setRipple, changeTheme } = useContext(PrimeReactContext);
 
-    const onConfigButtonClick = () => {
-        setLayoutState((prevState: LayoutState) => ({ ...prevState, configSidebarVisible: true }));
-    };
+    // Config button removed - sidebar now opened from Settings page
+    // const onConfigButtonClick = () => {
+    //     setLayoutState((prevState: LayoutState) => ({ ...prevState, configSidebarVisible: true }));
+    // };
 
     const onConfigSidebarHide = () => {
         setLayoutState((prevState: LayoutState) => ({ ...prevState, configSidebarVisible: false }));
@@ -61,10 +62,8 @@ const AppConfig = (props: AppConfigProps) => {
 
     return (
         <>
-            <button className='layout-config-button config-link' type='button' onClick={onConfigButtonClick}>
-                <i className='pi pi-cog'></i>
-            </button>
-
+            {/* Config button removed - now in Settings page */}
+            
             <Sidebar
                 visible={layoutState.configSidebarVisible}
                 onHide={onConfigSidebarHide}

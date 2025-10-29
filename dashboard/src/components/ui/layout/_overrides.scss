@@ -1,0 +1,239 @@
+/**
+ * Custom Overrides for PrimeReact Components
+ * Fix styling issues and customize appearance
+ */
+
+/* ============================================
+   BUTTON SIZE FIX - Make buttons smaller
+   ============================================ */
+
+/* Make all buttons more compact */
+.p-button {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.875rem !important;
+}
+
+/* Small buttons */
+.p-button.p-button-sm,
+.p-button-sm {
+    padding: 0.375rem 0.75rem !important;
+    font-size: 0.8125rem !important;
+}
+
+/* Icon-only buttons */
+.p-button.p-button-icon-only {
+    padding: 0.5rem !important;
+    width: 2.25rem !important;
+    height: 2.25rem !important;
+}
+
+/* Rounded icon-only buttons */
+.p-button.p-button-rounded.p-button-icon-only {
+    width: 2.25rem !important;
+    height: 2.25rem !important;
+    padding: 0 !important;
+}
+
+/* Small icon-only buttons */
+.p-button.p-button-sm.p-button-icon-only,
+.p-button-sm.p-button-icon-only {
+    width: 2rem !important;
+    height: 2rem !important;
+    padding: 0 !important;
+}
+
+/* Button labels */
+.p-button-label {
+    font-size: inherit !important;
+    font-weight: 500 !important;
+}
+
+/* Button icons */
+.p-button-icon {
+    font-size: 1rem !important;
+}
+
+.p-button-sm .p-button-icon {
+    font-size: 0.875rem !important;
+}
+
+/* ============================================
+   ICON FIXES - Ensure icons are visible
+   ============================================ */
+
+/* Fix PrimeIcons visibility */
+.pi {
+    font-family: 'primeicons' !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    line-height: 1 !important;
+    display: inline-block !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* Ensure icons in buttons are visible */
+.p-button-icon {
+    font-family: 'primeicons' !important;
+    display: inline-block !important;
+    line-height: inherit !important;
+}
+
+/* Ensure icons in input groups are visible */
+.p-inputgroup-addon .pi {
+    font-family: 'primeicons' !important;
+    display: inline-block !important;
+}
+
+/* Fix icon sizing in various contexts */
+.p-button .pi,
+.p-inputgroup-addon .pi,
+.p-datatable .pi,
+.p-paginator .pi {
+    font-size: inherit !important;
+    line-height: inherit !important;
+}
+
+/* Prevent icons from being hidden by other styles */
+i.pi {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* ============================================
+   PAGINATOR FIXES
+   ============================================ */
+
+/* Paginator Fixes for Light Mode */
+.p-paginator {
+    /* Fix active page button colors in light mode */
+    .p-paginator-page.p-highlight {
+        background-color: var(--primary-color) !important;
+        color: var(--primary-color-text) !important;
+        border-color: var(--primary-color) !important;
+    }
+    
+    /* Fix hover state */
+    .p-paginator-page:not(.p-highlight):hover {
+        background-color: var(--surface-hover) !important;
+        color: var(--text-color) !important;
+    }
+    
+    /* Fix default page button colors */
+    .p-paginator-page {
+        color: var(--text-color) !important;
+        background-color: transparent !important;
+        border-color: transparent !important;
+    }
+    
+    /* Fix navigation buttons */
+    .p-paginator-first,
+    .p-paginator-prev,
+    .p-paginator-next,
+    .p-paginator-last {
+        color: var(--text-color) !important;
+        
+        &:hover:not(:disabled) {
+            background-color: var(--surface-hover) !important;
+        }
+        
+        &:disabled {
+            opacity: 0.4;
+        }
+    }
+}
+
+/* DataTable Paginator specific fixes */
+.p-datatable .p-paginator {
+    border-top: 1px solid var(--surface-border);
+    padding: 1rem;
+}
+
+/* Ensure proper contrast in light mode */
+[data-theme="light"] {
+    .p-paginator-page.p-highlight {
+        background-color: var(--primary-color) !important;
+        color: #ffffff !important;
+    }
+}
+
+/* Ensure proper contrast in dark mode */
+[data-theme="dark"] {
+    .p-paginator-page.p-highlight {
+        background-color: var(--primary-color) !important;
+        color: var(--primary-color-text) !important;
+    }
+}
+
+/* ============================================
+   DATATABLE SELECTED ROW FIX
+   ============================================ */
+
+/* Fix selected row overlay - remove heavy background */
+.p-datatable .p-datatable-tbody > tr.p-highlight {
+    background: rgba(var(--primary-color-rgb, 20, 184, 166), 0.08) !important;
+    color: var(--text-color) !important;
+}
+
+/* Ensure text is visible in selected rows */
+.p-datatable .p-datatable-tbody > tr.p-highlight td {
+    color: var(--text-color) !important;
+}
+
+/* Keep checkbox visible */
+.p-datatable .p-datatable-tbody > tr.p-highlight .p-checkbox-box {
+    border-color: var(--primary-color) !important;
+}
+
+/* Hover state for selected row */
+.p-datatable .p-datatable-tbody > tr.p-highlight:hover {
+    background: rgba(var(--primary-color-rgb, 20, 184, 166), 0.12) !important;
+}
+
+/* ============================================
+   FORMATTING TOOLBAR ICON FIX
+   ============================================ */
+
+/* Fix icon visibility in outlined buttons (toolbar) */
+.surface-50 .p-button.p-button-outlined.p-button-rounded {
+    /* Force perfect circle shape */
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    min-width: 2.5rem !important;
+    padding: 0 !important;
+    
+    /* Ensure icons are visible with proper color */
+    .pi,
+    .p-button-icon,
+    span.pi,
+    i.pi {
+        color: var(--primary-color) !important;
+        opacity: 1 !important;
+        font-size: 1rem !important;
+    }
+    
+    .p-button-label {
+        color: var(--primary-color) !important;
+        opacity: 1 !important;
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+    }
+    
+    &:hover {
+        background: var(--primary-50) !important;
+        border-color: var(--primary-color) !important;
+        
+        .pi,
+        .p-button-icon,
+        span.pi,
+        i.pi {
+            color: var(--primary-color) !important;
+        }
+        
+        .p-button-label {
+            color: var(--primary-color) !important;
+        }
+    }
+}

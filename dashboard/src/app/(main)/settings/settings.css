@@ -1,0 +1,206 @@
+.settings-page {
+    padding: 1rem;
+}
+
+.settings-header {
+    margin-bottom: 2rem;
+}
+
+.settings-card {
+    height: 100%;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.settings-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.settings-card .p-card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #0f766e;
+}
+
+.settings-card .p-card-body {
+    padding: 1.5rem;
+}
+
+.info-item {
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+    transition: all 0.3s;
+    border: 2px solid transparent;
+}
+
+.info-item:hover {
+    background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%);
+    transform: translateY(-4px);
+    border-color: #0f766e;
+    box-shadow: 0 8px 16px rgba(15, 118, 110, 0.15);
+}
+
+.info-item i {
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+/* WhatsApp-inspired buttons */
+.settings-page .p-button {
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.2s;
+}
+
+.settings-page .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-warning):not(.p-button-danger):not(.p-button-info) {
+    background: #0f766e;
+    border-color: #0f766e;
+}
+
+.settings-page .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-warning):not(.p-button-danger):not(.p-button-info):hover {
+    background: #0d9488;
+    border-color: #0d9488;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);
+}
+
+.settings-page .p-button.p-button-outlined {
+    border: 2px solid #0f766e;
+    color: #0f766e;
+}
+
+.settings-page .p-button.p-button-outlined:hover {
+    background: #f0fdfa;
+    border-color: #0d9488;
+    color: #0d9488;
+}
+
+.settings-page .p-button-warning {
+    background: #f59e0b !important;
+    border-color: #f59e0b !important;
+}
+
+.settings-page .p-button-warning:hover {
+    background: #d97706 !important;
+    border-color: #d97706 !important;
+}
+
+.settings-page .p-button-danger {
+    background: #ef4444 !important;
+    border-color: #ef4444 !important;
+}
+
+.settings-page .p-button-danger:hover {
+    background: #dc2626 !important;
+    border-color: #dc2626 !important;
+}
+
+.settings-page .p-button-info {
+    background: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+}
+
+.settings-page .p-button-info:hover {
+    background: #2563eb !important;
+    border-color: #2563eb !important;
+}
+
+/* Fix dropdown colors globally */
+.p-dropdown-item.p-highlight,
+.p-dropdown-item:not(.p-highlight):not(.p-disabled):hover {
+    color: #ffffff !important;
+    background: #0f766e !important;
+}
+
+.p-dropdown-item.p-highlight:hover {
+    color: #ffffff !important;
+    background: #0d9488 !important;
+}
+
+/* Input styling */
+.settings-page .p-inputtext,
+.settings-page .p-dropdown {
+    border-radius: 8px;
+    border: 2px solid #e5e7eb;
+    transition: all 0.2s;
+}
+
+.settings-page .p-inputtext:focus,
+.settings-page .p-dropdown:focus {
+    border-color: #0f766e;
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+}
+
+/* Switch styling */
+.settings-page .p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
+    background: #0f766e;
+}
+
+/* Card sections */
+.settings-section {
+    padding: 1rem;
+    border-radius: 10px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s;
+}
+
+.settings-section:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+}
+
+/* Alert boxes */
+.alert-box {
+    padding: 1rem;
+    border-radius: 10px;
+    border-left-width: 4px;
+    border-left-style: solid;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.alert-box.warning {
+    background: #fef3c7;
+    border-color: #f59e0b;
+}
+
+.alert-box.danger {
+    background: #fee2e2;
+    border-color: #ef4444;
+}
+
+.alert-box.info {
+    background: #dbeafe;
+    border-color: #3b82f6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .settings-page {
+        padding: 0.5rem;
+    }
+    
+    .settings-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .settings-card .p-card-body {
+        padding: 1rem;
+    }
+    
+    .info-item {
+        padding: 1rem;
+    }
+    
+    .settings-page .p-button {
+        padding: 0.625rem 1.25rem;
+        font-size: 0.875rem;
+    }
+}
