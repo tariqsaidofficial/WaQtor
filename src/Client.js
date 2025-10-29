@@ -108,6 +108,25 @@ class Client extends EventEmitter {
             await this.pupPage.evaluate(ExposeLegacyAuthStore, moduleRaid.toString());
         }
 
+        // Wait for AuthStore to be fully initialized with retry logic
+        await this.pupPage.evaluate(async () => {
+            let retries = 0;
+            const maxRetries = 10;
+            const retryDelay = 500; // 500ms
+            
+            while (retries < maxRetries) {
+                if (window.AuthStore && window.AuthStore.RegistrationUtils && window.AuthStore.AppState) {
+                    break; // AuthStore is ready
+                }
+                await new Promise(resolve => setTimeout(resolve, retryDelay));
+                retries++;
+            }
+            
+            if (!window.AuthStore || !window.AuthStore.RegistrationUtils) {
+                throw new Error('AuthStore failed to load after ' + maxRetries + ' retries');
+            }
+        });
+
         const needAuthentication = await this.pupPage.evaluate(async () => {
             let state = window.AuthStore.AppState.state;
 
@@ -177,6 +196,11 @@ class Client extends EventEmitter {
 
 
                 await this.pupPage.evaluate(async () => {
+                    // Wait for AuthStore to be fully loaded
+                    if (!window.AuthStore || !window.AuthStore.RegistrationUtils) {
+                        throw new Error('AuthStore not loaded yet. Please wait and try again.');
+                    }
+                    
                     const registrationInfo = await window.AuthStore.RegistrationUtils.waSignalStore.getRegistrationInfo();
                     const noiseKeyPair = await window.AuthStore.RegistrationUtils.waNoiseInfo.get();
                     const staticKeyB64 = window.AuthStore.Base64Tools.encodeB64(noiseKeyPair.staticKeyPair.pubKey);

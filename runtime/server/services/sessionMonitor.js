@@ -135,6 +135,20 @@ class SessionMonitor {
             // Client ready
             client.on('ready', () => {
                 const info = client.info;
+                
+                // Map platform codes to readable names
+                const platformMap = {
+                    'smba': 'WhatsApp Business (Android)',
+                    'smbi': 'WhatsApp Business (iOS)',
+                    'web': 'WhatsApp Web',
+                    'android': 'WhatsApp (Android)',
+                    'iphone': 'WhatsApp (iOS)',
+                    'windows': 'WhatsApp (Windows)',
+                    'mac': 'WhatsApp (Mac)'
+                };
+                
+                const platformName = platformMap[info.platform] || info.platform || 'WhatsApp';
+                
                 this.updateState({
                     status: 'connected',
                     ready: true,
@@ -143,10 +157,11 @@ class SessionMonitor {
                     info: {
                         phone: info.wid.user,
                         pushname: info.pushname,
-                        platform: info.platform
+                        platform: platformName,
+                        platformRaw: info.platform  // Keep original for debugging
                     }
                 });
-                logger.info('Client is ready');
+                logger.info(`Client is ready - Platform: ${platformName} (${info.platform})`);
             });
 
             // Message sent
@@ -232,6 +247,15 @@ class SessionMonitor {
                     last_update = CURRENT_TIMESTAMP
                 WHERE id = 1
             `);
+            
+            // Update last update time
+            this.currentState.lastUpdate = new Date().toISOString();
+            
+            // Broadcast to WebSocket clients in real-time
+            if (this.websocketBroadcast) {
+                this.websocketBroadcast('session_update', this.getPublicState());
+                logger.debug(`Message count updated (${type}): Broadcasting to clients`);
+            }
         } catch (error) {
             logger.error('Failed to update message count:', error);
         }
