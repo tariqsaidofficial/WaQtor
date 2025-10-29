@@ -22,8 +22,8 @@ const AppMenu = () => {
                     to: '/campaigns' 
                 },
                 { 
-                    label: 'Send Message', 
-                    icon: 'pi pi-fw pi-send', 
+                    label: 'Messages', 
+                    icon: 'pi pi-fw pi-comments', 
                     to: '/send-message' 
                 },
                 { 
@@ -48,7 +48,6 @@ const AppMenu = () => {
             items: [
                 { label: 'Prime Dashboard', icon: 'pi pi-fw pi-desktop', to: '/dashboard' },
                 { label: 'UI Components', icon: 'pi pi-fw pi-box', to: '/uikit/formlayout' },
-                { label: 'Messages (Old)', icon: 'pi pi-fw pi-comments', to: '/messages' },
             ],
         },
     ];
