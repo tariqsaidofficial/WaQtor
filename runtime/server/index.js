@@ -15,10 +15,18 @@ const waClient = require('./waClient');
 const logger = require('./utils/logger');
 const { rateLimiter } = require('./middlewares/limiter');
 const { apiKeyAuth } = require('./middlewares/auth');
+const { 
+    errorHandler, 
+    notFoundHandler, 
+    handleUnhandledRejection, 
+    handleUncaughtException 
+} = require('./middleware/errorHandler');
 
 // Services
 const SessionMonitor = require('./services/sessionMonitor');
 const WebSocketBridge = require('./services/websocketBridge');
+const EnhancedWAClientHandler = require('./services/enhancedWAClientHandler');
+const errorMonitor = require('./services/errorMonitor');
 
 // Routes
 const messageRoutes = require('./routes/message');
@@ -26,6 +34,7 @@ const campaignRoutes = require('./routes/campaign');
 const statusRoutes = require('./routes/status');
 const testRoutes = require('./routes/test');
 const sessionRoutes = require('./routes/session');
+const errorRoutes = require('./routes/errors');
 
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '../config/.env') });
@@ -37,6 +46,7 @@ const PORT = process.env.PORT || 8080;
 // Initialize services
 let sessionMonitor = null;
 let websocketBridge = null;
+let enhancedWAClientHandler = null;
 
 // Middleware
 app.use(helmet());
@@ -112,6 +122,7 @@ app.use('/api/campaigns', apiKeyAuth, campaignRoutes);
 app.use('/api/status', apiKeyAuth, statusRoutes);
 app.use('/api/test', apiKeyAuth, testRoutes);
 app.use('/api/session', apiKeyAuth, sessionRoutes.router);
+app.use('/api/errors', apiKeyAuth, errorRoutes);
 
 // Quick send message endpoint (for compatibility)
 app.post('/api/sendMessage', apiKeyAuth, async (req, res) => {
@@ -147,21 +158,14 @@ app.post('/api/sendMessage', apiKeyAuth, async (req, res) => {
 });
 
 // 404 Handler
-app.use((req, res) => {
-    res.status(404).json({ 
-        error: 'Not Found',
-        message: 'The requested endpoint does not exist'
-    });
-});
+app.use(notFoundHandler);
 
-// Error Handler
-app.use((err, req, res) => {
-    logger.error(err.stack);
-    res.status(err.status || 500).json({
-        error: err.message || 'Internal Server Error',
-        ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-    });
-});
+// Global Error Handler
+app.use(errorHandler);
+
+// Setup global error handlers
+handleUnhandledRejection();
+handleUncaughtException();
 
 // Start Server
 async function startServer() {
@@ -182,8 +186,30 @@ async function startServer() {
         websocketBridge = new WebSocketBridge(server, sessionMonitor);
         websocketBridge.initialize();
 
+        // Initialize Enhanced WA Client Handler
+        logger.info('Initializing enhanced WhatsApp client handler...');
+        enhancedWAClientHandler = new EnhancedWAClientHandler();
+        enhancedWAClientHandler.initialize(waClient);
+
+        // Connect enhanced handler to WebSocket bridge
+        enhancedWAClientHandler.setWebSocketBridge(websocketBridge);
+
         // Initialize session routes with services
-        sessionRoutes.initializeRoutes(sessionMonitor, websocketBridge);
+        sessionRoutes.initializeRoutes(sessionMonitor, websocketBridge, enhancedWAClientHandler);
+
+        // Start error monitoring
+        logger.info('Starting error monitoring...');
+        errorMonitor.start();
+
+        // Setup error monitor alerts
+        errorMonitor.on('critical', (alert) => {
+            logger.error('CRITICAL ERROR RATE:', alert);
+            // Future: Send alerts via email/Slack/etc.
+        });
+
+        errorMonitor.on('warning', (alert) => {
+            logger.warn('HIGH ERROR RATE:', alert);
+        });
 
         // Start HTTP Server
         server.listen(PORT, () => {
@@ -203,9 +229,19 @@ async function startServer() {
 process.on('SIGINT', async () => {
     logger.info('Shutting down gracefully...');
     
+    // Stop error monitoring
+    if (errorMonitor) {
+        errorMonitor.stop();
+    }
+    
     // Close WebSocket connections
     if (websocketBridge) {
         websocketBridge.shutdown();
+    }
+    
+    // Stop enhanced handler
+    if (enhancedWAClientHandler) {
+        enhancedWAClientHandler.destroy();
     }
     
     // Stop session monitor
@@ -222,9 +258,19 @@ process.on('SIGINT', async () => {
 process.on('SIGTERM', async () => {
     logger.info('Shutting down gracefully...');
     
+    // Stop error monitoring
+    if (errorMonitor) {
+        errorMonitor.stop();
+    }
+    
     // Close WebSocket connections
     if (websocketBridge) {
         websocketBridge.shutdown();
+    }
+    
+    // Stop enhanced handler
+    if (enhancedWAClientHandler) {
+        enhancedWAClientHandler.destroy();
     }
     
     // Stop session monitor

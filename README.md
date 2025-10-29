@@ -18,8 +18,18 @@
 
 ## 🆕 What's New in v2.0
 
-**October 29, 2025** - Major file management system release!
+**October 29, 2025** - Major release with Dashboard and File Management!
 
+### 🎨 New Dashboard (Phase 1)
+- 💻 **Modern React Dashboard** - Built with Vite + PrimeReact
+- 📡 **Real-time WebSocket** - Live session monitoring
+- 🔲 **QR Code Display** - Easy WhatsApp connection
+- 📊 **Statistics** - Messages sent/received, uptime tracking
+- ⚡ **Quick Actions** - Send messages directly from UI
+- 🎯 **State Management** - Zustand for efficient state
+- 📱 **Responsive Design** - Works on all devices
+
+### 📁 File Management System
 - 🖼️ **Images arrive as media** with preview (not documents)
 - 📁 **Smart organization** - Files in `uploads/YYYY-MM-DD/` folders  
 - 📏 **Custom size limits** - Different per file type
@@ -27,7 +37,7 @@
 - 👁️ **File preview** - In web interface
 - 🧪 **100% tested** - All features verified
 
-**[📖 See full changelog](CHANGELOG.md) • [📚 Documentation](DOCS.md)**
+**[📖 See full changelog](CHANGELOG.md) • [📚 Documentation](DOCS.md) • [🎨 Dashboard Guide](dashboard/README.md)**
 
 ---
 

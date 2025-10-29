@@ -1,0 +1,69 @@
+# Waqtor Backend Dockerfile
+# Node.js backend with WhatsApp Web integration
+
+FROM node:18-alpine
+
+# Install Chromium and dependencies for Puppeteer + build tools for sqlite3
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    freetype-dev \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    nodejs \
+    yarn \
+    git \
+    python3 \
+    py3-setuptools \
+    make \
+    g++ \
+    sqlite \
+    sqlite-dev
+
+# Set Puppeteer environment variables
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
+    NODE_ENV=development
+
+# Create app directory
+WORKDIR /app
+
+# Copy package files only
+COPY package*.json ./
+
+# Install dependencies and rebuild sqlite3 for Alpine Linux
+RUN npm install && \
+    npm rebuild sqlite3 --build-from-source
+
+# Copy application files (excluding node_modules via .dockerignore)
+COPY src ./src
+COPY runtime ./runtime
+COPY index.js ./
+COPY shell.js ./
+COPY index.d.ts ./ 
+COPY .env.example ./
+
+# Create necessary directories
+RUN mkdir -p /app/.wwebjs_auth && \
+    mkdir -p /app/.wwebjs_cache && \
+    mkdir -p /app/runtime/logs && \
+    mkdir -p /app/runtime/server/session && \
+    mkdir -p /app/uploads
+
+# Set permissions (development mode)
+RUN chmod -R 777 /app/.wwebjs_auth && \
+    chmod -R 777 /app/.wwebjs_cache && \
+    chmod -R 777 /app/runtime/logs && \
+    chmod -R 777 /app/uploads
+
+# Expose port
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:8080/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); })"
+
+# Start application
+CMD ["npm", "run", "dev"]

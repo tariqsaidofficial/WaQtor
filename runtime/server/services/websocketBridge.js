@@ -13,6 +13,12 @@ class WebSocketBridge {
         this.sessionMonitor = sessionMonitor;
         this.clients = new Set();
         this.apiKey = process.env.API_KEY;
+        
+        // QR Management إضافة جديدة
+        this.qrAttempts = 0;
+        this.maxQrAttempts = 10;
+        this.qrStartTime = null;
+        this.isQrExpired = false;
     }
 
     /**
@@ -291,6 +297,77 @@ class WebSocketBridge {
             });
         });
         return clients;
+    }
+
+    /**
+     * Enhanced QR handling with attempt tracking
+     */
+    handleQRReceived(qrData) {
+        this.qrAttempts++;
+        this.qrStartTime = this.qrStartTime || Date.now();
+        this.isQrExpired = false;
+
+        logger.info(`📱 QR Code generated - Attempt ${this.qrAttempts}/${this.maxQrAttempts}`);
+
+        // إرسال QR مع معلومات المحاولة
+        this.broadcast({
+            type: 'qr',
+            data: qrData,
+            attempt: this.qrAttempts,
+            maxAttempts: this.maxQrAttempts,
+            timeRemaining: (this.maxQrAttempts - this.qrAttempts) * 30, // 30 ثانية لكل محاولة
+            timestamp: Date.now()
+        });
+
+        // تحقق من استنفاد المحاولات
+        if (this.qrAttempts >= this.maxQrAttempts) {
+            setTimeout(() => {
+                this.handleQRMaxRetries();
+            }, 30000); // انتظار 30 ثانية قبل الإعلان عن انتهاء المحاولات
+        }
+    }
+
+    /**
+     * Handle QR max retries reached
+     */
+    handleQRMaxRetries() {
+        if (!this.isQrExpired && this.qrAttempts >= this.maxQrAttempts) {
+            this.isQrExpired = true;
+            
+            logger.warn('🔄 QR max retries reached, requesting manual refresh');
+
+            this.broadcast({
+                type: 'qr_max_retries',
+                message: 'QR scan timeout - Click to refresh session',
+                canRetry: true,
+                totalTime: Math.round((Date.now() - this.qrStartTime) / 1000),
+                attempts: this.qrAttempts,
+                timestamp: Date.now()
+            });
+        }
+    }
+
+    /**
+     * Reset QR attempt counter
+     */
+    resetQRAttempts() {
+        this.qrAttempts = 0;
+        this.qrStartTime = null;
+        this.isQrExpired = false;
+        logger.info('🔄 QR attempt counter reset');
+    }
+
+    /**
+     * Handle session authenticated
+     */
+    handleSessionAuthenticated() {
+        this.resetQRAttempts();
+        
+        this.broadcast({
+            type: 'session_authenticated',
+            message: 'WhatsApp session authenticated successfully',
+            timestamp: Date.now()
+        });
     }
 
     /**

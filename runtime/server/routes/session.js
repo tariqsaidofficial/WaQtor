@@ -10,13 +10,15 @@ const logger = require('../utils/logger');
 // This will be set by the main server
 let sessionMonitor = null;
 let websocketBridge = null;
+let enhancedWAClientHandler = null;
 
 /**
  * Initialize routes with services
  */
-function initializeRoutes(monitor, wsbridge) {
+function initializeRoutes(monitor, wsbridge, enhancedHandler = null) {
     sessionMonitor = monitor;
     websocketBridge = wsbridge;
+    enhancedWAClientHandler = enhancedHandler;
 }
 
 /**
@@ -162,6 +164,76 @@ router.post('/stats/reset', async (req, res) => {
         res.status(500).json({
             success: false,
             error: 'Failed to reset statistics',
+            message: error.message
+        });
+    }
+});
+
+/**
+ * POST /api/session/refresh
+ * Refresh WhatsApp session (logout and reinitialize)
+ */
+router.post('/refresh', async (req, res) => {
+    try {
+        if (!sessionMonitor) {
+            return res.status(503).json({
+                success: false,
+                error: 'Session monitor not initialized'
+            });
+        }
+
+        logger.info('🔄 Session refresh requested');
+
+        // Use enhanced handler if available, fallback to direct client access
+        if (enhancedWAClientHandler) {
+            const result = await enhancedWAClientHandler.handleSessionRefresh();
+            
+            if (result.success) {
+                res.json({ 
+                    success: true, 
+                    message: result.message,
+                    timestamp: new Date().toISOString()
+                });
+            } else {
+                res.status(500).json({ 
+                    success: false, 
+                    error: result.error,
+                    message: 'Enhanced session refresh failed'
+                });
+            }
+            return;
+        }
+
+        // Fallback to original logic if enhanced handler not available
+        const waClient = require('../waClient');
+        const client = waClient.getClient();
+        
+        if (client) {
+            logger.info('Logging out current session...');
+            await client.logout();
+            
+            // انتظار قصير ثم إعادة التشغيل
+            setTimeout(() => {
+                logger.info('Reinitializing WhatsApp client...');
+                waClient.initialize();
+            }, 2000);
+        } else {
+            // إذا لم يكن هناك client، ابدأ واحد جديد
+            logger.info('No active client found, initializing new session...');
+            waClient.initialize();
+        }
+
+        res.json({ 
+            success: true, 
+            message: 'Session refresh initiated successfully',
+            timestamp: new Date().toISOString()
+        });
+        
+    } catch (error) {
+        logger.error('Session refresh error:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Failed to refresh session',
             message: error.message
         });
     }

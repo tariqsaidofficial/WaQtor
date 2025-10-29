@@ -1,0 +1,87 @@
+# Docker Compose for Development
+# Integrated setup with backend and frontend linked
+
+services:
+  # Backend API Service
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.backend
+    container_name: waqtor-backend-dev
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=development
+      - PORT=8080
+      - HOST=0.0.0.0
+      - API_KEY=waqtor_dev_key_12345
+      - READONLY_FORK=false
+      - DEBUG=true
+      - CORS_ORIGIN=http://localhost:3001,http://dashboard:3000
+    volumes:
+      # Hot reload - mount source code ONLY (not package.json)
+      - ../runtime:/app/runtime
+      - ../src:/app/src  
+      - ../index.js:/app/index.js
+      - ../shell.js:/app/shell.js
+      # Persistent data
+      - waqtor-sessions:/app/.wwebjs_auth
+      - waqtor-cache:/app/.wwebjs_cache
+      - waqtor-logs:/app/runtime/logs
+      - waqtor-uploads:/app/uploads
+      # IMPORTANT: Do NOT mount node_modules or package.json
+    networks:
+      - waqtor-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:8080/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); })"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    command: npm run dev
+
+  # Frontend Dashboard Service
+  dashboard:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dashboard
+    container_name: waqtor-dashboard-dev
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+      # Use service name for container-to-container communication
+      - NEXT_PUBLIC_API_URL=http://backend:8080
+      - NEXT_PUBLIC_WS_URL=ws://backend:8080
+      # For browser access (client-side)
+      - NEXT_PUBLIC_BROWSER_API_URL=http://localhost:8080
+      - NEXT_PUBLIC_BROWSER_WS_URL=ws://localhost:8080
+      - NEXT_PUBLIC_API_KEY=waqtor_dev_key_12345
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      # Hot reload - mount source code
+      - ../dashboard:/app
+      # Use named volumes to prevent macOS binaries
+      - dashboard-node-modules:/app/node_modules
+      - dashboard-next:/app/.next
+    networks:
+      - waqtor-network
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    command: npm run dev
+
+volumes:
+  waqtor-sessions:
+  waqtor-cache:
+  waqtor-logs:
+  waqtor-uploads:
+  dashboard-node-modules:
+  dashboard-next:
+
+networks:
+  waqtor-network:
+    driver: bridge
