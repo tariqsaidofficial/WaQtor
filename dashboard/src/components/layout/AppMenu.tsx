@@ -32,6 +32,11 @@ const AppMenu = () => {
                     to: '/smartbot' 
                 },
                 { 
+                    label: 'Interactive', 
+                    icon: 'pi pi-fw pi-comments', 
+                    to: '/interactive' 
+                },
+                { 
                     label: 'Reports', 
                     icon: 'pi pi-fw pi-chart-bar', 
                     to: '/reports' 

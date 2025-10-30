@@ -44,6 +44,7 @@ const errorRoutes = require('./routes/errors');
 const queueRoutes = require('./routes/queue');
 const smartbotRoutes = require('./routes/smartbot');
 const reportsRoutes = require('./routes/reports');
+const interactiveRoutes = require('./routes/interactive');
 
 // Load environment variables from root .env file
 dotenv.config({ path: path.join(__dirname, '../../.env') });
@@ -147,6 +148,7 @@ app.use('/api/test', apiKeyAuth, testRoutes);
 app.use('/api/session', apiKeyAuth, sessionRoutes.router);
 app.use('/api/errors', apiKeyAuth, errorRoutes);
 app.use('/api/queue', apiKeyAuth, queueRoutes);
+app.use('/api/interactive', apiKeyAuth, interactiveRoutes);
 app.use('/api/smartbot', apiKeyAuth, smartbotRoutes.router);
 app.use('/api/reports', apiKeyAuth, reportsRoutes);
 

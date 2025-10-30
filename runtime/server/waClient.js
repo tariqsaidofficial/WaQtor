@@ -103,7 +103,16 @@ class WhatsAppClient {
 
         this.client.on('message', async (message) => {
             logger.info(`📩 New message from ${message.from}: ${message.body}`);
-            // You can add auto-reply logic here
+            
+            // Handle interactive bot responses
+            if (message.body && message.from.endsWith('@c.us')) {
+                try {
+                    const interactiveBotService = require('./services/interactiveBotService');
+                    await interactiveBotService.handleTextResponse(this.client, message);
+                } catch (error) {
+                    logger.error('Error handling interactive response:', error);
+                }
+            }
         });
 
         this.client.on('disconnected', (reason) => {

@@ -18,10 +18,10 @@
 
 ## 🆕 What's New in v2.1.0
 
-**October 29, 2025** - Major Dashboard & Real-time Updates Release!
+**October 30, 2025** - Major Dashboard & Feature-Complete Release!
 
-### ✨ Enhanced Dashboard (Phase 2)
-- 💻 **Modern React Dashboard** - Built with Next.js + PrimeReact
+### ✨ Enhanced Dashboard (Phase 3)
+- 💻 **Modern React Dashboard** - Built with Next.js 14 + PrimeReact
 - 📡 **Real-time WebSocket Updates** - Live statistics without refresh (50-100x faster!)
 - 🔲 **Enhanced QR Code Display** - With client info and session details
 - 📊 **Live Statistics** - Messages sent/received update instantly
@@ -30,6 +30,40 @@
 - ⚡ **Dynamic Counters** - No manual refresh needed
 - 🎯 **Zustand State Management** - Efficient real-time state
 - 📱 **Fully Responsive** - Works perfectly on all devices
+
+### 🤖 SmartBot System (NEW!)
+- 🧠 **AI-Powered Auto-Replies** - Intelligent response matching
+- 🌍 **Bilingual Support** - Arabic & English language detection
+- 🔍 **Smart Matching** - Fuzzy search with 80% accuracy threshold
+- 🎭 **Response Variations** - Multiple reply options for natural conversation
+- 🚫 **Profanity Filter** - Built-in content moderation
+- ⌨️ **Typing Indicator** - Realistic human-like delays
+- 📊 **Reply History** - Track all automated responses
+- 🛡️ **Anti-Ban Protection** - Random delays and smart throttling
+
+### 📊 Reports & Analytics (NEW!)
+- 📈 **Real-time Charts** - Message statistics with Chart.js
+- 📅 **Date Range Filtering** - Custom period analysis
+- 📊 **Performance Metrics** - Response rates, success rates, avg response time
+- 📥 **Export to CSV** - Download reports for external analysis
+- 🎨 **Interactive Visualizations** - Line charts, bar charts, pie charts
+- 🔄 **Live Data Integration** - Direct connection to smartbot-history.json
+
+### ⚙️ Settings & Configuration (NEW!)
+- 🔑 **API Key Management** - Show/hide, copy, generate new keys
+- 🎨 **Appearance Settings** - 8 themes, dark mode, compact mode
+- 🌍 **Localization** - Date format, timezone, language selection
+- 💻 **System Information** - Real-time server status, IP, version, uptime
+- 🧩 **Logging Controls** - Enable/disable logging, debug mode
+- ⚙️ **Session Management** - Restart, logout, clear session data
+
+### 💬 Interactive Menu System (NEW!)
+- 1️⃣ **Number-based Menus** - Simple 1, 2, 3 selection system
+- 🌍 **Language Selection** - English/Arabic choice
+- 🛒 **Product Catalogs** - Organized product listings
+- 🤝 **Service Menus** - Support, Sales, Information routing
+- ✅ **Confirmation Dialogs** - Yes/No decision flows
+- 💾 **Conversation State** - Persistent user journey tracking
 
 ### 📁 File Management System
 - 🖼️ **Images arrive as media** with preview (not documents)
@@ -150,24 +184,116 @@ Quick reference:
 
 ## 🧱 Core Architecture
 
-The WaQtor engine follows a modular design that connects all layers seamlessly:
+The WaQtor engine follows a modular, full-stack design that connects all layers seamlessly:
 
 ```
-┌──────────────────────┐
-│ REST API Layer       │ ← Express.js server for endpoints
-├──────────────────────┤
-│ whatsapp-web.js      │ ← Connects via the official WhatsApp Web app
-├──────────────────────┤
-│ SQLite Database      │ ← Tracks campaigns, messages, and logs
-├──────────────────────┤
-│ Docker Environment   │ ← Isolated runtime + persistent volumes
-└──────────────────────┘
+┌─────────────────────────────────────────────────────────┐
+│                    Frontend Layer                        │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │  Next.js 14 Dashboard (Port 3000)                │  │
+│  │  ├─ Pages: Dashboard, Messages, Campaigns        │  │
+│  │  ├─ SmartBot: Rules, History, Editor             │  │
+│  │  ├─ Reports: Charts, Analytics, Export           │  │
+│  │  ├─ Settings: API Keys, Appearance, System       │  │
+│  │  ├─ Interactive: Menu System, Language Selection │  │
+│  │  └─ Real-time: WebSocket, Live Updates           │  │
+│  └──────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────┘
+                            ↕ HTTP/WebSocket
+┌─────────────────────────────────────────────────────────┐
+│                    Backend Layer                         │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │  Express.js REST API (Port 8080)                 │  │
+│  │  ├─ Routes: /api/messages, /api/campaigns        │  │
+│  │  ├─ SmartBot: /api/smartbot (rules, history)     │  │
+│  │  ├─ Reports: /api/reports (analytics)            │  │
+│  │  ├─ Interactive: /api/interactive (menus)        │  │
+│  │  ├─ Auth: API Key validation, Rate limiting      │  │
+│  │  └─ WebSocket: Real-time session updates         │  │
+│  └──────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────┘
+                            ↕
+┌─────────────────────────────────────────────────────────┐
+│                  WhatsApp Layer                          │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │  whatsapp-web.js v1.34.1                         │  │
+│  │  ├─ Puppeteer: Chrome automation                 │  │
+│  │  ├─ Session: LocalAuth strategy                  │  │
+│  │  ├─ Events: message, qr, ready, disconnected     │  │
+│  │  └─ SmartBot: Auto-reply message handler         │  │
+│  └──────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────┘
+                            ↕
+┌─────────────────────────────────────────────────────────┐
+│                   Data Layer                             │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │  SQLite Database                                  │  │
+│  │  ├─ campaigns.db: Campaign tracking              │  │
+│  │  └─ messages.db: Delivery logs                   │  │
+│  ├──────────────────────────────────────────────────┤  │
+│  │  JSON Storage                                     │  │
+│  │  ├─ smartbot-rules.json: Auto-reply rules        │  │
+│  │  ├─ smartbot-history.json: Reply history         │  │
+│  │  └─ interactive-conversations.json: Menu state   │  │
+│  └──────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────┘
+                            ↕
+┌─────────────────────────────────────────────────────────┐
+│                Docker Environment                        │
+│  ├─ Isolated runtime with persistent volumes           │
+│  ├─ Session files: /runtime/server/session/            │
+│  ├─ Uploads: /uploads/YYYY-MM-DD/                      │
+│  └─ Auto-cleanup: 30-day retention policy              │
+└─────────────────────────────────────────────────────────┘
 ```
 
-- **REST API** — exposes endpoints for sending text/media, templates, and campaigns.
-- **whatsapp-web.js** — handles WebSocket connection and message events.
-- **SQLite** — lightweight persistence for campaigns and delivery tracking.
-- **Docker** — isolates sessions, ensures reproducibility, and secures volumes.
+### Layer Breakdown
+
+#### 🎨 **Frontend Layer** (`/dashboard`)
+- **Framework:** Next.js 14 with App Router
+- **UI Library:** PrimeReact (Enterprise-grade components)
+- **State:** Zustand for global state, React Context for session
+- **Styling:** SCSS modules with WhatsApp-inspired theme (#0f766e)
+- **Real-time:** WebSocket client for live updates
+- **Features:**
+  - 📊 Dashboard with live statistics
+  - 💬 Messages page with templates & recipients
+  - 📢 Campaigns with CSV upload
+  - 🤖 SmartBot management interface
+  - 📈 Reports with interactive charts
+  - ⚙️ Settings with 6 configuration sections
+  - 💬 Interactive menu system
+
+#### ⚙️ **Backend Layer** (`/runtime/server`)
+- **Framework:** Express.js with middleware stack
+- **Authentication:** API Key-based with rate limiting
+- **WebSocket:** Socket.io for real-time updates
+- **Services:**
+  - `smartbotService.js` - Auto-reply logic
+  - `interactiveBotService.js` - Menu conversations
+  - `sessionMonitor.js` - Connection tracking
+  - `websocketBridge.js` - Real-time broadcasting
+- **Utils:**
+  - `languageDetector.js` - Arabic/English detection
+  - `profanityFilter.js` - Content moderation
+  - `smartMatcher.js` - Fuzzy search matching
+  - `responseVariations.js` - Natural replies
+
+#### 📱 **WhatsApp Layer**
+- **Library:** whatsapp-web.js v1.34.1
+- **Browser:** Puppeteer with Chrome
+- **Auth:** LocalAuth with persistent sessions
+- **Features:** All WhatsApp Web capabilities
+
+#### 💾 **Data Layer**
+- **SQLite:** Campaign and message tracking
+- **JSON Files:** SmartBot rules, history, conversations
+- **File Storage:** Organized uploads with auto-cleanup
+
+#### 🐳 **Docker Layer**
+- **Isolation:** Containerized runtime
+- **Volumes:** Persistent session and upload storage
+- **Security:** Session files never committed to Git
 
 ---
 
@@ -182,6 +308,22 @@ The WaQtor engine follows a modular design that connects all layers seamlessly:
 - 📝 **[Final Summary](./FINAL_SUMMARY.md)** - Complete project overview
 - 🔒 **[Security Guidelines](./SECURITY.md)** - Security best practices
 - 🤝 **[Contributing](./CONTRIBUTING.md)** - How to contribute
+
+### Feature Documentation
+- 🤖 **[SmartBot Guide](./documentation/SMARTBOT_BACKEND_IMPLEMENTATION.md)** - Auto-reply system
+- 📊 **[Reports Feature](./documentation/REPORTS_FEATURE.md)** - Analytics and charts
+- ⚙️ **[Settings Feature](./documentation/SETTINGS_FEATURE.md)** - Configuration options
+- 💬 **[Interactive Menus](./INTERACTIVE_BUTTONS_FEATURE.md)** - Menu system guide
+- 🌍 **[Language Detection](./documentation/SMARTBOT_LANGUAGE_AWARE.md)** - Bilingual support
+- 🚫 **[Profanity Filter](./documentation/SMARTBOT_PROFANITY_FILTER.md)** - Content moderation
+- 🎭 **[Response Variations](./documentation/SMARTBOT_PROFESSIONAL_RESPONSES.md)** - Natural replies
+
+### Dashboard Documentation
+- 🎨 **[Dashboard Overview](./dashboard/README.md)** - Frontend architecture
+- 📱 **[Messages Page](./dashboard/MESSAGES_SELECTION_FIX.md)** - Send messages guide
+- 🎯 **[UI Improvements](./dashboard/UI_IMPROVEMENTS.md)** - Design system
+- 🔧 **[Settings Page](./dashboard/SETTINGS_IMPROVEMENTS.md)** - Configuration UI
+- 📊 **[Session Context](./dashboard/SESSION_CONTEXT_IMPLEMENTATION.md)** - State management
 
 ### External Links
 - [GitHub Repository][gitHub]
@@ -345,13 +487,29 @@ For further details on saving and restoring sessions, explore the provided [Auth
 
 ### ✨ Core Features
 
+#### 📡 Backend Features
 - **REST API:** Send text, images, PDFs, and templates
 - **Campaign Management:** Create, schedule, and track bulk messaging campaigns
+- **SmartBot System:** AI-powered auto-replies with language detection
+- **Interactive Menus:** Number-based conversation flows
+- **Reports & Analytics:** Real-time statistics with chart visualizations
 - **Docker-first:** One-command deployment with persistent volumes
 - **Session Security:** Session files generated only at runtime, never committed
 - **SQLite Tracking:** Logs every campaign and message delivery
 - **Rate Limiting:** Built-in protection against API abuse
 - **Personal Testing:** Secure endpoint for testing with your own phone number
+
+#### 🎨 Dashboard Features
+- **Modern UI:** Next.js 14 + PrimeReact enterprise components
+- **Real-time Updates:** WebSocket-powered live statistics (50-100x faster)
+- **SmartBot Management:** Visual rule editor with reply history
+- **Reports Dashboard:** Interactive charts with date filtering
+- **Settings Panel:** 6 configuration sections (API Keys, Appearance, System Info)
+- **Interactive System:** Menu builder for customer conversations
+- **Message Templates:** Pre-built templates with variable support
+- **CSV Upload:** Bulk recipient import for campaigns
+- **Responsive Design:** Works on desktop, tablet, and mobile
+- **WhatsApp Theme:** Consistent #0f766e color scheme throughout
 
 ### 🔧 Quick Testing
 
