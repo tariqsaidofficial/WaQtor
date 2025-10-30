@@ -30,19 +30,26 @@ class EventIntegration {
      * Setup WhatsApp client event listeners
      */
     setupWhatsAppEvents() {
+        // Check if client is ready
+        if (!this.waClient.isClientReady()) {
+            logger.warn('WhatsApp client not ready yet, webhook listeners will be setup when client is ready');
+            
+            // Retry after a delay
+            setTimeout(() => {
+                if (this.waClient.isClientReady()) {
+                    logger.info('WhatsApp client ready, setting up webhook event listeners');
+                    this.setupWhatsAppEvents();
+                }
+            }, 5000); // Retry after 5 seconds
+            
+            return;
+        }
+
         let client;
-        
         try {
             client = this.waClient.getClient();
         } catch (error) {
-            logger.warn('WhatsApp client not ready yet, will setup webhook listeners when client is ready');
-            
-            // Setup listener for when client becomes ready
-            this.waClient.on('ready', () => {
-                logger.info('WhatsApp client ready, setting up webhook event listeners');
-                this.setupWhatsAppEvents();
-            });
-            
+            logger.error('Error getting WhatsApp client for webhooks:', error);
             return;
         }
 
