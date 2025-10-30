@@ -383,18 +383,17 @@ export default function AboutPage() {
                 {/* Support & Contact */}
                 <div className="col-12 lg:col-6">
                     <Card title="Support & Contact">
-                        <div className="flex flex-column gap-3">
-                            <div className="flex align-items-center gap-3">
-                                <i className="pi pi-envelope text-2xl text-primary"></i>
-                                <div>
+                        <div className="grid">
+                            <div className="col-12 md:col-4">
+                                <div className="flex flex-column align-items-center text-center gap-2">
+                                    <i className="pi pi-envelope text-3xl text-primary"></i>
                                     <div className="font-semibold">Email Support</div>
                                     <a href="mailto:support@dxbmark.com" className="text-600 text-sm">support@dxbmark.com</a>
                                 </div>
                             </div>
-                            <Divider />
-                            <div className="flex align-items-center gap-3">
-                                <i className="pi pi-github text-2xl text-primary"></i>
-                                <div>
+                            <div className="col-12 md:col-4">
+                                <div className="flex flex-column align-items-center text-center gap-2">
+                                    <i className="pi pi-github text-3xl text-primary"></i>
                                     <div className="font-semibold">GitHub Issues</div>
                                     <a 
                                         href="https://github.com/tariqsaidofficial/WaQtor/issues" 
@@ -402,14 +401,13 @@ export default function AboutPage() {
                                         rel="noopener noreferrer"
                                         className="text-600 text-sm"
                                     >
-                                        Report bugs or request features
+                                        Report bugs
                                     </a>
                                 </div>
                             </div>
-                            <Divider />
-                            <div className="flex align-items-center gap-3">
-                                <i className="pi pi-globe text-2xl text-primary"></i>
-                                <div>
+                            <div className="col-12 md:col-4">
+                                <div className="flex flex-column align-items-center text-center gap-2">
+                                    <i className="pi pi-globe text-3xl text-primary"></i>
                                     <div className="font-semibold">Website</div>
                                     <a 
                                         href="https://waqtor.dxbmark.com" 
