@@ -8,13 +8,91 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- Admin dashboard (React + PrimeReact)
 - Webhooks support (delivered / read / failed)
 - Multi-session management
 - Template library with variables
-- Analytics & CSV export
 - Image compression before sending
 - Cloud storage integration (S3, GCS)
+
+## [2.2.0] - 2025-10-30
+
+### 🎨 Enhanced Settings & UI Improvements Release
+
+#### Added
+- ⚙️ **Advanced Settings System** - Complete appearance customization
+- 🎨 **Branding Settings**:
+  - App Name customization
+  - Browser Tab Title
+  - Logo Upload (PNG/SVG with preview)
+  - Logo Text with show/hide toggle
+  - Favicon Upload (ICO/PNG)
+  - Footer Text customization
+  - Show/Hide Footer toggle
+- 🔑 **API Key Management** - Generate, save, and manage API keys
+- 📊 **Session Controls** - Logout, restart, and delete sessions
+- 🌓 **Theme Switcher** - Light/Dark themes (Lara Teal)
+- 📏 **Scale Control** - Adjust UI size (12-16px)
+- 🔄 **Real-time Updates** - Changes apply instantly across dashboard
+- 💾 **Auto-Save** - All settings saved to localStorage
+
+#### Changed
+- ✨ **Icon Fixes** - All PrimeReact icons display correctly
+- 🎯 **Button Consistency** - Unified button styles and sizes
+- 📱 **Responsive Layout** - Optimized for all screen sizes
+- 🔲 **InputGroup Fix** - Proper alignment for input fields and buttons
+- 🎨 **Focus States** - Removed distracting focus box-shadows
+- 🖼️ **Header/Footer Integration** - Fully connected with settings
+
+#### Removed
+- 🗑️ **Unused CSS** - Removed custom overrides and unused theme files
+- 📦 **Simplified Themes** - Only Teal Light/Dark (removed 10+ unused themes)
+- ⚡ **Code Cleanup** - Removed Ripple Effect and Input Style settings
+
+#### Technical Details
+- Event system for branding updates (`branding-update`)
+- localStorage integration for all settings
+- Compact UI design (all settings visible without scrolling)
+- TypeScript improvements in Settings components
+
+### Package Info
+- **npm Package**: [waqtor@2.2.0](https://www.npmjs.com/package/waqtor)
+- **Package Size**: 14.9 MB (compressed)
+- **Unpacked Size**: 24.3 MB
+- **Total Files**: 415
+
+## [2.1.0] - 2025-10-30
+
+### 🎉 Major Dashboard & Feature-Complete Release
+
+#### Added
+- 💻 **Modern React Dashboard** - Built with Next.js 14 + PrimeReact
+- 📡 **Real-time WebSocket Updates** - Live statistics (50-100x faster!)
+- 🤖 **SmartBot System** - AI-powered auto-replies with bilingual support
+- 📊 **Reports & Analytics** - Real-time charts with Chart.js
+- 📨 **Campaign Management** - Bulk messaging with CSV import
+- 🎯 **Interactive Messages** - Button and list messages
+- 🔲 **Enhanced QR Code Display** - With client info and session details
+- 📅 **Date & Timezone Display** - Automatic timezone detection
+- 📱 **Platform Recognition** - Clear platform names (WhatsApp Business, etc.)
+
+#### SmartBot Features
+- 🧠 AI-Powered response matching with fuzzy search (80% accuracy)
+- 🌍 Bilingual support (Arabic & English)
+- 🎭 Response variations for natural conversation
+- 🚫 Profanity filter with content moderation
+- ⌨️ Typing indicator with realistic delays
+- 📊 Reply history tracking
+- 🛡️ Anti-ban protection
+
+#### Reports Features
+- 📈 Real-time charts (line, bar, pie)
+- 📅 Date range filtering
+- 📊 Performance metrics (response rates, success rates, avg time)
+- 📥 Export to CSV
+- 🔄 Live data integration
+
+### Package Info
+- **npm Package**: [waqtor@2.1.0](https://www.npmjs.com/package/waqtor)
 
 ## [2.0.0] - 2025-10-29
 

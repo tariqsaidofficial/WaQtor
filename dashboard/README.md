@@ -1,20 +1,71 @@
-# 🎯 Waqtor Dashboard
+# 🎯 WaQtor Dashboard v2.2.0
 
-Modern, real-time dashboard for Waqtor WhatsApp automation platform.
+Modern, real-time dashboard for WaQtor WhatsApp automation platform with advanced settings and full branding customization.
 
 ## 📋 Overview
 
-The Waqtor Dashboard provides a beautiful, responsive interface for managing WhatsApp campaigns, monitoring session status, and sending messages through an intuitive UI.
+The WaQtor Dashboard provides a beautiful, responsive interface for managing WhatsApp campaigns, SmartBot automation, monitoring session status, and complete appearance customization through an intuitive UI.
 
 ## ✨ Features
 
-- **Real-time WebSocket Connection** - Live session monitoring and QR code updates
+### 🔄 Real-time Features
+- **WebSocket Connection** - Live session monitoring and QR code updates (50-100x faster!)
+- **Live Statistics** - Messages sent/received update instantly
 - **Session Management** - Visual QR code scanning and connection status
-- **Campaign Management** - Create, schedule, and execute WhatsApp campaigns
-- **Message Sending** - Send text, media, and bulk messages
-- **Statistics Dashboard** - View message counts, uptime, and performance metrics
+- **Platform Recognition** - Clear platform names (WhatsApp Business, etc.)
+- **Date & Timezone Display** - Automatic timezone detection
+
+### 🤖 SmartBot System
+- **AI-Powered Auto-Replies** - Intelligent response matching
+- **Bilingual Support** - Arabic & English language detection
+- **Smart Matching** - Fuzzy search with 80% accuracy threshold
+- **Response Variations** - Multiple reply options for natural conversation
+- **Profanity Filter** - Built-in content moderation
+- **Typing Indicator** - Realistic human-like delays
+- **Reply History** - Track all automated responses
+
+### 📊 Reports & Analytics
+- **Real-time Charts** - Message statistics with Chart.js
+- **Date Range Filtering** - Custom period analysis
+- **Performance Metrics** - Response rates, success rates, avg response time
+- **Export to CSV** - Download reports for external analysis
+- **Interactive Visualizations** - Line charts, bar charts, pie charts
+
+### 📨 Campaign Management
+- **Bulk Messaging** - Send to multiple contacts
+- **CSV Import** - Upload contact lists
+- **Message Templates** - Save and reuse templates
+- **Scheduling** - Schedule campaigns for later
+- **Progress Tracking** - Real-time campaign status
+
+### 🎨 Advanced Settings (NEW in v2.2.0)
+- **Complete Appearance Customization** - Full branding control
+- **Theme Switcher** - Light/Dark themes (Lara Teal)
+- **Scale Control** - Adjust UI size (12-16px)
+- **Branding Settings**:
+  - App Name customization
+  - Browser Tab Title
+  - Logo Upload (PNG/SVG)
+  - Logo Text with show/hide toggle
+  - Favicon Upload
+  - Footer Text customization
+  - Show/Hide Footer toggle
+- **API Key Management** - Generate, save, and manage API keys
+- **Session Controls** - Logout, restart, and delete sessions
+- **Real-time Updates** - Changes apply instantly across the dashboard
+- **Auto-Save** - All settings saved to localStorage
+
+### 🎯 Interactive Messages
+- **Button Messages** - Send messages with interactive buttons
+- **List Messages** - Send selection lists
+- **Quick Replies** - Pre-defined response options
+
+### 📱 UI/UX
 - **Responsive Design** - Works seamlessly on desktop, tablet, and mobile
 - **Modern UI** - Built with PrimeReact components
+- **Icon Fixes** - All PrimeReact icons display correctly
+- **Button Consistency** - Unified button styles and sizes
+- **Compact Layout** - All settings visible without scrolling
 
 ## 🛠️ Tech Stack
 
@@ -89,27 +140,61 @@ npm run preview
 ```
 dashboard/
 ├── src/
-│   ├── api/                    # API configuration and services
-│   │   ├── client.js          # Axios instance with interceptors
-│   │   └── services.js        # API endpoint functions
-│   ├── components/            # React components
-│   │   ├── QRStatusCard.jsx   # WhatsApp QR code display
-│   │   ├── SessionStatsCard.jsx # Session statistics
-│   │   └── QuickActionsCard.jsx # Quick action buttons
-│   ├── hooks/                 # Custom React hooks
-│   │   └── useWebSocket.js    # WebSocket connection hook
-│   ├── pages/                 # Page components
-│   │   └── Dashboard.jsx      # Main dashboard page
-│   ├── store/                 # State management
-│   │   └── useAppStore.js     # Zustand store
-│   ├── App.jsx                # Main app component
-│   └── main.jsx               # App entry point
-├── public/                    # Static assets
-├── .env                       # Environment variables
-├── .env.example               # Example environment variables
-├── package.json               # Dependencies
-├── vite.config.js            # Vite configuration
-└── README.md                  # This file
+│   ├── app/                           # Next.js app directory
+│   │   ├── (main)/                    # Main layout group
+│   │   │   ├── campaigns/             # Campaign management pages
+│   │   │   ├── interactive/           # Interactive messages pages
+│   │   │   ├── reports/               # Reports & analytics pages
+│   │   │   ├── settings/              # Settings pages
+│   │   │   ├── smartbot/              # SmartBot management pages
+│   │   │   ├── page.tsx               # Dashboard home page
+│   │   │   └── layout.tsx             # Main layout wrapper
+│   │   ├── globals.css                # Global styles
+│   │   └── layout.tsx                 # Root layout
+│   ├── components/
+│   │   ├── layout/                    # Layout components
+│   │   │   ├── AppFooter.tsx          # Footer with branding
+│   │   │   ├── AppMenu.tsx            # Sidebar navigation
+│   │   │   ├── AppTopbar.tsx          # Header with logo & user menu
+│   │   │   └── context/               # Layout context
+│   │   ├── Settings/                  # Settings components
+│   │   │   ├── AppearanceSettings.tsx # Theme & branding settings
+│   │   │   ├── APIKeyCard.tsx         # API key management
+│   │   │   └── SessionControls.tsx    # Session control buttons
+│   │   ├── smartbot/                  # SmartBot components
+│   │   │   ├── RuleList.tsx           # Auto-reply rules list
+│   │   │   ├── EditorDialog.tsx       # Rule editor dialog
+│   │   │   └── ReplyHistory.tsx       # Reply history viewer
+│   │   ├── QRStatusCard.tsx           # QR code display
+│   │   ├── SessionStatsCard.tsx       # Session statistics
+│   │   └── QuickActionsCard.tsx       # Quick action buttons
+│   ├── contexts/                      # React contexts
+│   │   └── SessionContext.tsx         # Session state management
+│   ├── hooks/                         # Custom React hooks
+│   │   ├── useWebSocket.js            # WebSocket connection
+│   │   └── useErrorHandler.js         # Error handling
+│   ├── store/                         # State management
+│   │   └── useAppStore.js             # Zustand global store
+│   ├── utils/                         # Utility functions
+│   │   └── errorHandler.js            # Error handling utilities
+│   └── types/                         # TypeScript type definitions
+│       ├── demo.d.ts                  # Demo types
+│       ├── layout.d.ts                # Layout types
+│       └── index.d.ts                 # General types
+├── public/
+│   ├── layout/
+│   │   └── images/                    # Logo and branding images
+│   ├── themes/                        # PrimeReact theme files
+│   │   ├── lara-light-teal/          # Light theme
+│   │   └── lara-dark-teal/           # Dark theme
+│   └── favicon.ico                    # Site favicon
+├── .env                               # Environment variables
+├── .env.example                       # Example environment variables
+├── package.json                       # Dependencies
+├── next.config.js                     # Next.js configuration
+├── tsconfig.json                      # TypeScript configuration
+├── IMPLEMENTATION_PLAN.md             # Development roadmap
+└── README.md                          # This file
 ```
 
 ## 🔌 API Integration
