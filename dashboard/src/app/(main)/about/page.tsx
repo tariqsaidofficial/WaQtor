@@ -393,6 +393,21 @@ export default function AboutPage() {
                             </div>
                             <Divider />
                             <div className="flex align-items-center gap-3">
+                                <i className="pi pi-github text-2xl text-primary"></i>
+                                <div>
+                                    <div className="font-semibold">GitHub Issues</div>
+                                    <a 
+                                        href="https://github.com/tariqsaidofficial/WaQtor/issues" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="text-600 text-sm"
+                                    >
+                                        Report bugs or request features
+                                    </a>
+                                </div>
+                            </div>
+                            <Divider />
+                            <div className="flex align-items-center gap-3">
                                 <i className="pi pi-globe text-2xl text-primary"></i>
                                 <div>
                                     <div className="font-semibold">Website</div>
