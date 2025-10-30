@@ -10,6 +10,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ProgressBar } from 'primereact/progressbar';
 import { Tag } from 'primereact/tag';
+import ProtectedPage from '@/src/components/BlockUI/ProtectedPage';
 import './reports.css';
 
 interface ReportData {
@@ -35,7 +36,7 @@ interface ReportData {
     }>;
 }
 
-export default function ReportsPage() {
+function ReportsPage() {
     const [loading, setLoading] = useState(true);
     const [reportData, setReportData] = useState<ReportData | null>(null);
     const [dateRange, setDateRange] = useState<Date[]>([
@@ -430,5 +431,13 @@ export default function ReportsPage() {
                 </>
             )}
         </div>
+    );
+}
+
+export default function ReportsPageWrapper() {
+    return (
+        <ProtectedPage featureName="Reports">
+            <ReportsPage />
+        </ProtectedPage>
     );
 }

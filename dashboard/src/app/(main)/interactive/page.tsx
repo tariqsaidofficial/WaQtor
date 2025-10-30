@@ -7,9 +7,10 @@ import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
 import { Divider } from 'primereact/divider';
+import ProtectedPage from '@/src/components/BlockUI/ProtectedPage';
 import './interactive.css';
 
-export default function InteractivePage() {
+function InteractivePage() {
     const [chatId, setChatId] = useState('');
     const [language, setLanguage] = useState('en');
     const [loading, setLoading] = useState(false);
@@ -353,5 +354,13 @@ export default function InteractivePage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function InteractivePageWrapper() {
+    return (
+        <ProtectedPage featureName="Interactive Messages">
+            <InteractivePage />
+        </ProtectedPage>
     );
 }
