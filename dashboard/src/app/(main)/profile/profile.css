@@ -44,6 +44,25 @@
     margin-right: 10px;
 }
 
+/* Password field - Fix meter overflow */
+.profile-page .p-password {
+    width: 100%;
+}
+
+.profile-page .p-password .p-inputtext {
+    width: 100%;
+}
+
+.profile-page .p-password-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Password strength meter container */
+.profile-page .p-password-meter {
+    margin-top: 0.5rem;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .profile-avatar {

@@ -39,6 +39,7 @@ export default function ProfilePage() {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [passwordError, setPasswordError] = useState('');
     const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
     
     // Preferences
@@ -167,6 +168,68 @@ export default function ProfilePage() {
         return userName.charAt(0).toUpperCase();
     };
 
+    const handlePasswordChange = () => {
+        // Reset error
+        setPasswordError('');
+
+        // Validate
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            setPasswordError('Please fill all password fields');
+            toast.current?.show({ 
+                severity: 'error', 
+                summary: 'Error', 
+                detail: 'Please fill all password fields',
+                life: 3000 
+            });
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            setPasswordError('New passwords do not match');
+            toast.current?.show({ 
+                severity: 'error', 
+                summary: 'Error', 
+                detail: 'New passwords do not match',
+                life: 3000 
+            });
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            setPasswordError('Password must be at least 6 characters');
+            toast.current?.show({ 
+                severity: 'error', 
+                summary: 'Error', 
+                detail: 'Password must be at least 6 characters',
+                life: 3000 
+            });
+            return;
+        }
+
+        // Success
+        toast.current?.show({ 
+            severity: 'success', 
+            summary: 'Success', 
+            detail: 'Password updated successfully',
+            life: 3000 
+        });
+
+        // Clear fields
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+        setPasswordError('');
+    };
+
+    const handleConfirmPasswordChange = (value: string) => {
+        setConfirmPassword(value);
+        if (newPassword && value && newPassword !== value) {
+            setPasswordError('Passwords do not match');
+        } else {
+            setPasswordError('');
+        }
+    };
+
     const getActivityIcon = (type: string) => {
         switch (type) {
             case 'login': return 'pi pi-sign-in';
@@ -282,7 +345,6 @@ export default function ProfilePage() {
                                 <Button 
                                     label="Upgrade" 
                                     icon="pi pi-arrow-up" 
-                                    severity="success" 
                                     size="small" 
                                     className="w-full"
                                     onClick={() => window.open('https://waqtor.dxbmark.com/pricing', '_blank')}
@@ -418,15 +480,23 @@ export default function ProfilePage() {
                                                 <label className="block mb-2">Confirm New Password</label>
                                                 <Password
                                                     value={confirmPassword}
-                                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                                    className="w-full"
+                                                    onChange={(e) => handleConfirmPasswordChange(e.target.value)}
+                                                    className={`w-full ${passwordError ? 'p-invalid' : ''}`}
                                                     toggleMask
                                                     feedback={false}
                                                     placeholder="Confirm new password"
                                                 />
+                                                {passwordError && (
+                                                    <small className="p-error block mt-1">{passwordError}</small>
+                                                )}
                                             </div>
                                             <div className="col-12">
-                                                <Button label="Update Password" icon="pi pi-key" size="small" />
+                                                <Button 
+                                                    label="Update Password" 
+                                                    icon="pi pi-key" 
+                                                    size="small" 
+                                                    onClick={handlePasswordChange}
+                                                />
                                             </div>
                                         </div>
                                     </div>
@@ -548,12 +618,33 @@ export default function ProfilePage() {
                                         <p className="text-500 mb-4">Export your data or backup your settings</p>
                                     </div>
 
-                                    {/* Backup */}
+                                    {/* Backup Buttons */}
                                     <div className="col-12">
-                                        <div className="flex gap-2">
-                                            <Button label="Export Data" icon="pi pi-download" outlined size="small" />
-                                            <Button label="Backup Settings" icon="pi pi-save" outlined size="small" />
-                                            <Button label="Import Data" icon="pi pi-upload" outlined size="small" />
+                                        <div className="flex flex-wrap gap-3">
+                                            <Button 
+                                                label="Export Data" 
+                                                icon="pi pi-download" 
+                                                outlined 
+                                                size="small"
+                                                className="flex-1"
+                                                style={{ minWidth: '150px' }}
+                                            />
+                                            <Button 
+                                                label="Backup Settings" 
+                                                icon="pi pi-save" 
+                                                outlined 
+                                                size="small"
+                                                className="flex-1"
+                                                style={{ minWidth: '150px' }}
+                                            />
+                                            <Button 
+                                                label="Import Data" 
+                                                icon="pi pi-upload" 
+                                                outlined 
+                                                size="small"
+                                                className="flex-1"
+                                                style={{ minWidth: '150px' }}
+                                            />
                                         </div>
                                     </div>
                                 </div>

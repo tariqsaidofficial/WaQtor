@@ -16,6 +16,17 @@
 
 ---
 
+## 🔗 Quick Links
+
+<div align="center">
+
+| 🚀 [Quick Start](#-quick-start) | 📡 [API Docs](./runtime/README.md) | 🎨 [Dashboard](./dashboard/README.md) | 🐳 [Docker Setup](#option-1-docker-recommended) | 🪝 [Webhooks](#-upcoming--todo) | 📝 [Changelog](./CHANGELOG.md) |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+
+</div>
+
+---
+
 ## 🆕 What's New in v2.2.0
 
 **October 30, 2025** - Enhanced Settings & UI Improvements Release!
@@ -112,6 +123,74 @@
 - 🧪 **100% tested** - All features verified
 
 **[📖 See full changelog](CHANGELOG.md) • [📚 Documentation](DOCS.md) • [🎨 Dashboard Guide](dashboard/README.md)**
+
+---
+
+## 🔄 Compatibility Matrix
+
+| Component | Version | Status | Notes |
+|-----------|---------|--------|-------|
+| **Node.js** | ≥18.0.0 | ✅ Required | v20.x LTS recommended |
+| **whatsapp-web.js** | 1.34.1 | ✅ Stable | Last upstream sync: Oct 28, 2025 |
+| **Puppeteer** | 23.11.1 | ✅ Stable | Chrome/Chromium automation |
+| **Chrome/Chromium** | 131+ | ✅ Compatible | Auto-downloaded by Puppeteer |
+| **Docker** | 20.10+ | ✅ Recommended | Production deployment |
+| **npm** | 9.0+ | ✅ Supported | Package manager |
+
+### Update Policy
+
+- **Security Patches**: Applied within 48 hours of disclosure
+- **Minor Updates**: Monthly review cycle for dependencies
+- **Major Updates**: Tested in staging before production release
+- **Breaking Changes**: Announced 2 weeks in advance with migration guide
+
+### Browser Compatibility
+
+- **Chrome/Chromium**: Primary support (auto-managed by Puppeteer)
+- **Headless Mode**: Fully supported for production deployments
+- **ARM64**: Compatible with Apple Silicon and ARM servers
+
+---
+
+## 🔒 Security & Anti-Ban Notes
+
+> [!WARNING]
+> **WhatsApp does not officially support bots or automation.** Use WaQtor responsibly to minimize ban risks.
+
+### Best Practices for Safe Usage
+
+#### ⚠️ Rate Limits (Recommended)
+- **Messages per hour**: Max 50-100 messages
+- **Messages per day**: Max 500-1000 messages
+- **Delay between messages**: 3-5 seconds minimum
+- **Bulk campaigns**: Spread over 24-48 hours
+
+#### 🛡️ Anti-Ban Strategies
+1. **Use Business Accounts**: WhatsApp Business has higher tolerance
+2. **Warm Up New Numbers**: Start with 10-20 messages/day, gradually increase
+3. **Avoid Spam Patterns**: Vary message content, use natural delays
+4. **Monitor Session Health**: Watch for warnings in dashboard
+5. **Respect User Blocks**: Stop messaging users who block you
+6. **Use SmartBot Wisely**: Enable typing indicators and realistic delays
+
+#### 🚨 Disconnection Scenarios
+
+| Scenario | Cause | Recovery |
+|----------|-------|----------|
+| **QR Code Expired** | Session timeout (>24h inactive) | Re-scan QR code |
+| **Logged Out** | Manual logout from phone | Re-authenticate |
+| **Banned** | Rate limit violation | Wait 24-48h, use different number |
+| **Network Error** | Connection lost | Auto-reconnect (built-in) |
+| **Chrome Crash** | Puppeteer failure | Restart server |
+
+#### 📚 Full Security Guidelines
+
+For comprehensive security practices, see **[SECURITY.md](./SECURITY.md)**:
+- API key management
+- Session file protection
+- Environment variable security
+- Docker security hardening
+- Webhook authentication
 
 ---
 
@@ -815,6 +894,582 @@ pnpm add waqtor
 - 🐛 [Report Issues](https://github.com/tariqsaidofficial/WaQtor/issues)
 - 📖 [Changelog](./CHANGELOG.md)
 - 🔖 [Releases](https://github.com/tariqsaidofficial/WaQtor/releases)
+
+---
+
+## 🔧 Troubleshooting
+
+### Common Issues & Solutions
+
+#### 1. QR Code Not Appearing
+
+**Symptoms**: Server starts but no QR code in logs
+
+```bash
+# Enable debug logging
+DEBUG=* LOG_LEVEL=debug npm start
+
+# Check if Chrome is running
+ps aux | grep chrome
+
+# Clear session and restart
+rm -rf runtime/server/session/*
+npm start
+```
+
+**Causes**: Puppeteer initialization failure, Chrome not installed, session corruption
+
+---
+
+#### 2. "Session Already Exists" Error
+
+**Symptoms**: Cannot scan QR, session file locked
+
+```bash
+# Safe session cleanup
+npm run docker:stop
+rm -rf runtime/server/session/*
+npm run docker:run
+```
+
+**Prevention**: Always stop server before deleting sessions
+
+---
+
+#### 3. Messages Not Sending
+
+**Symptoms**: API returns success but messages don't arrive
+
+```bash
+# Check client status
+curl -H "X-API-Key: your_key" http://localhost:8080/api/status/client
+
+# Verify phone number format
+# Correct: 966501234567@c.us
+# Wrong: +966 50 123 4567
+
+# Check logs for errors
+npm run docker:logs
+```
+
+**Common Causes**: Wrong number format, client disconnected, rate limiting
+
+---
+
+#### 4. High Memory Usage
+
+**Symptoms**: Chrome consuming >2GB RAM
+
+```bash
+# Restart with memory limits (Docker)
+docker run -m 2g waqtor
+
+# Clear Chrome cache
+rm -rf runtime/server/session/Default/Cache/*
+
+# Use headless mode (add to .env)
+HEADLESS=true
+```
+
+**Solution**: Enable headless mode, restart daily, limit concurrent sessions
+
+---
+
+#### 5. "ECONNREFUSED" API Errors
+
+**Symptoms**: Dashboard cannot connect to backend
+
+```bash
+# Check if backend is running
+curl http://localhost:8080/health
+
+# Verify ports are not blocked
+lsof -i :8080
+lsof -i :3000
+
+# Check firewall settings
+sudo ufw status
+```
+
+**Solution**: Ensure backend starts before dashboard, check firewall rules
+
+---
+
+#### 6. WebSocket Connection Failed
+
+**Symptoms**: Dashboard shows "Connecting..." forever
+
+```bash
+# Test WebSocket endpoint
+wscat -c ws://localhost:8080
+
+# Check CORS settings in runtime/server/index.js
+# Verify dashboard URL in CORS whitelist
+```
+
+**Solution**: Add dashboard URL to CORS whitelist, restart backend
+
+---
+
+#### 7. "Module Not Found" Errors
+
+**Symptoms**: Import errors after npm install
+
+```bash
+# Clean install
+rm -rf node_modules package-lock.json
+npm cache clean --force
+npm install
+
+# Verify Node version
+node --version  # Should be ≥18.0.0
+```
+
+---
+
+#### 8. Docker Build Fails
+
+**Symptoms**: "Error response from daemon"
+
+```bash
+# Clean Docker cache
+docker system prune -a
+
+# Rebuild without cache
+docker build --no-cache -t waqtor .
+
+# Check Docker disk space
+docker system df
+```
+
+---
+
+#### 9. SmartBot Not Responding
+
+**Symptoms**: Auto-replies not working
+
+```bash
+# Check if SmartBot is enabled in dashboard
+# Verify rules in runtime/server/smartbot-rules.json
+
+# Test rule matching
+curl -X POST http://localhost:8080/api/smartbot/test \
+  -H "X-API-Key: your_key" \
+  -H "Content-Type: application/json" \
+  -d '{"message": "hello"}'
+```
+
+**Common Issues**: Rules disabled, profanity filter blocking, language mismatch
+
+---
+
+#### 10. Session Keeps Disconnecting
+
+**Symptoms**: Frequent re-authentication required
+
+```bash
+# Check network stability
+ping -c 10 web.whatsapp.com
+
+# Increase timeout (add to .env)
+SESSION_TIMEOUT=300000
+
+# Monitor session health
+tail -f runtime/server/logs/app.log | grep -i "disconnect"
+```
+
+**Causes**: Network instability, WhatsApp server issues, rate limiting
+
+---
+
+### Debug Mode
+
+Enable comprehensive logging:
+
+```bash
+# Environment variables
+DEBUG=waqtor:*,whatsapp-web.js:*
+LOG_LEVEL=debug
+VERBOSE=true
+
+# Start with debug
+DEBUG=* npm start 2>&1 | tee debug.log
+```
+
+### Getting Help
+
+If issues persist:
+1. Check [GitHub Issues](https://github.com/tariqsaidofficial/WaQtor/issues)
+2. Search [Discussions](https://github.com/tariqsaidofficial/WaQtor/discussions)
+3. Create new issue with:
+   - WaQtor version
+   - Node.js version
+   - Error logs (last 50 lines)
+   - Steps to reproduce
+
+---
+
+## 🛠️ Operations Runbook
+
+### Daily Operations
+
+#### Rotate API Keys
+
+```bash
+# Generate new key in dashboard Settings → API Keys
+# Or via API
+curl -X POST http://localhost:8080/api/settings/generate-key \
+  -H "X-API-Key: current_key"
+
+# Update .env file
+sed -i 's/API_KEY=old_key/API_KEY=new_key/' runtime/config/.env
+
+# Restart server
+npm run docker:restart
+```
+
+**Frequency**: Every 90 days or after suspected compromise
+
+---
+
+#### Force Logout
+
+```bash
+# Via API
+curl -X POST http://localhost:8080/api/status/logout \
+  -H "X-API-Key: your_key"
+
+# Or via dashboard: Settings → Session → Logout
+
+# Clean session files
+rm -rf runtime/server/session/*
+```
+
+**Use Cases**: Switching accounts, security incident, testing
+
+---
+
+#### Rebuild Session
+
+```bash
+# Stop server
+npm run docker:stop
+
+# Backup current session (optional)
+cp -r runtime/server/session runtime/server/session.backup
+
+# Clear session
+rm -rf runtime/server/session/*
+
+# Start and re-scan QR
+npm run docker:run
+npm run docker:logs
+```
+
+**When to Use**: Persistent connection issues, corrupted session, account migration
+
+---
+
+#### Restart Worker
+
+```bash
+# Graceful restart (Docker)
+docker restart waqtor
+
+# Or with npm
+npm run docker:restart
+
+# Force restart (if hung)
+docker kill waqtor
+docker start waqtor
+```
+
+**Triggers**: High memory usage, slow response times, after updates
+
+---
+
+### File & Log Retention Policies
+
+#### Uploaded Files
+
+```bash
+# Location: uploads/YYYY-MM-DD/
+# Retention: 30 days (auto-cleanup)
+
+# Manual cleanup (files older than 30 days)
+find uploads/ -type f -mtime +30 -delete
+
+# Check disk usage
+du -sh uploads/
+```
+
+#### Application Logs
+
+```bash
+# Location: runtime/server/logs/
+# Retention: 7 days (rotate daily)
+
+# View recent logs
+tail -f runtime/server/logs/app.log
+
+# Archive old logs
+tar -czf logs-$(date +%Y%m%d).tar.gz runtime/server/logs/*.log
+mv logs-*.tar.gz archives/
+
+# Clean logs older than 7 days
+find runtime/server/logs/ -name "*.log" -mtime +7 -delete
+```
+
+#### Database Backups
+
+```bash
+# Backup campaigns database
+cp runtime/server/campaigns.db backups/campaigns-$(date +%Y%m%d).db
+
+# Backup messages database
+cp runtime/server/messages.db backups/messages-$(date +%Y%m%d).db
+
+# Compress backups
+tar -czf backup-$(date +%Y%m%d).tar.gz backups/*.db
+
+# Keep last 30 days of backups
+find backups/ -name "*.db" -mtime +30 -delete
+```
+
+#### Session Files
+
+```bash
+# Location: runtime/server/session/
+# Retention: Until manual logout
+# Backup: Before major updates
+
+# Backup session
+tar -czf session-backup-$(date +%Y%m%d).tar.gz runtime/server/session/
+```
+
+---
+
+### Monitoring Commands
+
+#### Health Check
+
+```bash
+# Quick health check
+curl http://localhost:8080/health
+
+# Detailed status
+curl -H "X-API-Key: your_key" http://localhost:8080/api/status/client
+```
+
+#### Resource Usage
+
+```bash
+# Docker stats
+docker stats waqtor
+
+# Memory usage
+free -h
+
+# Disk usage
+df -h
+
+# Process info
+ps aux | grep node
+```
+
+#### Connection Status
+
+```bash
+# Check open connections
+netstat -an | grep :8080
+
+# WebSocket connections
+ss -o state established '( sport = :8080 )'
+```
+
+---
+
+### Deployment Checklist
+
+#### Pre-Deployment
+
+- [ ] Backup current session files
+- [ ] Backup databases (campaigns.db, messages.db)
+- [ ] Export SmartBot rules
+- [ ] Document current API keys
+- [ ] Test in staging environment
+- [ ] Review CHANGELOG for breaking changes
+
+#### Deployment
+
+- [ ] Stop current server
+- [ ] Pull latest code: `git pull origin main`
+- [ ] Install dependencies: `npm install`
+- [ ] Run database migrations (if any)
+- [ ] Update environment variables
+- [ ] Build Docker image: `npm run docker:build`
+- [ ] Start server: `npm run docker:run`
+- [ ] Verify health: `curl http://localhost:8080/health`
+
+#### Post-Deployment
+
+- [ ] Check logs for errors: `npm run docker:logs`
+- [ ] Test API endpoints
+- [ ] Verify WebSocket connection
+- [ ] Test SmartBot responses
+- [ ] Monitor resource usage
+- [ ] Update documentation if needed
+
+---
+
+## 📋 Release Checklist
+
+### Before Publishing a New Version
+
+#### 1. Update Version Numbers
+
+```bash
+# Update package.json version
+npm version patch  # or minor, or major
+
+# Update version in README.md badges (line 8)
+# Update version in runtime/package.json
+# Update version in dashboard/package.json
+```
+
+#### 2. Update CHANGELOG.md
+
+```markdown
+## [vX.X.X] - YYYY-MM-DD
+
+### Added
+- New feature descriptions
+
+### Changed
+- Modified functionality
+
+### Fixed
+- Bug fixes
+
+### Security
+- Security patches
+```
+
+#### 3. Run Tests
+
+```bash
+# Unit tests
+npm test
+
+# Integration tests
+npm run test:integration
+
+# E2E tests
+npm run test:e2e
+
+# Linting
+npm run lint
+
+# Type checking
+npm run type-check
+```
+
+#### 4. Build & Test Docker Image
+
+```bash
+# Build image
+npm run docker:build
+
+# Test image
+docker run --rm waqtor npm test
+
+# Verify image size
+docker images waqtor
+
+# Security scan
+docker scan waqtor
+```
+
+#### 5. Update Documentation
+
+- [ ] Update README.md with new features
+- [ ] Update API documentation (runtime/README.md)
+- [ ] Update dashboard documentation (dashboard/README.md)
+- [ ] Add migration guide if breaking changes
+- [ ] Update examples if API changed
+
+#### 6. Verify README Badges
+
+```markdown
+# Check these badges are up to date:
+- Version badge (line 8)
+- npm version badge (line 9)
+- Node version badge (line 11)
+- Build status badge (line 12)
+```
+
+#### 7. Create Git Tag
+
+```bash
+# Create annotated tag
+git tag -a v2.2.0 -m "Release v2.2.0: Enhanced Settings & UI Improvements"
+
+# Push tag
+git push origin v2.2.0
+```
+
+#### 8. Publish to npm
+
+```bash
+# Login to npm
+npm login
+
+# Dry run
+npm publish --dry-run
+
+# Publish
+npm publish
+
+# Verify publication
+npm info waqtor
+```
+
+#### 9. Create GitHub Release
+
+1. Go to [Releases](https://github.com/tariqsaidofficial/WaQtor/releases)
+2. Click "Draft a new release"
+3. Select tag: v2.2.0
+4. Title: "v2.2.0 - Enhanced Settings & UI Improvements"
+5. Copy content from CHANGELOG.md
+6. Attach binaries if applicable
+7. Publish release
+
+#### 10. Post-Release
+
+- [ ] Announce on GitHub Discussions
+- [ ] Update project website (if applicable)
+- [ ] Notify users via email/Discord (if applicable)
+- [ ] Monitor for issues in first 24 hours
+- [ ] Update Docker Hub tags
+
+---
+
+### Version Bump Guide
+
+**Patch (x.x.1)**: Bug fixes, security patches
+```bash
+npm version patch
+```
+
+**Minor (x.1.x)**: New features, backward-compatible
+```bash
+npm version minor
+```
+
+**Major (1.x.x)**: Breaking changes
+```bash
+npm version major
+```
 
 ---
 
