@@ -37,9 +37,10 @@ export default function ReplyHistory({ history }: ReplyHistoryProps) {
     };
     
     const customizedMarker = (_item: ReplyLog) => {
+        const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color') || '#14B8A6';
         return (
             <span className="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1"
-                style={{ backgroundColor: '#14B8A6' }}>
+                style={{ backgroundColor: primaryColor }}>
                 <i className="pi pi-send"></i>
             </span>
         );

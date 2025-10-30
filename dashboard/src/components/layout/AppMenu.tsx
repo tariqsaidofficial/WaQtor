@@ -19,7 +19,8 @@ const AppMenu = () => {
                 { 
                     label: 'Campaigns', 
                     icon: 'pi pi-fw pi-megaphone', 
-                    to: '/campaigns' 
+                    to: '/campaigns',
+                    badge: 'NEW'
                 },
                 { 
                     label: 'Messages', 
@@ -34,17 +35,29 @@ const AppMenu = () => {
                 { 
                     label: 'Interactive', 
                     icon: 'pi pi-fw pi-comments', 
-                    to: '/interactive' 
+                    to: '/interactive',
+                    badge: 'NEW'
                 },
                 { 
                     label: 'Reports', 
                     icon: 'pi pi-fw pi-chart-bar', 
-                    to: '/reports' 
+                    to: '/reports',
+                    badge: 'NEW'
                 },
                 { 
                     label: 'Settings', 
                     icon: 'pi pi-fw pi-cog', 
                     to: '/settings' 
+                },
+                { 
+                    label: 'Profile', 
+                    icon: 'pi pi-fw pi-user', 
+                    to: '/profile' 
+                },
+                { 
+                    label: 'About', 
+                    icon: 'pi pi-fw pi-info-circle', 
+                    to: '/about' 
                 },
             ],
         },

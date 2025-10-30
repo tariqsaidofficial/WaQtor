@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { api } from '../../api/client';
 
 interface SessionControlsProps {
     onSuccess: (message: string) => void;
@@ -20,41 +21,35 @@ export default function SessionControls({ onSuccess, onError }: SessionControlsP
 
     const fetchSessionInfo = async () => {
         try {
-            const response = await fetch('/api/session/state');
-            if (response.ok) {
-                const data = await response.json();
-                setSessionInfo(data.data);
+            const response = await api.get('/api/session/state');
+            if (response.data?.success) {
+                setSessionInfo(response.data.data);
             }
         } catch (error) {
             console.error('Failed to fetch session info:', error);
         }
     };
 
-    const handleLogout = () => {
+    const handleDisconnect = () => {
         confirmDialog({
-            message: 'Are you sure you want to logout? You will need to scan QR code again.',
-            header: 'Confirm Logout',
+            message: 'This will disconnect your WhatsApp session. You can reconnect anytime without scanning QR code again.',
+            header: 'Disconnect WhatsApp',
             icon: 'pi pi-exclamation-triangle',
             accept: async () => {
                 setLoading(true);
                 try {
-                    const response = await fetch('/api/status/logout', {
-                        method: 'POST',
-                        headers: {
-                            'X-API-Key': process.env.NEXT_PUBLIC_API_KEY || 'test-api-key-123'
-                        }
-                    });
+                    const response = await api.post('/api/status/logout');
                     
-                    if (response.ok) {
-                        onSuccess('Logged out successfully');
+                    if (response.data?.success) {
+                        onSuccess('WhatsApp disconnected successfully');
                         setTimeout(() => {
-                            window.location.reload();
-                        }, 1500);
+                            fetchSessionInfo();
+                        }, 1000);
                     } else {
-                        onError('Failed to logout');
+                        onError('Failed to disconnect WhatsApp');
                     }
                 } catch (error) {
-                    onError('Failed to logout');
+                    onError('Failed to disconnect WhatsApp');
                 } finally {
                     setLoading(false);
                 }
@@ -62,23 +57,27 @@ export default function SessionControls({ onSuccess, onError }: SessionControlsP
         });
     };
 
-    const handleClearSession = () => {
+    const handleDeleteSession = () => {
         confirmDialog({
-            message: 'This will clear all session data. Are you sure?',
-            header: 'Confirm Clear Session',
+            message: 'This will permanently delete your session files. You will need to scan the QR code again to reconnect.',
+            header: 'Delete Session',
             icon: 'pi pi-exclamation-triangle',
             acceptClassName: 'p-button-danger',
             accept: async () => {
                 setLoading(true);
                 try {
-                    // Clear session data
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    onSuccess('Session cleared successfully');
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1500);
+                    const response = await api.delete('/api/session/delete');
+                    
+                    if (response.data?.success) {
+                        onSuccess('Session deleted successfully');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        onError('Failed to delete session');
+                    }
                 } catch (error) {
-                    onError('Failed to clear session');
+                    onError('Failed to delete session');
                 } finally {
                     setLoading(false);
                 }
@@ -88,15 +87,22 @@ export default function SessionControls({ onSuccess, onError }: SessionControlsP
 
     const handleRestartSession = () => {
         confirmDialog({
-            message: 'This will restart the WhatsApp session. Continue?',
-            header: 'Confirm Restart',
+            message: 'This will restart your WhatsApp session. Continue?',
+            header: 'Restart Session',
             icon: 'pi pi-refresh',
             accept: async () => {
                 setLoading(true);
                 try {
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                    onSuccess('Session restarted successfully');
-                    fetchSessionInfo();
+                    const response = await api.post('/api/session/restart');
+                    
+                    if (response.data?.success) {
+                        onSuccess('Session restarted successfully');
+                        setTimeout(() => {
+                            fetchSessionInfo();
+                        }, 1500);
+                    } else {
+                        onError('Failed to restart session');
+                    }
                 } catch (error) {
                     onError('Failed to restart session');
                 } finally {
@@ -109,73 +115,118 @@ export default function SessionControls({ onSuccess, onError }: SessionControlsP
     return (
         <>
             <ConfirmDialog />
-            <Card title="⚙️ Session Controls" className="settings-card h-full">
-                <div className="flex flex-column gap-3">
-                    {sessionInfo && (
-                        <div className="p-3 bg-blue-50 border-round mb-2">
-                            <div className="flex align-items-center gap-2 mb-2">
-                                <i className="pi pi-info-circle text-blue-600"></i>
-                                <span className="font-semibold">Session Status</span>
+            <Card className="settings-card-content">
+                <div className="flex flex-column gap-4">
+                    {/* Session Status Card */}
+                    <div className="surface-card p-4 border-round shadow-1">
+                        <div className="flex align-items-center justify-content-between mb-3">
+                            <div className="flex align-items-center gap-2">
+                                <i className="pi pi-whatsapp text-2xl text-green-500"></i>
+                                <span className="text-xl font-semibold">WhatsApp Session</span>
                             </div>
-                            <div className="grid">
-                                <div className="col-6">
-                                    <div className="text-500 text-sm">Status</div>
-                                    <div className="font-semibold">
-                                        {sessionInfo.status === 'connected' ? (
+                            {sessionInfo?.status === 'connected' ? (
+                                <span className="px-3 py-1 bg-green-100 text-green-700 border-round font-semibold text-sm">
+                                    <i className="pi pi-check-circle mr-1"></i>
+                                    Connected
+                                </span>
+                            ) : (
+                                <span className="px-3 py-1 bg-red-100 text-red-700 border-round font-semibold text-sm">
+                                    <i className="pi pi-times-circle mr-1"></i>
+                                    Disconnected
+                                </span>
+                            )}
+                        </div>
+                        
+                        <div className="grid">
+                            <div className="col-6">
+                                <div className="flex flex-column gap-1">
+                                    <span className="text-500 text-sm">Session Ready</span>
+                                    <span className="font-semibold text-lg">
+                                        {sessionInfo?.isReady ? (
                                             <span className="text-green-600">
-                                                <i className="pi pi-check-circle mr-1"></i>
-                                                Connected
+                                                <i className="pi pi-check mr-1"></i>
+                                                Yes
                                             </span>
                                         ) : (
-                                            <span className="text-red-600">
-                                                <i className="pi pi-times-circle mr-1"></i>
-                                                Disconnected
+                                            <span className="text-orange-600">
+                                                <i className="pi pi-times mr-1"></i>
+                                                No
                                             </span>
                                         )}
-                                    </div>
+                                    </span>
                                 </div>
-                                <div className="col-6">
-                                    <div className="text-500 text-sm">Ready</div>
-                                    <div className="font-semibold">
-                                        {sessionInfo.isReady ? 'Yes' : 'No'}
-                                    </div>
+                            </div>
+                            <div className="col-6">
+                                <div className="flex flex-column gap-1">
+                                    <span className="text-500 text-sm">Connection</span>
+                                    <span className="font-semibold text-lg">
+                                        {sessionInfo?.status === 'connected' ? (
+                                            <span className="text-green-600">Active</span>
+                                        ) : (
+                                            <span className="text-red-600">Inactive</span>
+                                        )}
+                                    </span>
                                 </div>
                             </div>
                         </div>
-                    )}
+                    </div>
 
-                    <Button
-                        label="Restart Session"
-                        icon="pi pi-refresh"
-                        onClick={handleRestartSession}
-                        loading={loading}
-                        className="w-full"
-                        severity="info"
-                    />
+                    {/* Action Buttons */}
+                    <div className="flex flex-column gap-2">
+                        <div className="grid">
+                            <div className="col-12 md:col-4">
+                                <Button
+                                    label="Restart"
+                                    icon="pi pi-refresh"
+                                    onClick={handleRestartSession}
+                                    loading={loading}
+                                    disabled={sessionInfo?.status !== 'connected'}
+                                    className="w-full"
+                                    outlined
+                                    tooltip="Restart WhatsApp session"
+                                    tooltipOptions={{ position: 'top' }}
+                                />
+                            </div>
+                            <div className="col-12 md:col-4">
+                                <Button
+                                    label="Disconnect"
+                                    icon="pi pi-sign-out"
+                                    onClick={handleDisconnect}
+                                    loading={loading}
+                                    disabled={sessionInfo?.status !== 'connected'}
+                                    severity="secondary"
+                                    className="w-full"
+                                    outlined
+                                    tooltip="Disconnect WhatsApp (can reconnect without QR)"
+                                    tooltipOptions={{ position: 'top' }}
+                                />
+                            </div>
+                            <div className="col-12 md:col-4">
+                                <Button
+                                    label="Delete Session"
+                                    icon="pi pi-trash"
+                                    onClick={handleDeleteSession}
+                                    loading={loading}
+                                    severity="danger"
+                                    className="w-full"
+                                    tooltip="Permanently delete session files"
+                                    tooltipOptions={{ position: 'top' }}
+                                />
+                            </div>
+                        </div>
+                    </div>
 
-                    <Button
-                        label="Logout"
-                        icon="pi pi-sign-out"
-                        onClick={handleLogout}
-                        loading={loading}
-                        className="w-full"
-                        severity="warning"
-                    />
-
-                    <Button
-                        label="Clear Session Data"
-                        icon="pi pi-trash"
-                        onClick={handleClearSession}
-                        loading={loading}
-                        className="w-full"
-                        severity="danger"
-                    />
-
-                    <div className="p-3 bg-red-50 border-round">
+                    {/* Warning Message */}
+                    <div className="surface-border border-1 border-round p-3">
                         <div className="flex align-items-start gap-2">
-                            <i className="pi pi-exclamation-circle text-red-600 mt-1"></i>
-                            <div className="text-sm">
-                                <strong>Caution:</strong> Clearing session data will require you to scan the QR code again to reconnect.
+                            <i className="pi pi-info-circle text-orange-500 text-xl mt-1"></i>
+                            <div>
+                                <div className="font-semibold text-900 mb-2">Session Actions Guide</div>
+                                <ul className="text-600 text-sm line-height-3 m-0 pl-3">
+                                    <li><strong>Restart:</strong> Reconnect WhatsApp without losing session</li>
+                                    <li><strong>Disconnect:</strong> Temporarily disconnect (can reconnect without QR)</li>
+                                    <li><strong>Delete Session:</strong> Permanently remove session files (requires new QR scan)</li>
+                                </ul>
                             </div>
                         </div>
                     </div>

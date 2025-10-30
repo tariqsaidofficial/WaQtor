@@ -63,7 +63,7 @@
     }
 
     .layout-menu-button {
-        margin-left: 2rem;
+        margin-left: 0.25rem;
     }
 
     .layout-topbar-menu-button {
@@ -145,5 +145,31 @@
                 }
             }
         }
+    }
+}
+
+// Quick Action Items Hover Effect
+.quick-action-item {
+    &:hover {
+        background-color: var(--surface-hover) !important;
+        border-color: var(--primary-color) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+        i {
+            color: var(--primary-color) !important;
+        }
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+// Profile Menu Header
+.profile-menu-header {
+    &:hover {
+        background-color: var(--surface-hover);
+        cursor: pointer;
     }
 }

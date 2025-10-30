@@ -50,58 +50,68 @@ export default function APIKeyCard({ onSuccess, onError }: APIKeyCardProps) {
     };
 
     return (
-        <Card title="🔑 API Key Management" className="settings-card h-full">
-            <div className="flex flex-column gap-3">
-                <div>
-                    <label className="block mb-2 font-semibold">
-                        <i className="pi pi-key mr-2"></i>
-                        Your API Key
-                    </label>
-                    <div className="p-inputgroup">
+        <Card className="settings-card-content">
+            <div className="flex flex-column gap-4">
+                {/* API Key Display */}
+                <div className="surface-card p-4 border-round shadow-1">
+                    <div className="flex align-items-center gap-2 mb-3">
+                        <i className="pi pi-key text-2xl text-primary"></i>
+                        <span className="text-xl font-semibold">Your API Key</span>
+                    </div>
+                    
+                    <div className="p-inputgroup mb-2">
                         <InputText
-                            value={showKey ? apiKey : '••••••••••••••••'}
+                            value={showKey ? apiKey : '••••••••••••••••••••••••••••••••'}
                             readOnly
-                            className="w-full"
+                            className="font-mono"
+                        />
+                        <Button
+                            icon="pi pi-refresh"
+                            onClick={handleGenerateKey}
+                            loading={loading}
+                            tooltip="Generate New Key"
+                            tooltipOptions={{ position: 'top' }}
                         />
                         <Button
                             icon={showKey ? 'pi pi-eye-slash' : 'pi pi-eye'}
                             onClick={() => setShowKey(!showKey)}
-                            className="p-button-secondary"
+                            tooltip={showKey ? 'Hide key' : 'Show key'}
+                            tooltipOptions={{ position: 'top' }}
                         />
                         <Button
                             icon="pi pi-copy"
                             onClick={handleCopyKey}
-                            className="p-button-secondary"
+                            tooltip="Copy to clipboard"
+                            tooltipOptions={{ position: 'top' }}
                         />
                     </div>
+                    
                     <small className="text-500">
-                        Use this key to authenticate API requests
+                        <i className="pi pi-info-circle mr-1"></i>
+                        Use this key to authenticate all API requests
                     </small>
                 </div>
 
-                <div className="flex gap-2">
+                {/* Action Buttons */}
+                <div className="flex align-items-center justify-content-center gap-2">
                     <Button
-                        label="Generate New Key"
-                        icon="pi pi-refresh"
-                        onClick={handleGenerateKey}
-                        loading={loading}
-                        className="flex-1"
-                        severity="warning"
-                    />
-                    <Button
-                        label="Save"
-                        icon="pi pi-check"
+                        label="Save Key"
+                        icon="pi pi-save"
                         onClick={handleSaveKey}
                         loading={loading}
-                        className="flex-1"
+                        style={{ width: '200px' }}
                     />
                 </div>
 
-                <div className="p-3 bg-yellow-50 border-round">
+                {/* Warning Message */}
+                <div className="surface-border border-1 border-round p-3">
                     <div className="flex align-items-start gap-2">
-                        <i className="pi pi-exclamation-triangle text-yellow-600 mt-1"></i>
-                        <div className="text-sm">
-                            <strong>Warning:</strong> Generating a new API key will invalidate the old one. Update all your applications with the new key.
+                        <i className="pi pi-exclamation-triangle text-orange-500 text-xl mt-1"></i>
+                        <div>
+                            <div className="font-semibold text-900 mb-1">Security Notice</div>
+                            <div className="text-600 text-sm line-height-3">
+                                Generating a new API key will immediately invalidate the old one. Make sure to update all your applications with the new key to avoid service interruption.
+                            </div>
                         </div>
                     </div>
                 </div>

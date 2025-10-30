@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEventListener, useMountEffect, useUnmountEffect } from 'primereact/hooks';
 import React, { useContext, useEffect, useRef } from 'react';
 import { classNames } from 'primereact/utils';
+import { ScrollTop } from 'primereact/scrolltop';
 import AppFooter from './AppFooter';
 import AppSidebar from './AppSidebar';
 import AppTopbar from './AppTopbar';
@@ -151,6 +152,11 @@ const Layout = ({ children }: ChildContainerProps) => {
                 <AppConfig />
                 <div className='layout-mask'></div>
             </div>
+            <ScrollTop 
+                threshold={400} 
+                icon="pi pi-arrow-up"
+                className="custom-scrolltop"
+            />
         </React.Fragment>
     );
 };

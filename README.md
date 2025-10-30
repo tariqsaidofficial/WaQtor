@@ -5,7 +5,7 @@
     <p><strong>"A new vector for intelligent communication."</strong></p>
     <br />
     <p>
-        <a href="https://github.com/tariqsaidofficial/WaQtor"><img src="https://img.shields.io/badge/WaQtor-v2.1.0-blue.svg" alt="WaQtor v2.1.0" /></a>
+        <a href="https://github.com/tariqsaidofficial/WaQtor"><img src="https://img.shields.io/badge/WaQtor-v2.2.0-blue.svg" alt="WaQtor v2.2.0" /></a>
         <a href="https://www.npmjs.com/package/waqtor"><img src="https://img.shields.io/npm/v/waqtor.svg?color=blue" alt="npm version" /></a>
         <a href="https://github.com/tariqsaidofficial/WaQtor/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
         <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen" alt="Node" /></a>
@@ -16,7 +16,45 @@
 
 ---
 
-## 🆕 What's New in v2.1.0
+## 🆕 What's New in v2.2.0
+
+**October 30, 2025** - Enhanced Settings & UI Improvements Release!
+
+### ⚙️ Advanced Settings System (NEW!)
+- 🎨 **Complete Appearance Customization** - Full branding control
+- 🔧 **API Management** - Generate, save, and manage API keys
+- 📊 **Session Controls** - Logout, restart, and delete sessions
+- 🎯 **Compact UI** - All settings visible without scrolling
+- 🌓 **Theme Switcher** - Light/Dark themes (Lara Teal)
+- 📏 **Scale Control** - Adjust UI size (12-16px)
+- 🏢 **Branding Settings**:
+  - App Name customization
+  - Browser Tab Title
+  - Logo Upload (PNG/SVG)
+  - Logo Text with show/hide toggle
+  - Favicon Upload
+  - Footer Text customization
+  - Show/Hide Footer toggle
+- 🔄 **Real-time Updates** - Changes apply instantly across the dashboard
+- 💾 **Auto-Save** - All settings saved to localStorage
+
+### 🎨 UI/UX Improvements
+- ✨ **Icon Fixes** - All PrimeReact icons display correctly
+- 🎯 **Button Consistency** - Unified button styles and sizes
+- 📱 **Responsive Layout** - Optimized for all screen sizes
+- 🔲 **InputGroup Fix** - Proper alignment for input fields and buttons
+- 🎨 **Focus States** - Removed distracting focus box-shadows
+- 🖼️ **Header/Footer Integration** - Fully connected with settings
+
+### 🔧 Technical Improvements
+- 🗑️ **Code Cleanup** - Removed unused CSS overrides
+- ⚡ **Performance** - Lighter theme files
+- 🎯 **Event System** - Proper branding-update events
+- 📦 **Simplified Themes** - Only Teal Light/Dark (removed 10+ unused themes)
+
+---
+
+## 📜 Previous Release - v2.1.0
 
 **October 30, 2025** - Major Dashboard & Feature-Complete Release!
 

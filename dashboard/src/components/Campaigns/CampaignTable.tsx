@@ -167,7 +167,6 @@ export default function CampaignTable({
                     value={progress} 
                     showValue={false}
                     style={{ height: '8px' }}
-                    color={progress === 100 ? '#10b981' : '#3b82f6'}
                 />
                 <small className="text-600">
                     {sent} / {total} ({progress}%)

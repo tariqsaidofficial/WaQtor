@@ -173,14 +173,14 @@ export default function InteractivePage() {
                     Interactive Messages
                 </h1>
                 <p className="text-600 m-0">
-                    🎯 Send interactive buttons and lists to WhatsApp users
+                    Send interactive buttons and lists to WhatsApp users
                 </p>
             </div>
 
             <div className="grid">
                 {/* Configuration Card */}
                 <div className="col-12 lg:col-4">
-                    <Card title="⚙️ Configuration" className="interactive-card h-full">
+                    <Card title={<><i className="pi pi-cog mr-2"></i>Configuration</>} className="interactive-card h-full">
                         <div className="flex flex-column gap-3">
                             <div>
                                 <label className="block mb-2 font-semibold">
@@ -228,12 +228,12 @@ export default function InteractivePage() {
 
                 {/* Demo Preview */}
                 <div className="col-12 lg:col-8">
-                    <Card title="📱 Demo Preview" className="interactive-card h-full">
+                    <Card title={<><i className="pi pi-mobile mr-2"></i>Demo Preview</>} className="interactive-card h-full">
                         <div className="demo-preview">
                             <div className="whatsapp-message">
                                 <div className="message-bubble">
                                     <p className="message-text">
-                                        Before we begin, kindly select your preferred language. 💬
+                                        Before we begin, kindly select your preferred language.
                                     </p>
                                     <div className="button-group">
                                         <button className="wa-button">English</button>
@@ -249,9 +249,9 @@ export default function InteractivePage() {
                                         How can we help you today?
                                     </p>
                                     <div className="button-group">
-                                        <button className="wa-button">🛠️ Technical Support</button>
-                                        <button className="wa-button">💰 Sales</button>
-                                        <button className="wa-button">ℹ️ Information</button>
+                                        <button className="wa-button"><i className="pi pi-wrench mr-1"></i> Technical Support</button>
+                                        <button className="wa-button"><i className="pi pi-dollar mr-1"></i> Sales</button>
+                                        <button className="wa-button"><i className="pi pi-info-circle mr-1"></i> Information</button>
                                     </div>
                                     <div className="message-time">2:27 am</div>
                                 </div>

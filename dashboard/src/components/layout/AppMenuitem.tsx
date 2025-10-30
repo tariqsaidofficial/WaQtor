@@ -2,6 +2,7 @@
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Ripple } from 'primereact/ripple';
+import { Badge } from 'primereact/badge';
 import { classNames } from 'primereact/utils';
 import React, { useEffect, useContext } from 'react';
 import { CSSTransition } from 'react-transition-group';
@@ -97,6 +98,13 @@ const AppMenuitem = (props: AppMenuItemProps) => {
                 >
                     <i className={classNames('layout-menuitem-icon', item!.icon)}></i>
                     <span className='layout-menuitem-text'>{item!.label}</span>
+                    {item!.badge && (
+                        <Badge 
+                            value={item!.badge} 
+                            severity={item!.badge === 'NEW' ? 'success' : 'info'}
+                            style={{ marginLeft: '0.5rem' }}
+                        />
+                    )}
                     {item!.items && <i className='pi pi-fw pi-angle-down layout-submenu-toggler'></i>}
                     <Ripple />
                 </Link>

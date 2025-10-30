@@ -134,9 +134,13 @@ export default function ReportsPage() {
     const getChartData = () => {
         if (!reportData) return null;
 
-        const labels = reportData.dailyVolume.map(day => 
-            new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-        );
+        // Get colors from theme
+        const documentStyle = getComputedStyle(document.documentElement);
+        const labels = reportData.dailyVolume.map(day => day.date);
+        const blueColor = documentStyle.getPropertyValue('--blue-500') || '#3B82F6';
+        const greenColor = documentStyle.getPropertyValue('--green-500') || '#10B981';
+        const purpleColor = documentStyle.getPropertyValue('--purple-500') || '#8B5CF6';
+        const redColor = documentStyle.getPropertyValue('--red-500') || '#EF4444';
 
         return {
             labels,
@@ -144,32 +148,32 @@ export default function ReportsPage() {
                 {
                     label: 'Sent',
                     data: reportData.dailyVolume.map(day => day.sent),
-                    borderColor: '#3B82F6',
-                    backgroundColor: chartType === 'area' ? 'rgba(59, 130, 246, 0.2)' : '#3B82F6',
+                    borderColor: blueColor,
+                    backgroundColor: chartType === 'area' ? `${blueColor}33` : blueColor,
                     tension: 0.4,
                     fill: chartType === 'area'
                 },
                 {
                     label: 'Delivered',
                     data: reportData.dailyVolume.map(day => day.delivered),
-                    borderColor: '#10B981',
-                    backgroundColor: chartType === 'area' ? 'rgba(16, 185, 129, 0.2)' : '#10B981',
+                    borderColor: greenColor,
+                    backgroundColor: chartType === 'area' ? `${greenColor}33` : greenColor,
                     tension: 0.4,
                     fill: chartType === 'area'
                 },
                 {
                     label: 'Read',
                     data: reportData.dailyVolume.map(day => day.read),
-                    borderColor: '#8B5CF6',
-                    backgroundColor: chartType === 'area' ? 'rgba(139, 92, 246, 0.2)' : '#8B5CF6',
+                    borderColor: purpleColor,
+                    backgroundColor: chartType === 'area' ? `${purpleColor}33` : purpleColor,
                     tension: 0.4,
                     fill: chartType === 'area'
                 },
                 {
                     label: 'Failed',
                     data: reportData.dailyVolume.map(day => day.failed),
-                    borderColor: '#EF4444',
-                    backgroundColor: chartType === 'area' ? 'rgba(239, 68, 68, 0.2)' : '#EF4444',
+                    borderColor: redColor,
+                    backgroundColor: chartType === 'area' ? `${redColor}33` : redColor,
                     tension: 0.4,
                     fill: chartType === 'area'
                 }
@@ -212,7 +216,6 @@ export default function ReportsPage() {
                     value={rate} 
                     showValue={false}
                     style={{ width: '100px', height: '8px' }}
-                    color={severity === 'success' ? '#10B981' : severity === 'warning' ? '#F59E0B' : '#EF4444'}
                 />
                 <span className="font-semibold">{rate.toFixed(1)}%</span>
             </div>
@@ -237,7 +240,7 @@ export default function ReportsPage() {
                             Reports & Analytics
                         </h1>
                         <p className="text-600 m-0">
-                            📊 Comprehensive analysis of your WhatsApp activity
+                            Comprehensive analysis of your WhatsApp activity
                         </p>
                     </div>
                     <div className="flex gap-2">
@@ -380,7 +383,7 @@ export default function ReportsPage() {
             {reportData && (
                 <>
                     {/* Chart */}
-                    <Card className="mb-4" title="📈 Daily Message Volume">
+                    <Card className="mb-4" title={<><i className="pi pi-chart-line mr-2"></i>Daily Message Volume</>}>
                         <div style={{ height: '400px' }}>
                             <Chart
                                 type={chartType === 'area' ? 'line' : chartType}

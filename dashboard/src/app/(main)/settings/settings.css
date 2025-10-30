@@ -18,10 +18,130 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
+/* Feature Cards */
+.feature-card {
+    height: 100%;
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    border: 1px solid var(--surface-border);
+}
+
+.feature-card .p-card-body {
+    padding: 1.5rem;
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-color);
+}
+
+.feature-card:hover .feature-icon-wrapper {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(var(--primary-color-rgb, 20, 184, 166), 0.3);
+}
+
+.feature-card:active {
+    transform: translateY(-2px);
+}
+
+/* Settings Dialog Overlay */
+.settings-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Settings Dialog */
+.settings-dialog {
+    background: var(--surface-card);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Dialog Header */
+.settings-dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--surface-border);
+}
+
+.settings-dialog-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+/* Dialog Content */
+.settings-dialog-content {
+    padding: 1.5rem;
+    overflow-y: auto;
+    max-height: calc(90vh - 80px);
+}
+
+/* Settings Dialog Body */
+.settings-dialog-body {
+    padding: 0;
+}
+
+.settings-dialog-body .settings-card-content {
+    border: none;
+    box-shadow: none;
+}
+
+.settings-dialog-body .settings-card-content .p-card-body {
+    padding: 0;
+}
+
+.settings-dialog-body .settings-card-content .p-card-content {
+    padding: 0;
+}
+
+/* Remove button focus box-shadow */
+.settings-card-content .p-button:focus {
+    box-shadow: none;
+}
+
 .settings-card .p-card-title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: #0f766e;
+    color: var(--primary-color);
 }
 
 .settings-card .p-card-body {
@@ -32,16 +152,16 @@
     text-align: center;
     padding: 1.5rem;
     border-radius: 12px;
-    background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+    background: var(--surface-50);
     transition: all 0.3s;
-    border: 2px solid transparent;
+    border: 2px solid var(--surface-border);
 }
 
 .info-item:hover {
-    background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%);
+    background: var(--surface-100);
     transform: translateY(-4px);
-    border-color: #0f766e;
-    box-shadow: 0 8px 16px rgba(15, 118, 110, 0.15);
+    border-color: var(--primary-color);
+    box-shadow: 0 8px 16px rgba(var(--primary-color-rgb, 15, 118, 110), 0.15);
 }
 
 .info-item i {
@@ -58,26 +178,26 @@
 }
 
 .settings-page .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-warning):not(.p-button-danger):not(.p-button-info) {
-    background: #0f766e;
-    border-color: #0f766e;
+    background: var(--primary-color);
+    border-color: var(--primary-color);
 }
 
 .settings-page .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-warning):not(.p-button-danger):not(.p-button-info):hover {
-    background: #0d9488;
-    border-color: #0d9488;
+    background: var(--primary-600);
+    border-color: var(--primary-600);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);
+    box-shadow: 0 4px 12px rgba(var(--primary-color-rgb, 15, 118, 110), 0.3);
 }
 
 .settings-page .p-button.p-button-outlined {
-    border: 2px solid #0f766e;
-    color: #0f766e;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
 }
 
 .settings-page .p-button.p-button-outlined:hover {
-    background: #f0fdfa;
-    border-color: #0d9488;
-    color: #0d9488;
+    background: var(--primary-50);
+    border-color: var(--primary-600);
+    color: var(--primary-600);
 }
 
 .settings-page .p-button-warning {
@@ -114,12 +234,12 @@
 .p-dropdown-item.p-highlight,
 .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover {
     color: #ffffff !important;
-    background: #0f766e !important;
+    background: var(--primary-color) !important;
 }
 
 .p-dropdown-item.p-highlight:hover {
     color: #ffffff !important;
-    background: #0d9488 !important;
+    background: var(--primary-600) !important;
 }
 
 /* Input styling */
@@ -132,13 +252,13 @@
 
 .settings-page .p-inputtext:focus,
 .settings-page .p-dropdown:focus {
-    border-color: #0f766e;
-    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb, 15, 118, 110), 0.1);
 }
 
 /* Switch styling */
 .settings-page .p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
-    background: #0f766e;
+    background: var(--primary-color);
 }
 
 /* Card sections */
