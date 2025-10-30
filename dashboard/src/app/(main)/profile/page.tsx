@@ -59,11 +59,23 @@ export default function ProfilePage() {
         const savedEmail = localStorage.getItem('user_email') || '';
         const savedPhone = localStorage.getItem('user_phone') || '';
         const savedAvatar = localStorage.getItem('user_avatar') || '';
+        const saved2FA = localStorage.getItem('two_factor_enabled') === 'true';
+        const savedLanguage = localStorage.getItem('language') || 'en';
+        const savedTimezone = localStorage.getItem('timezone') || 'UTC';
+        const savedDateFormat = localStorage.getItem('date_format') || 'DD/MM/YYYY';
+        const savedEmailNotif = localStorage.getItem('email_notifications') !== 'false';
+        const savedPushNotif = localStorage.getItem('push_notifications') !== 'false';
         
         setUserName(savedName);
         setUserEmail(savedEmail);
         setUserPhone(savedPhone);
         setUserAvatar(savedAvatar);
+        setTwoFactorEnabled(saved2FA);
+        setLanguage(savedLanguage);
+        setTimezone(savedTimezone);
+        setDateFormat(savedDateFormat);
+        setEmailNotifications(savedEmailNotif);
+        setPushNotifications(savedPushNotif);
         
         // Load activity logs
         loadActivityLogs();
@@ -85,6 +97,19 @@ export default function ProfilePage() {
         } else {
             setActivityLogs([]);
         }
+    };
+
+    // Auto-save function
+    const autoSave = (field: string, value: any) => {
+        localStorage.setItem(field, value);
+        window.dispatchEvent(new Event('branding-update'));
+        
+        toast.current?.show({ 
+            severity: 'success', 
+            summary: 'Saved', 
+            detail: 'Changes saved automatically',
+            life: 2000 
+        });
     };
 
     const handleSave = () => {
@@ -247,6 +272,44 @@ export default function ProfilePage() {
 
                             <Divider />
 
+                            {/* Current Plan */}
+                            <div className="w-full mb-3">
+                                <div className="flex align-items-center justify-content-between mb-2">
+                                    <span className="text-500">Current Plan</span>
+                                    <Tag value="Active" severity="success" />
+                                </div>
+                                <div className="text-xl font-bold text-primary mb-2">Free Plan</div>
+                                <Button 
+                                    label="Upgrade" 
+                                    icon="pi pi-arrow-up" 
+                                    severity="success" 
+                                    size="small" 
+                                    className="w-full"
+                                    onClick={() => window.open('https://waqtor.dxbmark.com/pricing', '_blank')}
+                                />
+                            </div>
+
+                            <Divider />
+
+                            {/* Usage Statistics */}
+                            <div className="w-full">
+                                <h5 className="mb-3">Usage Statistics</h5>
+                                <div className="mb-3">
+                                    <div className="flex justify-content-between mb-1">
+                                        <span className="text-500 text-sm">API Requests</span>
+                                        <span className="font-semibold text-sm">0 / 1,000</span>
+                                    </div>
+                                </div>
+                                <div className="mb-3">
+                                    <div className="flex justify-content-between mb-1">
+                                        <span className="text-500 text-sm">Messages</span>
+                                        <span className="font-semibold text-sm">0 / 5,000</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <Divider />
+
                             {/* Account Info */}
                             <div className="w-full">
                                 <div className="flex justify-content-between mb-2">
@@ -374,7 +437,7 @@ export default function ProfilePage() {
                                                 <h4 className="mb-2">Two-Factor Authentication (2FA)</h4>
                                                 <p className="text-500 mt-0">Add an extra layer of security to your account</p>
                                             </div>
-                                            <InputSwitch checked={twoFactorEnabled} onChange={(e) => setTwoFactorEnabled(e.value)} />
+                                            <InputSwitch checked={twoFactorEnabled} onChange={(e) => { setTwoFactorEnabled(e.value); autoSave('two_factor_enabled', e.value); }} />
                                         </div>
                                     </div>
 
@@ -404,7 +467,7 @@ export default function ProfilePage() {
                                         <label className="block mb-2 font-semibold">Language</label>
                                         <Dropdown
                                             value={language}
-                                            onChange={(e) => setLanguage(e.value)}
+                                            onChange={(e) => { setLanguage(e.value); autoSave('language', e.value); }}
                                             options={[
                                                 { label: '🇬🇧 English', value: 'en' },
                                                 { label: '🇸🇦 العربية', value: 'ar' }
@@ -418,7 +481,7 @@ export default function ProfilePage() {
                                         <label className="block mb-2 font-semibold">Timezone</label>
                                         <Dropdown
                                             value={timezone}
-                                            onChange={(e) => setTimezone(e.value)}
+                                            onChange={(e) => { setTimezone(e.value); autoSave('timezone', e.value); }}
                                             options={[
                                                 { label: 'UTC', value: 'UTC' },
                                                 { label: 'GMT+4 (Dubai)', value: 'Asia/Dubai' },
@@ -434,7 +497,7 @@ export default function ProfilePage() {
                                         <label className="block mb-2 font-semibold">Date Format</label>
                                         <Dropdown
                                             value={dateFormat}
-                                            onChange={(e) => setDateFormat(e.value)}
+                                            onChange={(e) => { setDateFormat(e.value); autoSave('date_format', e.value); }}
                                             options={[
                                                 { label: 'DD/MM/YYYY', value: 'DD/MM/YYYY' },
                                                 { label: 'MM/DD/YYYY', value: 'MM/DD/YYYY' },
@@ -456,7 +519,7 @@ export default function ProfilePage() {
                                                 <div className="font-semibold">Email Notifications</div>
                                                 <div className="text-500 text-sm">Receive updates via email</div>
                                             </div>
-                                            <InputSwitch checked={emailNotifications} onChange={(e) => setEmailNotifications(e.value)} />
+                                            <InputSwitch checked={emailNotifications} onChange={(e) => { setEmailNotifications(e.value); autoSave('email_notifications', e.value); }} />
                                         </div>
                                     </div>
 
@@ -467,59 +530,19 @@ export default function ProfilePage() {
                                                 <div className="font-semibold">Push Notifications</div>
                                                 <div className="text-500 text-sm">Receive browser notifications</div>
                                             </div>
-                                            <InputSwitch checked={pushNotifications} onChange={(e) => setPushNotifications(e.value)} />
+                                            <InputSwitch checked={pushNotifications} onChange={(e) => { setPushNotifications(e.value); autoSave('push_notifications', e.value); }} />
                                         </div>
                                     </div>
 
-                                    <div className="col-12 mt-3">
-                                        <Button label="Save Preferences" icon="pi pi-check" size="small" />
-                                    </div>
                                 </div>
                             </TabPanel>
 
-                            {/* Subscription Tab */}
-                            <TabPanel header="Subscription" leftIcon="pi pi-star">
+                            {/* Backup & Export Tab */}
+                            <TabPanel header="Backup" leftIcon="pi pi-save">
                                 <div className="grid">
-                                    {/* Current Plan */}
                                     <div className="col-12">
-                                        <div className="surface-card p-4 border-round">
-                                            <div className="flex align-items-center justify-content-between mb-3">
-                                                <div>
-                                                    <h4 className="mt-0 mb-2">Current Plan</h4>
-                                                    <div className="text-2xl font-bold text-primary">Free Plan</div>
-                                                </div>
-                                                <Tag value="Active" severity="success" icon="pi pi-check" />
-                                            </div>
-                                            <p className="text-500 mt-0">You are currently on the free plan</p>
-                                            <Button label="Upgrade Plan" icon="pi pi-arrow-up" severity="success" size="small" />
-                                        </div>
-                                    </div>
-
-                                    <div className="col-12">
-                                        <Divider />
-                                        <h4 className="mb-3">Usage Statistics</h4>
-                                    </div>
-
-                                    {/* Rate Limits */}
-                                    <div className="col-12 md:col-6">
-                                        <div className="surface-card p-3 border-round">
-                                            <div className="text-500 mb-2">API Requests</div>
-                                            <div className="text-2xl font-semibold mb-2">0 / 1,000</div>
-                                            <small className="text-500">per month</small>
-                                        </div>
-                                    </div>
-
-                                    <div className="col-12 md:col-6">
-                                        <div className="surface-card p-3 border-round">
-                                            <div className="text-500 mb-2">Messages Sent</div>
-                                            <div className="text-2xl font-semibold mb-2">0 / 5,000</div>
-                                            <small className="text-500">per month</small>
-                                        </div>
-                                    </div>
-
-                                    <div className="col-12">
-                                        <Divider />
-                                        <h4 className="mb-3">Backup Settings</h4>
+                                        <h4 className="mb-3">Data Management</h4>
+                                        <p className="text-500 mb-4">Export your data or backup your settings</p>
                                     </div>
 
                                     {/* Backup */}
@@ -527,6 +550,7 @@ export default function ProfilePage() {
                                         <div className="flex gap-2">
                                             <Button label="Export Data" icon="pi pi-download" outlined size="small" />
                                             <Button label="Backup Settings" icon="pi pi-save" outlined size="small" />
+                                            <Button label="Import Data" icon="pi pi-upload" outlined size="small" />
                                         </div>
                                     </div>
                                 </div>
