@@ -52,7 +52,18 @@ const AppMenu = () => {
                 { 
                     label: 'Settings', 
                     icon: 'pi pi-fw pi-cog', 
-                    to: '/settings' 
+                    items: [
+                        {
+                            label: 'General',
+                            icon: 'pi pi-fw pi-cog',
+                            to: '/settings'
+                        },
+                        {
+                            label: 'Webhooks',
+                            icon: 'pi pi-fw pi-link',
+                            to: '/settings/webhooks'
+                        }
+                    ]
                 },
                 { 
                     label: 'Profile', 

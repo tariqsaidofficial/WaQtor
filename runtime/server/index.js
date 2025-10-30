@@ -33,6 +33,7 @@ const WebSocketBridge = require('./services/websocketBridge');
 const EnhancedWAClientHandler = require('./services/enhancedWAClientHandler');
 const SmartBotService = require('./services/smartbotService');
 const errorMonitor = require('./services/errorMonitor');
+const EventIntegration = require('./webhooks/eventIntegration');
 
 // Routes
 const messageRoutes = require('./routes/message');
@@ -46,6 +47,7 @@ const smartbotRoutes = require('./routes/smartbot');
 const reportsRoutes = require('./routes/reports');
 const interactiveRoutes = require('./routes/interactive');
 const notificationRoutes = require('./routes/notifications');
+const webhookRoutes = require('./routes/webhooks');
 
 // Load environment variables from root .env file
 dotenv.config({ path: path.join(__dirname, '../../.env') });
@@ -59,6 +61,7 @@ let sessionMonitor = null;
 let websocketBridge = null;
 let enhancedWAClientHandler = null;
 let smartbotService = null;
+let eventIntegration = null;
 
 // Middleware
 app.use(helmet());
@@ -153,6 +156,7 @@ app.use('/api/interactive', apiKeyAuth, interactiveRoutes);
 app.use('/api/smartbot', apiKeyAuth, smartbotRoutes.router);
 app.use('/api/reports', apiKeyAuth, reportsRoutes);
 app.use('/api/notifications', apiKeyAuth, notificationRoutes);
+app.use('/api/webhooks', apiKeyAuth, webhookRoutes);
 
 // Quick send message endpoint (for compatibility)
 app.post('/api/sendMessage', apiKeyAuth, async (req, res) => {
@@ -245,6 +249,12 @@ async function startServer() {
         // Make smartbotService available to routes
         app.set('smartbotService', smartbotService);
         logger.info('SmartBot service initialized');
+
+        // Initialize Webhook Event Integration
+        logger.info('Initializing webhook event integration...');
+        eventIntegration = new EventIntegration(waClient);
+        eventIntegration.initialize();
+        logger.info('Webhook event integration initialized');
 
         // Initialize Message Queue Processor
         logger.info('Initializing message queue processor...');
