@@ -533,7 +533,734 @@ sidebar_collapsed: boolean
 
 ---
 
-## 🏗️ **المرحلة 8️⃣: Architecture Evolution - من Monolith إلى Modular Microkernel**
+## 🪝 **المرحلة 8️⃣: Webhook Dispatcher - آمن وقابل للإدارة**
+
+### **🎯 الأهداف:**
+- ✅ نظام Webhooks آمن مع HMAC Signature
+- ✅ دعم أحداث متعددة (message_received, message_sent, campaign_executed, client_disconnected)
+- ✅ لوحة إدارة في Settings لإدارة Webhooks
+- ✅ Retry mechanism مع exponential backoff
+- ✅ Webhook logs & monitoring
+
+---
+
+### **📡 Webhook Events:**
+
+```typescript
+type WebhookEvent = 
+  | 'message_received'
+  | 'message_sent'
+  | 'campaign_executed'
+  | 'campaign_completed'
+  | 'client_connected'
+  | 'client_disconnected'
+  | 'smartbot_reply'
+  | 'session_qr';
+
+interface WebhookPayload {
+  event: WebhookEvent;
+  timestamp: string;
+  data: any;
+}
+```
+
+---
+
+### **🔒 HMAC Signature (Security):**
+
+#### **Server-Side (Signing):**
+
+```typescript
+// server/webhooks/signature.ts
+import crypto from 'crypto';
+
+export function generateSignature(payload: string, secret: string): string {
+  const hmac = crypto.createHmac('sha256', secret);
+  hmac.update(payload);
+  return 'sha256=' + hmac.digest('hex');
+}
+
+export function verifySignature(
+  payload: string,
+  signature: string,
+  secret: string
+): boolean {
+  const expectedSignature = generateSignature(payload, secret);
+  return crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expectedSignature)
+  );
+}
+```
+
+#### **Client-Side (Verification):**
+
+```typescript
+// Your webhook endpoint
+app.post('/webhooks/waqtor', (req, res) => {
+  const signature = req.headers['x-waqtor-signature'];
+  const rawBody = JSON.stringify(req.body);
+  
+  const secret = process.env.WEBHOOK_SECRET;
+  const expectedSig = 'sha256=' + crypto
+    .createHmac('sha256', secret)
+    .update(rawBody)
+    .digest('hex');
+  
+  if (signature !== expectedSig) {
+    return res.status(401).json({ error: 'Invalid signature' });
+  }
+  
+  // Process webhook
+  console.log('Webhook received:', req.body);
+  res.status(200).json({ received: true });
+});
+```
+
+---
+
+### **🔧 Backend Implementation:**
+
+#### **1. Webhook Manager:**
+
+```typescript
+// server/webhooks/WebhookManager.ts
+import axios from 'axios';
+import { EventBus } from '@waqtor/core';
+import { generateSignature } from './signature';
+
+interface WebhookConfig {
+  id: string;
+  url: string;
+  events: WebhookEvent[];
+  secret: string;
+  enabled: boolean;
+  retryAttempts: number;
+  retryDelay: number;
+}
+
+export class WebhookManager {
+  private webhooks: Map<string, WebhookConfig> = new Map();
+  private eventBus: EventBus;
+
+  constructor(eventBus: EventBus) {
+    this.eventBus = eventBus;
+    this.setupEventListeners();
+  }
+
+  private setupEventListeners() {
+    // Message received
+    this.eventBus.on('message.received', (data) => {
+      this.dispatch('message_received', data);
+    });
+
+    // Message sent
+    this.eventBus.on('message.sent', (data) => {
+      this.dispatch('message_sent', data);
+    });
+
+    // Campaign executed
+    this.eventBus.on('campaign.progress', (data) => {
+      this.dispatch('campaign_executed', data);
+    });
+
+    // Campaign completed
+    this.eventBus.on('campaign.completed', (data) => {
+      this.dispatch('campaign_completed', data);
+    });
+
+    // Client connected
+    this.eventBus.on('session.status', (data) => {
+      if (data.status === 'ready') {
+        this.dispatch('client_connected', data);
+      } else if (data.status === 'disconnected') {
+        this.dispatch('client_disconnected', data);
+      }
+    });
+
+    // SmartBot reply
+    this.eventBus.on('smartbot.reply', (data) => {
+      this.dispatch('smartbot_reply', data);
+    });
+
+    // Session QR
+    this.eventBus.on('session.qr', (data) => {
+      this.dispatch('session_qr', data);
+    });
+  }
+
+  async dispatch(event: WebhookEvent, data: any) {
+    const webhooks = Array.from(this.webhooks.values())
+      .filter(wh => wh.enabled && wh.events.includes(event));
+
+    for (const webhook of webhooks) {
+      await this.sendWebhook(webhook, event, data);
+    }
+  }
+
+  private async sendWebhook(
+    webhook: WebhookConfig,
+    event: WebhookEvent,
+    data: any,
+    attempt: number = 1
+  ) {
+    const payload: WebhookPayload = {
+      event,
+      timestamp: new Date().toISOString(),
+      data
+    };
+
+    const rawBody = JSON.stringify(payload);
+    const signature = generateSignature(rawBody, webhook.secret);
+
+    try {
+      const response = await axios.post(webhook.url, payload, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Waqtor-Signature': signature,
+          'X-Waqtor-Event': event,
+          'User-Agent': 'WaQtor-Webhook/2.2.0'
+        },
+        timeout: 10000
+      });
+
+      // Log success
+      await this.logWebhook(webhook.id, event, 'success', response.status);
+    } catch (error: any) {
+      console.error(`Webhook failed (attempt ${attempt}):`, error.message);
+
+      // Retry with exponential backoff
+      if (attempt < webhook.retryAttempts) {
+        const delay = webhook.retryDelay * Math.pow(2, attempt - 1);
+        setTimeout(() => {
+          this.sendWebhook(webhook, event, data, attempt + 1);
+        }, delay);
+      } else {
+        // Log failure
+        await this.logWebhook(webhook.id, event, 'failed', error.response?.status);
+      }
+    }
+  }
+
+  private async logWebhook(
+    webhookId: string,
+    event: string,
+    status: 'success' | 'failed',
+    statusCode?: number
+  ) {
+    // Save to database or file
+    console.log(`Webhook Log: ${webhookId} - ${event} - ${status} - ${statusCode}`);
+  }
+
+  // CRUD operations
+  addWebhook(config: WebhookConfig) {
+    this.webhooks.set(config.id, config);
+  }
+
+  removeWebhook(id: string) {
+    this.webhooks.delete(id);
+  }
+
+  updateWebhook(id: string, updates: Partial<WebhookConfig>) {
+    const webhook = this.webhooks.get(id);
+    if (webhook) {
+      this.webhooks.set(id, { ...webhook, ...updates });
+    }
+  }
+
+  getWebhook(id: string): WebhookConfig | undefined {
+    return this.webhooks.get(id);
+  }
+
+  getAllWebhooks(): WebhookConfig[] {
+    return Array.from(this.webhooks.values());
+  }
+}
+```
+
+#### **2. API Routes:**
+
+```typescript
+// server/api/webhooks.ts
+import express from 'express';
+import { WebhookManager } from '../webhooks/WebhookManager';
+
+const router = express.Router();
+
+// Get all webhooks
+router.get('/webhooks', (req, res) => {
+  const webhooks = webhookManager.getAllWebhooks();
+  res.json({ webhooks });
+});
+
+// Create webhook
+router.post('/webhooks', (req, res) => {
+  const { url, events, secret } = req.body;
+  
+  const webhook = {
+    id: generateId(),
+    url,
+    events,
+    secret: secret || generateSecret(),
+    enabled: true,
+    retryAttempts: 3,
+    retryDelay: 1000
+  };
+  
+  webhookManager.addWebhook(webhook);
+  res.status(201).json({ webhook });
+});
+
+// Update webhook
+router.patch('/webhooks/:id', (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+  
+  webhookManager.updateWebhook(id, updates);
+  res.json({ success: true });
+});
+
+// Delete webhook
+router.delete('/webhooks/:id', (req, res) => {
+  const { id } = req.params;
+  webhookManager.removeWebhook(id);
+  res.json({ success: true });
+});
+
+// Test webhook
+router.post('/webhooks/:id/test', async (req, res) => {
+  const { id } = req.params;
+  const webhook = webhookManager.getWebhook(id);
+  
+  if (!webhook) {
+    return res.status(404).json({ error: 'Webhook not found' });
+  }
+  
+  // Send test payload
+  await webhookManager.dispatch('message_received', {
+    from: 'test@c.us',
+    body: 'Test message',
+    timestamp: new Date().toISOString()
+  });
+  
+  res.json({ success: true, message: 'Test webhook sent' });
+});
+
+export default router;
+```
+
+---
+
+### **💻 Dashboard Implementation:**
+
+#### **1. Webhook Settings Page:**
+
+```typescript
+// dashboard/src/app/(main)/settings/webhooks/page.tsx
+'use client';
+
+import { useState, useEffect } from 'react';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { Button } from 'primereact/button';
+import { Dialog } from 'primereact/dialog';
+import { InputText } from 'primereact/inputtext';
+import { MultiSelect } from 'primereact/multiselect';
+import { InputSwitch } from 'primereact/inputswitch';
+import { Card } from 'primereact/card';
+import { Toast } from 'primereact/toast';
+import axios from 'axios';
+
+const WEBHOOK_EVENTS = [
+  { label: 'Message Received', value: 'message_received' },
+  { label: 'Message Sent', value: 'message_sent' },
+  { label: 'Campaign Executed', value: 'campaign_executed' },
+  { label: 'Campaign Completed', value: 'campaign_completed' },
+  { label: 'Client Connected', value: 'client_connected' },
+  { label: 'Client Disconnected', value: 'client_disconnected' },
+  { label: 'SmartBot Reply', value: 'smartbot_reply' },
+  { label: 'Session QR', value: 'session_qr' }
+];
+
+export default function WebhooksPage() {
+  const [webhooks, setWebhooks] = useState([]);
+  const [showDialog, setShowDialog] = useState(false);
+  const [editingWebhook, setEditingWebhook] = useState(null);
+  const [formData, setFormData] = useState({
+    url: '',
+    events: [],
+    secret: '',
+    enabled: true
+  });
+
+  useEffect(() => {
+    loadWebhooks();
+  }, []);
+
+  const loadWebhooks = async () => {
+    try {
+      const response = await axios.get('/api/webhooks');
+      setWebhooks(response.data.webhooks);
+    } catch (error) {
+      console.error('Failed to load webhooks:', error);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      if (editingWebhook) {
+        await axios.patch(`/api/webhooks/${editingWebhook.id}`, formData);
+      } else {
+        await axios.post('/api/webhooks', formData);
+      }
+      
+      setShowDialog(false);
+      loadWebhooks();
+      toast.current.show({
+        severity: 'success',
+        summary: 'Success',
+        detail: 'Webhook saved successfully'
+      });
+    } catch (error) {
+      console.error('Failed to save webhook:', error);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await axios.delete(`/api/webhooks/${id}`);
+      loadWebhooks();
+    } catch (error) {
+      console.error('Failed to delete webhook:', error);
+    }
+  };
+
+  const handleTest = async (id: string) => {
+    try {
+      await axios.post(`/api/webhooks/${id}/test`);
+      toast.current.show({
+        severity: 'info',
+        summary: 'Test Sent',
+        detail: 'Test webhook has been dispatched'
+      });
+    } catch (error) {
+      console.error('Failed to test webhook:', error);
+    }
+  };
+
+  const actionTemplate = (rowData: any) => {
+    return (
+      <div className="flex gap-2">
+        <Button
+          icon="pi pi-pencil"
+          size="small"
+          onClick={() => {
+            setEditingWebhook(rowData);
+            setFormData(rowData);
+            setShowDialog(true);
+          }}
+        />
+        <Button
+          icon="pi pi-send"
+          size="small"
+          severity="info"
+          onClick={() => handleTest(rowData.id)}
+        />
+        <Button
+          icon="pi pi-trash"
+          size="small"
+          severity="danger"
+          onClick={() => handleDelete(rowData.id)}
+        />
+      </div>
+    );
+  };
+
+  return (
+    <div className="grid">
+      <div className="col-12">
+        <Card title="Webhooks Management">
+          <div className="mb-3">
+            <Button
+              label="Add Webhook"
+              icon="pi pi-plus"
+              onClick={() => {
+                setEditingWebhook(null);
+                setFormData({ url: '', events: [], secret: '', enabled: true });
+                setShowDialog(true);
+              }}
+            />
+          </div>
+
+          <DataTable value={webhooks} paginator rows={10}>
+            <Column field="url" header="URL" />
+            <Column
+              field="events"
+              header="Events"
+              body={(rowData) => rowData.events.join(', ')}
+            />
+            <Column
+              field="enabled"
+              header="Status"
+              body={(rowData) => (
+                <span className={`badge ${rowData.enabled ? 'badge-success' : 'badge-danger'}`}>
+                  {rowData.enabled ? 'Enabled' : 'Disabled'}
+                </span>
+              )}
+            />
+            <Column header="Actions" body={actionTemplate} />
+          </DataTable>
+        </Card>
+      </div>
+
+      <Dialog
+        visible={showDialog}
+        onHide={() => setShowDialog(false)}
+        header={editingWebhook ? 'Edit Webhook' : 'Add Webhook'}
+        style={{ width: '600px' }}
+      >
+        <div className="flex flex-column gap-3">
+          <div>
+            <label>Webhook URL</label>
+            <InputText
+              value={formData.url}
+              onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+              className="w-full"
+              placeholder="https://yourapp.com/webhooks/waqtor"
+            />
+          </div>
+
+          <div>
+            <label>Events</label>
+            <MultiSelect
+              value={formData.events}
+              onChange={(e) => setFormData({ ...formData, events: e.value })}
+              options={WEBHOOK_EVENTS}
+              className="w-full"
+              placeholder="Select events"
+            />
+          </div>
+
+          <div>
+            <label>Secret Key</label>
+            <InputText
+              value={formData.secret}
+              onChange={(e) => setFormData({ ...formData, secret: e.target.value })}
+              className="w-full"
+              placeholder="Leave empty to auto-generate"
+            />
+          </div>
+
+          <div className="flex align-items-center gap-2">
+            <label>Enabled</label>
+            <InputSwitch
+              checked={formData.enabled}
+              onChange={(e) => setFormData({ ...formData, enabled: e.value })}
+            />
+          </div>
+
+          <div className="flex justify-content-end gap-2">
+            <Button label="Cancel" severity="secondary" onClick={() => setShowDialog(false)} />
+            <Button label="Save" onClick={handleSave} />
+          </div>
+        </div>
+      </Dialog>
+
+      <Toast ref={toast} />
+    </div>
+  );
+}
+```
+
+---
+
+### **📝 Example Usage:**
+
+#### **cURL Test:**
+
+```bash
+# Test webhook endpoint
+curl -X POST https://yourapp.com/webhooks/waqtor \
+  -H "X-Waqtor-Signature: sha256=abc123..." \
+  -H "X-Waqtor-Event: message_received" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "event": "message_received",
+    "timestamp": "2025-10-30T19:30:00Z",
+    "data": {
+      "from": "9715...@c.us",
+      "body": "Hi",
+      "messageId": "msg_123",
+      "isGroup": false
+    }
+  }'
+```
+
+#### **Node.js Webhook Receiver:**
+
+```javascript
+const express = require('express');
+const crypto = require('crypto');
+
+const app = express();
+app.use(express.json());
+
+const WEBHOOK_SECRET = 'your_secret_here';
+
+app.post('/webhooks/waqtor', (req, res) => {
+  // Verify signature
+  const signature = req.headers['x-waqtor-signature'];
+  const rawBody = JSON.stringify(req.body);
+  
+  const expectedSig = 'sha256=' + crypto
+    .createHmac('sha256', WEBHOOK_SECRET)
+    .update(rawBody)
+    .digest('hex');
+  
+  if (signature !== expectedSig) {
+    return res.status(401).json({ error: 'Invalid signature' });
+  }
+  
+  // Process webhook
+  const { event, data } = req.body;
+  
+  switch (event) {
+    case 'message_received':
+      console.log('New message from:', data.from);
+      console.log('Message body:', data.body);
+      break;
+      
+    case 'campaign_completed':
+      console.log('Campaign completed:', data.campaignId);
+      console.log('Total sent:', data.totalSent);
+      break;
+      
+    default:
+      console.log('Unknown event:', event);
+  }
+  
+  res.status(200).json({ received: true });
+});
+
+app.listen(3000, () => {
+  console.log('Webhook receiver running on port 3000');
+});
+```
+
+---
+
+### **📊 Webhook Logs & Monitoring:**
+
+```typescript
+// Dashboard component for webhook logs
+interface WebhookLog {
+  id: string;
+  webhookId: string;
+  event: string;
+  status: 'success' | 'failed';
+  statusCode: number;
+  timestamp: Date;
+  responseTime: number;
+}
+
+export function WebhookLogs() {
+  const [logs, setLogs] = useState<WebhookLog[]>([]);
+
+  return (
+    <Card title="Webhook Logs">
+      <DataTable value={logs} paginator rows={20}>
+        <Column field="timestamp" header="Time" />
+        <Column field="event" header="Event" />
+        <Column field="status" header="Status" />
+        <Column field="statusCode" header="Status Code" />
+        <Column field="responseTime" header="Response Time (ms)" />
+      </DataTable>
+    </Card>
+  );
+}
+```
+
+---
+
+### **🔧 Configuration (.env):**
+
+```bash
+# Webhook settings
+WEBHOOK_SECRET=your_super_secret_key_here
+WEBHOOK_RETRY_ATTEMPTS=3
+WEBHOOK_RETRY_DELAY=1000
+WEBHOOK_TIMEOUT=10000
+```
+
+---
+
+### **📝 الملفات المطلوبة:**
+
+```
+📁 packages/server/src/webhooks/
+├── WebhookManager.ts          # Webhook dispatcher
+├── signature.ts               # HMAC signature utilities
+└── types.ts                   # TypeScript definitions
+
+📁 packages/server/src/api/
+└── webhooks.ts                # Webhook CRUD API
+
+📁 dashboard/src/app/(main)/settings/webhooks/
+├── page.tsx                   # Webhooks management page
+└── logs/
+    └── page.tsx               # Webhook logs page
+
+📁 documentation/
+└── WEBHOOKS.md                # Webhook documentation
+```
+
+---
+
+### **✅ Features:**
+
+- ✅ **HMAC Signature**: Secure webhook verification
+- ✅ **Multiple Events**: 8 supported events
+- ✅ **Retry Mechanism**: Exponential backoff (3 attempts)
+- ✅ **Dashboard UI**: Full CRUD interface
+- ✅ **Test Endpoint**: Send test webhooks
+- ✅ **Logs & Monitoring**: Track webhook deliveries
+- ✅ **Enable/Disable**: Toggle webhooks on/off
+- ✅ **Secret Management**: Auto-generate or custom secrets
+
+---
+
+## 🤖 **المرحلة 9️⃣: SmartBot AI Engine v2 - من Fuzzy إلى Semantic Matching**
+
+### **🎯 الأهداف:**
+- ✅ ترقية من Fuzzy Matching إلى Semantic Matching
+- ✅ استخدام Embeddings (MiniLM/MPNet) للبحث المتجهي
+- ✅ Confidence scoring لكل رد
+- ✅ Template expansion مع متغيرات ديناميكية
+- ✅ Learning loop مع مراجعة بشرية
+- ✅ نقل التخزين من JSON إلى قاعدة بيانات علائقية
+
+### **📊 Pipeline: Message → Language Detection → Embedding → Semantic Search → Safety → Template → Response → Learning**
+
+### **🗄️ Database Schema:**
+- `smartbot_rules` (enhanced with tone, variables, priority)
+- `smartbot_embeddings` (NEW - stores 384-dim vectors)
+- `smartbot_history` (migrated from JSON)
+- `smartbot_suggestions` (NEW - learning loop)
+
+### **🔧 Components:**
+- EmbeddingService (Xenova transformers)
+- SmartBotEngineV2 (main pipeline)
+- TemplateEngine (variable expansion)
+- SafetyLayer (profanity + no-reply rules)
+
+### **💻 Dashboard Features:**
+- Rule List + "Generate Embedding" button
+- Test Bench (Top-3 matches + confidence)
+- Auto-Improve (suggestions from unmatched queries)
+
+---
+
+## 🏗️ **المرحلة 10: Architecture Evolution - من Monolith إلى Modular Microkernel**
 
 ### **🎯 الأهداف:**
 - ✅ تحديث المحرك بدون كسر الواجهة (Backward Compatibility)
@@ -1822,6 +2549,1061 @@ export class WebSocketMonitor {
     };
   }
 }
+```
+
+---
+
+## 🔄 **Migration Guide: من WebSocket الخام إلى Socket.IO**
+
+### **🧭 المرحلة 1: فحص الـ WebSocket الحالي**
+
+#### **📍 الهدف:**
+معرفة:
+- أين يبدأ تشغيل الـ WebSocket حالياً؟
+- ما الـ events المفعلة؟
+- ما نوع الاتصال بين backend وDashboard؟ (`ws://` أو `wss://`)
+
+#### **🧩 خطوات الفحص:**
+
+**1. ابحث عن WebSocket الخام في Backend:**
+
+```bash
+grep -R "WebSocket" runtime/server
+grep -R "new Server" runtime/server
+grep -R "ws" runtime/server
+```
+
+**إذا ظهر:**
+```javascript
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ server });
+```
+→ يستخدم مكتبة `ws` الخام
+
+**2. تحقق من منطق broadcast:**
+
+```javascript
+wss.on('connection', socket => {
+  socket.on('message', data => { ... })
+});
+
+// Broadcast pattern
+wss.clients.forEach(client => {
+  client.send(JSON.stringify({ type: 'update', data: ... }))
+});
+```
+
+**3. افحص الواجهة (Dashboard):**
+
+```javascript
+// dashboard/src/hooks/useWebSocket.js
+const ws = new WebSocket(import.meta.env.VITE_WS_URL);
+ws.onmessage = (msg) => { ... }
+```
+
+**4. تحقق من .env:**
+
+```bash
+VITE_WS_URL=ws://localhost:8080
+```
+
+#### **📋 الملخص بعد الفحص:**
+- ✅ Backend = `ws` library
+- ✅ Frontend = Native `WebSocket`
+- ✅ الأحداث: `qr`, `status`, `campaign_update`
+- ❌ لا يوجد heartbeat أو reconnect تلقائي
+
+---
+
+### **🔧 المرحلة 2: تحويل النظام إلى Socket.IO**
+
+#### **⚙️ أولاً: تثبيت المكتبات**
+
+**Backend:**
+```bash
+cd runtime/server
+npm install socket.io
+```
+
+**Frontend (Dashboard):**
+```bash
+cd dashboard
+npm install socket.io-client
+```
+
+#### **🏗️ ثانياً: تعديل السيرفر (Backend)**
+
+**✳️ قبل (WebSocket الخام):**
+
+```javascript
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ server });
+
+wss.on('connection', (socket) => {
+  socket.send(JSON.stringify({ type: 'welcome', data: 'Connected' }));
+  
+  socket.on('message', (data) => {
+    const message = JSON.parse(data);
+    // Handle message
+  });
+});
+```
+
+**✅ بعد (Socket.IO):**
+
+```javascript
+// runtime/server/index.js
+const httpServer = require('http').createServer(app);
+const { Server } = require('socket.io');
+
+const io = new Server(httpServer, {
+  path: '/ws',
+  cors: {
+    origin: process.env.DASHBOARD_URL || '*',
+    methods: ['GET', 'POST'],
+    credentials: true
+  },
+  pingInterval: 15000,      // Heartbeat every 15s
+  pingTimeout: 30000,       // Timeout after 30s
+  transports: ['websocket', 'polling']
+});
+
+// =============== Namespaces =================
+const statusNS = io.of('/status');
+const campaignsNS = io.of('/campaigns');
+const smartbotNS = io.of('/smartbot');
+
+// =============== Status Namespace ===========
+statusNS.on('connection', (socket) => {
+  console.log('🔌 Status client connected:', socket.id);
+
+  // بث QR جديد
+  socket.emit('qr', { qrCode: 'data:image/png;base64,...' });
+
+  // بث الحالة
+  socket.emit('status', { 
+    state: 'ready',
+    isConnected: true,
+    phoneNumber: '971...'
+  });
+
+  // بث الإحصائيات
+  socket.emit('stats', {
+    totalMessages: 1234,
+    totalCampaigns: 56,
+    activeUsers: 12
+  });
+
+  socket.on('disconnect', (reason) => {
+    console.log('⚠️ Client disconnected:', reason);
+  });
+});
+
+// =============== Campaigns Namespace ========
+campaignsNS.on('connection', (socket) => {
+  console.log('📢 Campaign socket connected:', socket.id);
+
+  socket.on('start_campaign', (payload) => {
+    console.log('Received campaign start:', payload);
+    
+    // Emit progress updates
+    socket.emit('campaign_progress', { 
+      campaignId: payload.id,
+      progress: 30,
+      sent: 30,
+      total: 100
+    });
+  });
+
+  socket.on('pause_campaign', (payload) => {
+    console.log('Pausing campaign:', payload.id);
+    socket.emit('campaign_paused', { campaignId: payload.id });
+  });
+});
+
+// =============== SmartBot Namespace =========
+smartbotNS.on('connection', (socket) => {
+  console.log('🤖 SmartBot socket connected:', socket.id);
+
+  socket.on('test_rule', (payload) => {
+    // Test SmartBot rule
+    socket.emit('test_result', {
+      matches: [...],
+      confidence: 0.85
+    });
+  });
+});
+
+// =============== Authentication Middleware ==
+io.use((socket, next) => {
+  const apiKey = socket.handshake.auth?.key;
+  if (apiKey === process.env.API_KEY) {
+    next();
+  } else {
+    next(new Error('Unauthorized'));
+  }
+});
+
+// =============== Connection Monitoring ======
+io.engine.on('connection_error', (err) => {
+  console.error('❌ Connection error:', err.code, err.message);
+});
+
+setInterval(() => {
+  console.log('🧩 Active connections:', {
+    status: statusNS.sockets.size,
+    campaigns: campaignsNS.sockets.size,
+    smartbot: smartbotNS.sockets.size
+  });
+}, 30000);
+
+// =============== Start Server ===============
+const PORT = process.env.PORT || 8080;
+httpServer.listen(PORT, () => {
+  console.log(`🚀 Server listening on port ${PORT}`);
+});
+```
+
+#### **🧩 ثالثاً: تحديث WebSocket Client في Dashboard**
+
+**✳️ قبل (WebSocket الخام):**
+
+```javascript
+// dashboard/src/hooks/useWebSocket.js
+const ws = new WebSocket(import.meta.env.VITE_WS_URL);
+
+ws.onopen = () => console.log('Connected');
+ws.onmessage = (msg) => {
+  const data = JSON.parse(msg.data);
+  if (data.type === 'qr') setQr(data.qrCode);
+  if (data.type === 'status') setStatus(data.state);
+};
+ws.onerror = (err) => console.error(err);
+ws.onclose = () => console.log('Disconnected');
+```
+
+**✅ بعد (Socket.IO Client):**
+
+```typescript
+// dashboard/src/hooks/useStatusWebSocket.ts
+import { io, Socket } from 'socket.io-client';
+import { useEffect, useRef } from 'react';
+import { useAppStore } from '../store/useAppStore';
+
+export function useStatusWebSocket() {
+  const { setQrCode, setSessionStatus, setStats } = useAppStore();
+  const socketRef = useRef<Socket | null>(null);
+
+  useEffect(() => {
+    // Create connection
+    const socket = io(`${import.meta.env.VITE_WS_URL}/status`, {
+      path: '/ws',
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 3000,
+      reconnectionDelayMax: 10000,
+      timeout: 20000,
+      auth: {
+        key: import.meta.env.VITE_API_KEY
+      }
+    });
+
+    socketRef.current = socket;
+
+    // Connection events
+    socket.on('connect', () => {
+      console.log('✅ Connected to /status namespace');
+    });
+
+    socket.on('disconnect', (reason) => {
+      console.log('⚠️ Disconnected from /status:', reason);
+    });
+
+    socket.on('connect_error', (error) => {
+      console.error('❌ Connection error:', error.message);
+    });
+
+    // Data events
+    socket.on('qr', (data) => {
+      console.log('📱 QR Code received');
+      setQrCode(data.qrCode);
+    });
+
+    socket.on('status', (data) => {
+      console.log('📊 Status update:', data.state);
+      setSessionStatus(data);
+    });
+
+    socket.on('stats', (data) => {
+      console.log('📈 Stats update:', data);
+      setStats(data);
+    });
+
+    // Cleanup
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  return socketRef.current;
+}
+```
+
+**Campaigns WebSocket Hook:**
+
+```typescript
+// dashboard/src/hooks/useCampaignsWebSocket.ts
+import { io, Socket } from 'socket.io-client';
+import { useEffect, useRef } from 'react';
+import { useCampaignStore } from '../store/useCampaignStore';
+
+export function useCampaignsWebSocket() {
+  const { updateCampaignProgress, setCampaignStatus } = useCampaignStore();
+  const socketRef = useRef<Socket | null>(null);
+
+  useEffect(() => {
+    const socket = io(`${import.meta.env.VITE_WS_URL}/campaigns`, {
+      path: '/ws',
+      transports: ['websocket'],
+      reconnection: true,
+      auth: {
+        key: import.meta.env.VITE_API_KEY
+      }
+    });
+
+    socketRef.current = socket;
+
+    socket.on('connect', () => {
+      console.log('✅ Connected to /campaigns namespace');
+    });
+
+    socket.on('campaign_progress', (data) => {
+      updateCampaignProgress(data.campaignId, data);
+    });
+
+    socket.on('campaign_completed', (data) => {
+      setCampaignStatus(data.campaignId, 'completed');
+    });
+
+    socket.on('campaign_paused', (data) => {
+      setCampaignStatus(data.campaignId, 'paused');
+    });
+
+    socket.on('campaign_failed', (data) => {
+      setCampaignStatus(data.campaignId, 'failed');
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  // Helper functions
+  const startCampaign = (campaignId: string) => {
+    socketRef.current?.emit('start_campaign', { id: campaignId });
+  };
+
+  const pauseCampaign = (campaignId: string) => {
+    socketRef.current?.emit('pause_campaign', { id: campaignId });
+  };
+
+  return {
+    socket: socketRef.current,
+    startCampaign,
+    pauseCampaign
+  };
+}
+```
+
+**Update .env:**
+
+```bash
+# Before
+VITE_WS_URL=ws://localhost:8080
+
+# After
+VITE_WS_URL=http://localhost:8080
+VITE_API_KEY=your_secret_api_key_here
+```
+
+**Note:** Socket.IO يستخدم `http://` وليس `ws://` لأن البروتوكول يُدار تلقائياً.
+
+---
+
+### **🧪 المرحلة 3: اختبار التشغيل والمراقبة**
+
+#### **✅ 1) تشغيل السيرفر**
+
+```bash
+cd runtime/server
+node index.js
+```
+
+**Expected output:**
+```
+🚀 Server listening on port 8080
+🔌 Status client connected: abc123
+📢 Campaign socket connected: def456
+```
+
+#### **✅ 2) تشغيل Dashboard**
+
+```bash
+cd dashboard
+npm run dev
+```
+
+**Browser Console:**
+```
+✅ Connected to /status namespace
+✅ Connected to /campaigns namespace
+📱 QR Code received
+📊 Status update: ready
+```
+
+#### **✅ 3) اختبار Auto-Reconnect**
+
+1. أوقف السيرفر (`Ctrl+C`)
+2. راقب Dashboard console:
+   ```
+   ⚠️ Disconnected from /status: transport close
+   🔄 Trying to reconnect... attempt 1
+   🔄 Trying to reconnect... attempt 2
+   ```
+3. شغل السيرفر مرة أخرى
+4. يجب أن ترى:
+   ```
+   ✅ Connected to /status namespace
+   ```
+
+#### **✅ 4) اختبار مراقبة الاتصالات**
+
+**Add to backend:**
+
+```javascript
+// Monitor connections every 10 seconds
+setInterval(() => {
+  const stats = {
+    status: statusNS.sockets.size,
+    campaigns: campaignsNS.sockets.size,
+    smartbot: smartbotNS.sockets.size,
+    total: io.engine.clientsCount
+  };
+  
+  console.log('🧩 Active connections:', stats);
+}, 10000);
+
+// Log connection errors
+io.engine.on('connection_error', (err) => {
+  console.error('❌ Connection error:', {
+    code: err.code,
+    message: err.message,
+    context: err.context
+  });
+});
+```
+
+---
+
+### **🧠 المرحلة 4: التوسعة والتحسين**
+
+#### **1. Custom Heartbeat:**
+
+```javascript
+// runtime/server/ws/heartbeat.js
+export function setupHeartbeat(io) {
+  io.on('connection', (socket) => {
+    let heartbeatInterval;
+
+    socket.on('ping', () => {
+      socket.emit('pong', { timestamp: Date.now() });
+    });
+
+    heartbeatInterval = setInterval(() => {
+      socket.emit('heartbeat', { timestamp: Date.now() });
+    }, 15000);
+
+    socket.on('disconnect', () => {
+      clearInterval(heartbeatInterval);
+    });
+  });
+}
+```
+
+#### **2. Auth Middleware:**
+
+```javascript
+// runtime/server/middleware/wsAuth.js
+export function wsAuthMiddleware(socket, next) {
+  const apiKey = socket.handshake.auth?.key;
+  const token = socket.handshake.auth?.token;
+
+  // Verify API Key
+  if (apiKey === process.env.API_KEY) {
+    return next();
+  }
+
+  // Verify JWT Token
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      socket.user = decoded;
+      return next();
+    } catch (err) {
+      return next(new Error('Invalid token'));
+    }
+  }
+
+  next(new Error('Unauthorized'));
+}
+
+// Usage
+io.use(wsAuthMiddleware);
+```
+
+#### **3. Logging & Metrics:**
+
+```javascript
+// runtime/server/utils/wsLogger.js
+export class WebSocketLogger {
+  constructor() {
+    this.metrics = {
+      connections: 0,
+      disconnections: 0,
+      messages: 0,
+      errors: 0
+    };
+  }
+
+  logConnection(namespace, socketId) {
+    this.metrics.connections++;
+    console.log(`[${new Date().toISOString()}] 🔌 Connection: ${namespace} - ${socketId}`);
+  }
+
+  logDisconnection(namespace, socketId, reason) {
+    this.metrics.disconnections++;
+    console.log(`[${new Date().toISOString()}] ⚠️ Disconnection: ${namespace} - ${socketId} - ${reason}`);
+  }
+
+  logMessage(namespace, event, data) {
+    this.metrics.messages++;
+    console.log(`[${new Date().toISOString()}] 📨 Message: ${namespace}/${event}`, data);
+  }
+
+  logError(error) {
+    this.metrics.errors++;
+    console.error(`[${new Date().toISOString()}] ❌ Error:`, error);
+  }
+
+  getMetrics() {
+    return {
+      ...this.metrics,
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString()
+    };
+  }
+}
+```
+
+#### **4. Redis Adapter (للـ Multi-Instance):**
+
+```bash
+npm install @socket.io/redis-adapter redis
+```
+
+```javascript
+// runtime/server/index.js
+import { createAdapter } from '@socket.io/redis-adapter';
+import { createClient } from 'redis';
+
+const pubClient = createClient({ url: 'redis://localhost:6379' });
+const subClient = pubClient.duplicate();
+
+Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
+  io.adapter(createAdapter(pubClient, subClient));
+  console.log('✅ Redis adapter connected');
+});
+```
+
+---
+
+### **🔒 نصائح أمنية**
+
+#### **1. Rate Limiting:**
+
+```javascript
+import rateLimit from 'socket.io-rate-limit';
+
+io.use(rateLimit({
+  tokensPerInterval: 100,
+  interval: 60000, // 1 minute
+  fireImmediately: true
+}));
+```
+
+#### **2. Message Validation:**
+
+```javascript
+socket.on('start_campaign', (payload) => {
+  // Validate payload
+  if (!payload.id || typeof payload.id !== 'string') {
+    socket.emit('error', { message: 'Invalid campaign ID' });
+    return;
+  }
+
+  // Sanitize input
+  const sanitizedId = payload.id.trim();
+  
+  // Process...
+});
+```
+
+#### **3. CORS Configuration:**
+
+```javascript
+const io = new Server(httpServer, {
+  cors: {
+    origin: [
+      'http://localhost:3000',
+      'https://yourdomain.com'
+    ],
+    methods: ['GET', 'POST'],
+    credentials: true,
+    allowedHeaders: ['Authorization']
+  }
+});
+```
+
+---
+
+### **🏁 الخلاصة**
+
+| العنصر | قبل (WebSocket الخام) | بعد (Socket.IO) |
+|--------|----------------------|-----------------|
+| **اتصال ثابت** | ❌ يتطلب إعادة اتصال يدوية | ✅ Auto-reconnect |
+| **Namespaces** | ❌ غير مدعوم | ✅ `/status`, `/campaigns`, `/smartbot` |
+| **Heartbeat** | ❌ يدوي | ✅ تلقائي (15s) |
+| **Error Handling** | ❌ محدود | ✅ شامل مع retry |
+| **Scalability** | ❌ صعب | ✅ Redis adapter |
+| **Authentication** | ❌ يدوي | ✅ Middleware built-in |
+| **Monitoring** | ❌ محدود | ✅ Metrics + Logging |
+| **Browser Support** | ⚠️ WebSocket فقط | ✅ WebSocket + Polling fallback |
+
+---
+
+## 🗺️ **خطة التنفيذ العملية (Incremental Roadmap)**
+
+### **Phase A: التهيئة المعمارية (4-6 أسابيع)**
+
+#### **الأهداف:**
+- ✅ إنشاء `packages/core` مع Events/Commands كواجهات رسمية
+- ✅ نقل WhatsAppClient/SessionManager إلى core
+- ✅ جعل server يحقن core عبر DI
+
+#### **المهام:**
+
+**Week 1-2: Core Package Setup**
+- [ ] إنشاء `packages/core` directory structure
+- [ ] تعريف Event interfaces (`session.qr`, `message.received`, etc.)
+- [ ] تعريف Command interfaces (`sendText`, `createCampaign`, etc.)
+- [ ] إنشاء EventBus class
+- [ ] Unit tests للـ EventBus
+
+**Week 3-4: Migration**
+- [ ] نقل WhatsAppClient من `runtime/server` إلى `packages/core`
+- [ ] نقل SessionManager إلى core
+- [ ] تحديث imports في server
+- [ ] Integration tests
+
+**Week 5-6: Dependency Injection**
+- [ ] إنشاء `bootstrap.ts` في server
+- [ ] تطبيق DI pattern
+- [ ] Refactor server routes لاستخدام injected core
+- [ ] Documentation update
+
+**Deliverables:**
+```
+packages/core/
+├── src/
+│   ├── engine/
+│   │   ├── WhatsAppClient.ts
+│   │   ├── SessionManager.ts
+│   │   └── EventBus.ts
+│   ├── types/
+│   │   ├── events.ts
+│   │   └── commands.ts
+│   └── index.ts
+└── package.json
+
+packages/server/
+├── src/
+│   ├── bootstrap.ts          # DI setup
+│   └── index.ts
+```
+
+---
+
+### **Phase B: WebSocket 2.0 (2-3 أسابيع)**
+
+#### **الأهداف:**
+- ✅ تنفيذ Namespaces (`/status`, `/campaigns`, `/smartbot`)
+- ✅ Heartbeat + Auto-reconnect + Backpressure
+- ✅ تحديث Dashboard hooks
+
+#### **المهام:**
+
+**Week 1: Server Implementation**
+- [ ] إنشاء `packages/server/src/ws/` directory
+- [ ] تطبيق `/status` namespace
+- [ ] تطبيق `/campaigns` namespace مع backpressure
+- [ ] تطبيق `/smartbot` namespace
+- [ ] Heartbeat mechanism (ping/pong every 15s)
+- [ ] WebSocket authentication middleware
+
+**Week 2: Client Implementation**
+- [ ] إنشاء `useWebSocket` base hook
+- [ ] إنشاء `useStatusWebSocket` hook
+- [ ] إنشاء `useCampaignsWebSocket` hook
+- [ ] إنشاء `useSmartBotWebSocket` hook
+- [ ] Auto-reconnect مع exponential backoff
+
+**Week 3: Testing & Integration**
+- [ ] WebSocket connection tests
+- [ ] Namespace isolation tests
+- [ ] Backpressure tests
+- [ ] Dashboard integration
+- [ ] Performance testing
+
+**Deliverables:**
+```
+packages/server/src/ws/
+├── index.ts
+├── namespaces/
+│   ├── status.ts
+│   ├── campaigns.ts
+│   └── smartbot.ts
+└── utils/
+    ├── backpressure.ts
+    └── heartbeat.ts
+
+dashboard/src/hooks/
+├── useWebSocket.ts
+├── useStatusWebSocket.ts
+├── useCampaignsWebSocket.ts
+└── useSmartBotWebSocket.ts
+```
+
+---
+
+### **Phase C: Webhooks (2-3 أسابيع)**
+
+#### **الأهداف:**
+- ✅ مسار `/api/webhooks/*` مع HMAC signature
+- ✅ نموذج إدارة Webhooks في Settings
+- ✅ Test delivery + logs
+
+#### **المهام:**
+
+**Week 1: Backend**
+- [ ] إنشاء WebhookManager class
+- [ ] تطبيق HMAC signature (sha256)
+- [ ] API routes (CRUD + test)
+- [ ] Retry mechanism مع exponential backoff
+- [ ] Webhook logging
+
+**Week 2: Dashboard**
+- [ ] صفحة Webhooks management
+- [ ] Add/Edit/Delete webhooks
+- [ ] Test webhook button
+- [ ] Webhook logs viewer
+- [ ] MultiSelect للأحداث
+
+**Week 3: Testing & Documentation**
+- [ ] Integration tests
+- [ ] cURL examples
+- [ ] Node.js receiver example
+- [ ] Python receiver example
+- [ ] WEBHOOKS.md documentation
+
+**Deliverables:**
+```
+packages/server/src/webhooks/
+├── WebhookManager.ts
+├── signature.ts
+└── types.ts
+
+packages/server/src/api/
+└── webhooks.ts
+
+dashboard/src/app/(main)/settings/webhooks/
+├── page.tsx
+└── logs/page.tsx
+
+documentation/
+└── WEBHOOKS.md
+```
+
+---
+
+### **Phase D: SmartBot v2 (3-4 أسابيع)**
+
+#### **الأهداف:**
+- ✅ طبقة Embeddings + تخزين متجهي
+- ✅ Migration لجداول embeddings/history
+- ✅ Test Bench في الواجهة
+
+#### **المهام:**
+
+**Week 1: Embedding Service**
+- [ ] تثبيت `@xenova/transformers`
+- [ ] إنشاء EmbeddingService class
+- [ ] تطبيق cosine similarity
+- [ ] Benchmark performance
+
+**Week 2: Database Migration**
+- [ ] إنشاء جداول جديدة (embeddings, history, suggestions)
+- [ ] Migration script من JSON إلى SQLite
+- [ ] Data validation
+
+**Week 3: SmartBot Engine v2**
+- [ ] تطبيق Pipeline (8 steps)
+- [ ] TemplateEngine class
+- [ ] SafetyLayer class
+- [ ] Integration مع EventBus
+
+**Week 4: Dashboard**
+- [ ] Enhanced rule management
+- [ ] "Generate Embedding" button
+- [ ] Test Bench (Top-3 matches + confidence)
+- [ ] Auto-Improve suggestions page
+
+**Deliverables:**
+```
+packages/server/src/smartbot/
+├── EmbeddingService.ts
+├── SmartBotEngineV2.ts
+├── TemplateEngine.ts
+├── SafetyLayer.ts
+└── LanguageDetector.ts
+
+database/migrations/
+└── 003_smartbot_v2.sql
+
+dashboard/src/app/(main)/smartbot/
+├── page.tsx (enhanced)
+└── suggestions/
+    └── page.tsx
+```
+
+---
+
+### **Phase E: SDK (3-4 أسابيع)**
+
+#### **الأهداف:**
+- ✅ `@waqtor/sdk` (Node.js) يغلف REST/WS/Webhooks
+- ✅ Python SDK بنفس العقود
+
+#### **المهام:**
+
+**Week 1-2: Node.js SDK**
+- [ ] إنشاء `packages/sdk-node`
+- [ ] WaqtorClient class
+- [ ] Resources (messages, campaigns, status)
+- [ ] WebSocket client wrapper
+- [ ] TypeScript definitions
+- [ ] Unit tests
+
+**Week 3: Python SDK**
+- [ ] إنشاء `packages/sdk-py`
+- [ ] WaqtorClient class (Python)
+- [ ] Resources implementation
+- [ ] Type hints
+- [ ] Unit tests
+
+**Week 4: Documentation & Examples**
+- [ ] SDK documentation
+- [ ] Example projects (basic-bot, campaign-scheduler)
+- [ ] API reference
+- [ ] Publish to npm/PyPI
+
+**Deliverables:**
+```
+packages/sdk-node/
+├── src/
+│   ├── client.ts
+│   ├── resources/
+│   │   ├── messages.ts
+│   │   ├── campaigns.ts
+│   │   └── status.ts
+│   └── index.ts
+├── examples/
+└── README.md
+
+packages/sdk-py/
+├── waqtor/
+│   ├── __init__.py
+│   ├── client.py
+│   └── resources/
+├── examples/
+└── README.md
+```
+
+---
+
+## 📊 **Timeline Summary:**
+
+| Phase | Duration | Start | End | Status |
+|-------|----------|-------|-----|--------|
+| **Phase A** | 4-6 weeks | Week 1 | Week 6 | 🔵 Planned |
+| **Phase B** | 2-3 weeks | Week 7 | Week 9 | 🔵 Planned |
+| **Phase C** | 2-3 weeks | Week 10 | Week 12 | 🔵 Planned |
+| **Phase D** | 3-4 weeks | Week 13 | Week 16 | 🔵 Planned |
+| **Phase E** | 3-4 weeks | Week 17 | Week 20 | 🔵 Planned |
+| **Total** | **14-20 weeks** | - | - | **~4-5 months** |
+
+---
+
+## 📝 **Design Contracts (للـ README العام)**
+
+### **Event Names:**
+
+```typescript
+// Session Events
+- 'session.qr'              // QR code generated
+- 'session.status'          // Status changed (ready/disconnected/connecting)
+- 'session.stats'           // Statistics updated
+
+// Message Events
+- 'message.received'        // Incoming message
+- 'message.sent'            // Outgoing message sent
+- 'message.delivered'       // Message delivered
+- 'message.read'            // Message read
+
+// Campaign Events
+- 'campaign.progress'       // Campaign execution progress
+- 'campaign.completed'      // Campaign finished
+- 'campaign.paused'         // Campaign paused
+- 'campaign.failed'         // Campaign failed
+
+// SmartBot Events
+- 'smartbot.reply'          // Auto-reply sent
+- 'smartbot.rule-updated'   // Rule created/updated/deleted
+```
+
+### **REST → Commands:**
+
+```typescript
+// Message Commands
+POST /api/messages/send-text
+POST /api/messages/send-media
+POST /api/messages/send-button
+POST /api/messages/send-list
+
+// Campaign Commands
+POST /api/campaigns/create
+POST /api/campaigns/:id/execute
+POST /api/campaigns/:id/pause
+POST /api/campaigns/:id/resume
+POST /api/campaigns/:id/cancel
+GET  /api/campaigns/:id/status
+
+// Session Commands
+GET  /api/session/state
+POST /api/session/logout
+POST /api/session/restart
+
+// SmartBot Commands
+GET  /api/smartbot/rules
+POST /api/smartbot/rules
+PUT  /api/smartbot/rules/:id
+DELETE /api/smartbot/rules/:id
+POST /api/smartbot/test
+
+// Webhook Commands
+GET  /api/webhooks
+POST /api/webhooks
+PATCH /api/webhooks/:id
+DELETE /api/webhooks/:id
+POST /api/webhooks/:id/test
+```
+
+---
+
+## 🔄 **Data Flow (للـ README الخاص بالـ Dashboard)**
+
+### **WebSocket Data Flow:**
+
+```
+Backend Events
+    ↓
+WebSocket Namespaces
+    ├─ /status    → session.qr, session.status, session.stats
+    ├─ /campaigns → campaign.progress, campaign.completed
+    └─ /smartbot  → message.received, smartbot.reply
+    ↓
+Dashboard Hooks
+    ├─ useStatusWebSocket()
+    ├─ useCampaignsWebSocket()
+    └─ useSmartBotWebSocket()
+    ↓
+Zustand Store
+    ├─ setQrCode()
+    ├─ setSessionStatus()
+    ├─ updateCampaignProgress()
+    └─ addSmartBotReply()
+    ↓
+React Components
+    ├─ QRStatusCard
+    ├─ SessionStatsCard
+    ├─ CampaignList
+    └─ SmartBotHistory
+```
+
+### **REST Data Flow:**
+
+```
+User Action
+    ↓
+React Component
+    ↓
+React Query Mutation
+    ├─ useMutation('sendMessage')
+    ├─ useMutation('createCampaign')
+    └─ useMutation('executeCommand')
+    ↓
+REST API
+    ├─ POST /api/messages/send-text
+    ├─ POST /api/campaigns/create
+    └─ POST /api/campaigns/:id/execute
+    ↓
+Backend Processing
+    ↓
+Event Emitted
+    ↓
+WebSocket Broadcast
+    ↓
+Dashboard Update (real-time)
+```
+
+### **Cache Strategy:**
+
+```typescript
+// React Query Cache
+- Stale Time: 30 seconds (most queries)
+- Cache Time: 5 minutes
+- Retry: 3 attempts with exponential backoff
+- Refetch on Window Focus: Enabled for critical data
+
+// Zustand Store (UI State)
+- Theme, scale, sidebar visibility
+- Branding (logo, app name, footer)
+- Persisted to localStorage
+
+// WebSocket (Real-time)
+- In-memory cache
+- No persistence
+- Auto-reconnect on disconnect
 ```
 
 ---
