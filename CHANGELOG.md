@@ -8,11 +8,82 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- Webhooks support (delivered / read / failed)
 - Multi-session management
 - Template library with variables
 - Image compression before sending
 - Cloud storage integration (S3, GCS)
+- SmartBot AI v2 with Semantic Matching
+
+## [2.3.0] - 2025-10-31
+
+### 🔔 Real-Time Notifications & Webhook System Release
+
+#### Added - Notification System (Phase 6)
+- 🔔 **Real-Time Notifications** - Instant updates via WebSocket
+- 📊 **Notification Center** - Full-page view at `/notifications`
+- 🔴 **Unread Badge** - Live count in topbar
+- 🎨 **Color-Coded Types** - Success, Error, Warning, Info
+- ⏱️ **Time Ago** - Relative timestamps (e.g., "5 minutes ago")
+- ✅ **Mark as Read** - Single or bulk operations
+- 🗑️ **Delete Notifications** - Remove unwanted notifications
+- 🔄 **Auto-Refresh** - 30-second polling + WebSocket fallback
+- 📱 **Responsive Design** - Works on all devices
+- 🎯 **Empty States** - Beautiful UI when no notifications
+
+#### Added - Webhook Dispatcher System (Phase 8)
+- 🔒 **HMAC SHA-256 Security** - Signed payloads for verification
+- 📡 **8 Webhook Events**:
+  - `message_received` - When message is received
+  - `message_sent` - When message is sent (ACK=3)
+  - `campaign_executed` - During campaign execution
+  - `campaign_completed` - When campaign completes
+  - `client_connected` - WhatsApp client connected
+  - `client_disconnected` - WhatsApp client disconnected
+  - `smartbot_reply` - SmartBot auto-reply sent
+  - `session_qr` - QR code generated
+- 🔄 **Retry Mechanism** - Exponential backoff (configurable)
+- 📊 **Logs & Monitoring** - Track all webhook deliveries (last 1000)
+- 🎯 **Event Filtering** - Subscribe to specific events
+- 🔧 **Settings UI** - Full CRUD interface at `/settings/webhooks`
+- 🧪 **Test Endpoint** - Send test webhooks
+- 🔑 **Secret Management** - Auto-generate or custom secrets
+- ⚡ **Real-Time Dispatch** - Instant event delivery
+- 📈 **Statistics** - Success rate, avg duration, failed attempts
+
+#### Added - WebSocket Real-Time Updates
+- ⚡ **Instant Notifications** - No polling delay
+- 🔄 **Auto-Reconnection** - Exponential backoff (max 5 attempts)
+- 🎯 **Event Subscription** - `notification:new`, `notification:count`
+- 🛡️ **Fallback to Polling** - Graceful degradation
+- 🔐 **API Key Authentication** - Secure WebSocket connections
+
+#### Backend
+- Created `/runtime/server/webhooks/signature.js` - HMAC signing
+- Created `/runtime/server/webhooks/WebhookManager.js` - Main webhook manager
+- Created `/runtime/server/webhooks/eventIntegration.js` - Event listeners
+- Created `/runtime/server/routes/webhooks.js` - API endpoints
+- Created `/runtime/server/routes/notifications.js` - Notification API
+- Enhanced `WebSocketBridge` with notification broadcasting
+- Added webhook event integration with WhatsApp client
+
+#### Frontend
+- Created `/dashboard/src/components/Notifications/` - Notification components
+- Created `/dashboard/src/app/(main)/notifications/page.tsx` - Notifications page
+- Created `/dashboard/src/app/(main)/settings/webhooks/page.tsx` - Webhooks settings
+- Created `/dashboard/src/contexts/NotificationContext.tsx` - Global state
+- Created `/dashboard/src/hooks/useNotificationWebSocket.ts` - WebSocket hook
+- Added notification bell in AppTopbar
+- Added webhooks menu item in sidebar
+
+#### Documentation
+- Created `NOTIFICATIONS_SETUP.md` - Complete notification system guide
+- Updated `IMPLEMENTATION_PLAN.md` - Marked Phase 6 & 8 as complete
+- Updated `README.md` - Added v2.3.0 release notes
+
+#### Fixed
+- Fixed EventIntegration initialization when WhatsApp client not ready
+- Fixed InputSwitch TypeScript errors in webhooks page
+- Improved error handling in webhook event listeners
 
 ## [2.2.0] - 2025-10-30
 

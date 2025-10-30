@@ -5,7 +5,7 @@
     <p><strong>"A new vector for intelligent communication."</strong></p>
     <br />
     <p>
-        <a href="https://github.com/tariqsaidofficial/WaQtor"><img src="https://img.shields.io/badge/WaQtor-v2.2.0-blue.svg" alt="WaQtor v2.2.0" /></a>
+        <a href="https://github.com/tariqsaidofficial/WaQtor"><img src="https://img.shields.io/badge/WaQtor-v2.3.0-blue.svg" alt="WaQtor v2.3.0" /></a>
         <a href="https://www.npmjs.com/package/waqtor"><img src="https://img.shields.io/npm/v/waqtor.svg?color=blue" alt="npm version" /></a>
         <a href="https://github.com/tariqsaidofficial/WaQtor/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
         <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen" alt="Node" /></a>
@@ -27,7 +27,44 @@
 
 ---
 
-## 🆕 What's New in v2.2.0
+## 🆕 What's New in v2.3.0
+
+**October 31, 2025** - Real-Time Notifications & Webhook System Release!
+
+### 🔔 Notification System (Phase 6 - COMPLETE!)
+- 🔔 **Real-Time Notifications** - Instant updates via WebSocket
+- 📊 **Notification Center** - Full-page view with filtering
+- 🔴 **Unread Badge** - Live count in topbar
+- 🎨 **Color-Coded Types** - Success, Error, Warning, Info
+- ⏱️ **Time Ago** - Relative timestamps (e.g., "5 minutes ago")
+- ✅ **Mark as Read** - Single or bulk operations
+- 🗑️ **Delete Notifications** - Remove unwanted notifications
+- 🔄 **Auto-Refresh** - 30-second polling + WebSocket
+- 📱 **Responsive Design** - Works on all devices
+- 🎯 **Empty States** - Beautiful UI when no notifications
+
+### 🪝 Webhook Dispatcher System (Phase 8 - COMPLETE!)
+- 🔒 **HMAC SHA-256 Security** - Signed payloads for verification
+- 📡 **8 Webhook Events** - message_received, message_sent, campaign_executed, campaign_completed, client_connected, client_disconnected, smartbot_reply, session_qr
+- 🔄 **Retry Mechanism** - Exponential backoff (configurable)
+- 📊 **Logs & Monitoring** - Track all webhook deliveries
+- 🎯 **Event Filtering** - Subscribe to specific events
+- 🔧 **Settings UI** - Full CRUD interface in dashboard
+- 🧪 **Test Endpoint** - Send test webhooks
+- 🔑 **Secret Management** - Auto-generate or custom secrets
+- ⚡ **Real-Time Dispatch** - Instant event delivery
+- 📈 **Statistics** - Success rate, avg duration, failed attempts
+
+### 🔌 WebSocket Real-Time Updates
+- ⚡ **Instant Notifications** - No polling delay
+- 🔄 **Auto-Reconnection** - Exponential backoff (max 5 attempts)
+- 🎯 **Event Subscription** - notification:new, notification:count
+- 🛡️ **Fallback to Polling** - Graceful degradation
+- 🔐 **API Key Authentication** - Secure WebSocket connections
+
+---
+
+## 📜 Previous Release - v2.2.0
 
 **October 30, 2025** - Enhanced Settings & UI Improvements Release!
 

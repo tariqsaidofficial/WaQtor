@@ -1,7 +1,7 @@
 {
   "name": "waqtor",
-  "version": "2.2.0",
-  "description": "WaQtor - Smart Automation Engine for WhatsApp with Real-time Dashboard. Built on whatsapp-web.js v1.34.1",
+  "version": "2.3.0",
+  "description": "WaQtor - Smart Automation Engine for WhatsApp with Real-time Notifications & Webhooks. Built on whatsapp-web.js v1.34.1",
   "main": "./index.js",
   "typings": "./index.d.ts",
   "scripts": {
