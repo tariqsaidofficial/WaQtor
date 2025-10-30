@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { StyleClass } from 'primereact/styleclass';
 import { Button } from 'primereact/button';
 import { Ripple } from 'primereact/ripple';
-import { Divider } from 'primereact/divider';
 import { LayoutContext } from '../../../components/layout/context/layoutcontext';
 import { NodeRef } from '@/types';
 import { classNames } from 'primereact/utils';
@@ -33,7 +32,7 @@ const LandingPage = () => {
                             height='50'
                             className='mr-0 lg:mr-2'
                         />
-                        <span className='text-900 font-medium text-2xl line-height-3 mr-8'>SAKAI</span>
+                        <span className='text-900 font-medium text-2xl line-height-3 mr-8'>WaQtor</span>
                     </Link>
                     <StyleClass
                         nodeRef={menuRef as NodeRef}
@@ -94,51 +93,124 @@ const LandingPage = () => {
                             </li>
                         </ul>
                         <div className='flex justify-content-between lg:block border-top-1 lg:border-top-none surface-border py-3 lg:py-0 mt-3 lg:mt-0'>
-                            <Button
-                                label='Login'
-                                text
-                                rounded
-                                className='border-none font-light line-height-2 text-blue-500'
-                            ></Button>
-                            <Button
-                                label='Register'
-                                rounded
-                                className='border-none ml-5 font-light line-height-2 bg-blue-500 text-white'
-                            ></Button>
+                            <Link href='/auth/login'>
+                                <Button
+                                    label='Login'
+                                    text
+                                    rounded
+                                    className='border-none font-light line-height-2'
+                                    style={{ color: 'var(--primary-color)' }}
+                                />
+                            </Link>
+                            <Link href='/auth/signup'>
+                                <Button
+                                    label='Get Started'
+                                    rounded
+                                    className='border-none ml-5 font-light line-height-2 text-white'
+                                    style={{ backgroundColor: 'var(--primary-color)' }}
+                                />
+                            </Link>
                         </div>
                     </div>
                 </div>
 
-                <div
-                    id='hero'
-                    className='flex flex-column pt-4 px-4 lg:px-8 overflow-hidden'
-                    style={{
-                        background:
-                            'linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), radial-gradient(77.36% 256.97% at 77.36% 57.52%, #EEEFAF 0%, #C3E3FA 100%)',
-                        clipPath: 'ellipse(150% 87% at 93% 13%)',
-                    }}
-                >
-                    <div className='mx-4 md:mx-8 mt-0 md:mt-4'>
-                        <h1 className='text-6xl font-bold text-gray-900 line-height-2'>
-                            <span className='font-light block'>Eu sem integer</span>eget magna fermentum
-                        </h1>
-                        <p className='font-normal text-2xl line-height-3 md:mt-3 text-gray-700'>
-                            Sed blandit libero volutpat sed cras. Fames ac turpis egestas integer. Placerat in egestas
-                            erat...{' '}
-                        </p>
-                        <Button
-                            type='button'
-                            label='Get Started'
-                            rounded
-                            className='text-xl border-none mt-3 bg-blue-500 font-normal line-height-3 px-3 text-white'
-                        ></Button>
+                {/* Hero Section */}
+                <div id='hero' className='grid grid-nogutter surface-0 text-800'>
+                    <div className='col-12 md:col-6 p-6 text-center md:text-left flex align-items-center'>
+                        <section>
+                            <span className='block text-6xl font-bold mb-1'>WhatsApp Business</span>
+                            <div className='text-6xl font-bold mb-3' style={{ color: 'var(--primary-color)' }}>
+                                API Made Simple
+                            </div>
+                            <p className='mt-0 mb-4 text-700 line-height-3'>
+                                Send messages, manage campaigns, and automate customer interactions with our powerful WhatsApp Business API platform.
+                            </p>
+
+                            <Link href='/auth/signup'>
+                                <Button 
+                                    label='Get Started Free' 
+                                    type='button' 
+                                    className='mr-3 p-button-raised'
+                                    style={{ backgroundColor: 'var(--primary-color)', borderColor: 'var(--primary-color)' }}
+                                />
+                            </Link>
+                            <Link href='/'>
+                                <Button label='Live Demo' type='button' className='p-button-outlined' />
+                            </Link>
+                        </section>
                     </div>
-                    <div className='flex justify-content-center md:justify-content-end'>
-                        <img src='/demo/images/landing/screen-1.png' alt='Hero Image' className='w-9 md:w-auto' />
+                    <div className='col-12 md:col-6 overflow-hidden flex align-items-center justify-content-center p-6'>
+                        <i className='pi pi-whatsapp' style={{ fontSize: '20rem', color: 'var(--primary-color)', opacity: 0.1 }}></i>
                     </div>
                 </div>
 
-                <div id='features' className='py-4 px-4 lg:px-8 mt-5 mx-0 lg:mx-8'>
+                {/* Features Section */}
+                <div id='features' className='surface-0 text-center py-8 px-4 lg:px-8'>
+                    <div className='mb-3 font-bold text-3xl'>
+                        <span className='text-900'>One Product, </span>
+                        <span style={{ color: 'var(--primary-color)' }}>Many Solutions</span>
+                    </div>
+                    <div className='text-700 mb-6'>Powerful WhatsApp Business API platform with everything you need to succeed.</div>
+                    <div className='grid'>
+                        <div className='col-12 md:col-4 mb-4 px-5'>
+                            <span className='p-3 shadow-2 mb-3 inline-block' style={{ borderRadius: '10px' }}>
+                                <i className='pi pi-code text-4xl' style={{ color: 'var(--primary-color)' }}></i>
+                            </span>
+                            <div className='text-900 text-xl mb-3 font-medium'>Built for Developers</div>
+                            <span className='text-700 line-height-3'>
+                                RESTful API, WebSocket support, and comprehensive documentation for seamless integration.
+                            </span>
+                        </div>
+                        <div className='col-12 md:col-4 mb-4 px-5'>
+                            <span className='p-3 shadow-2 mb-3 inline-block' style={{ borderRadius: '10px' }}>
+                                <i className='pi pi-lock text-4xl' style={{ color: 'var(--primary-color)' }}></i>
+                            </span>
+                            <div className='text-900 text-xl mb-3 font-medium'>End-to-End Encryption</div>
+                            <span className='text-700 line-height-3'>
+                                Your messages are secured with WhatsApp's end-to-end encryption protocol.
+                            </span>
+                        </div>
+                        <div className='col-12 md:col-4 mb-4 px-5'>
+                            <span className='p-3 shadow-2 mb-3 inline-block' style={{ borderRadius: '10px' }}>
+                                <i className='pi pi-check-circle text-4xl' style={{ color: 'var(--primary-color)' }}></i>
+                            </span>
+                            <div className='text-900 text-xl mb-3 font-medium'>Easy to Use</div>
+                            <span className='text-700 line-height-3'>
+                                Intuitive dashboard with drag-and-drop campaign builder and real-time analytics.
+                            </span>
+                        </div>
+                        <div className='col-12 md:col-4 mb-4 px-5'>
+                            <span className='p-3 shadow-2 mb-3 inline-block' style={{ borderRadius: '10px' }}>
+                                <i className='pi pi-bolt text-4xl' style={{ color: 'var(--primary-color)' }}></i>
+                            </span>
+                            <div className='text-900 text-xl mb-3 font-medium'>Fast & Reliable</div>
+                            <span className='text-700 line-height-3'>
+                                High-performance infrastructure with 99.9% uptime and instant message delivery.
+                            </span>
+                        </div>
+                        <div className='col-12 md:col-4 mb-4 px-5'>
+                            <span className='p-3 shadow-2 mb-3 inline-block' style={{ borderRadius: '10px' }}>
+                                <i className='pi pi-github text-4xl' style={{ color: 'var(--primary-color)' }}></i>
+                            </span>
+                            <div className='text-900 text-xl mb-3 font-medium'>Open Source</div>
+                            <span className='text-700 line-height-3'>
+                                Built on open-source technologies with active community support and contributions.
+                            </span>
+                        </div>
+                        <div className='col-12 md:col-4 md:mb-4 mb-0 px-3'>
+                            <span className='p-3 shadow-2 mb-3 inline-block' style={{ borderRadius: '10px' }}>
+                                <i className='pi pi-shield text-4xl' style={{ color: 'var(--primary-color)' }}></i>
+                            </span>
+                            <div className='text-900 text-xl mb-3 font-medium'>Trusted Security</div>
+                            <span className='text-700 line-height-3'>
+                                Enterprise-grade security with OAuth 2.0, API keys, and role-based access control.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Old Features Grid - Keep for reference */}
+                <div className='py-4 px-4 lg:px-8 mt-5 mx-0 lg:mx-8' style={{ display: 'none' }}>
                     <div className='grid justify-content-center'>
                         <div className='col-12 text-center mt-8 mb-4'>
                             <h2 className='text-900 font-normal mb-2'>Marvelous Features</h2>
@@ -481,126 +553,142 @@ const LandingPage = () => {
                     </div>
                 </div>
 
-                <div id='pricing' className='py-4 px-4 lg:px-8 my-2 md:my-4'>
-                    <div className='text-center'>
-                        <h2 className='text-900 font-normal mb-2'>Matchless Pricing</h2>
-                        <span className='text-600 text-2xl'>Amet consectetur adipiscing elit...</span>
+                {/* Pricing Section */}
+                <div id='pricing' className='surface-0 py-8 px-4 lg:px-8'>
+                    <div className='text-900 font-bold text-6xl mb-4 text-center'>Pricing Plans</div>
+                    <div className='text-700 text-xl mb-6 text-center line-height-3'>
+                        Choose the perfect plan for your business needs
                     </div>
 
-                    <div className='grid justify-content-between mt-8 md:mt-0'>
-                        <div className='col-12 lg:col-4 p-0 md:p-3'>
-                            <div className='p-3 flex flex-column border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all'>
-                                <h3 className='text-900 text-center my-5'>Free</h3>
-                                <img src='/demo/images/landing/free.svg' className='w-10 h-10 mx-auto' alt='free' />
-                                <div className='my-5 text-center'>
-                                    <span className='text-5xl font-bold mr-2 text-900'>$0</span>
-                                    <span className='text-600'>per month</span>
-                                    <Button
-                                        label='Get Started'
-                                        rounded
-                                        className='block mx-auto mt-4 border-none ml-3 font-light line-height-2 bg-blue-500 text-white'
-                                    ></Button>
+                    <div className='grid'>
+                        <div className='col-12 lg:col-4'>
+                            <div className='p-3 h-full'>
+                                <div className='shadow-2 p-3 h-full flex flex-column' style={{ borderRadius: '6px' }}>
+                                    <div className='text-900 font-medium text-xl mb-2'>Basic</div>
+                                    <div className='text-600'>Perfect for getting started</div>
+                                    <hr className='my-3 mx-0 border-top-1 border-bottom-none border-300' />
+                                    <div className='flex align-items-center'>
+                                        <span className='font-bold text-2xl text-900'>$9</span>
+                                        <span className='ml-2 font-medium text-600'>per month</span>
+                                    </div>
+                                    <hr className='my-3 mx-0 border-top-1 border-bottom-none border-300' />
+                                    <ul className='list-none p-0 m-0 flex-grow-1'>
+                                        <li className='flex align-items-center mb-3'>
+                                            <i className='pi pi-check-circle text-green-500 mr-2'></i>
+                                            <span>1,000 messages/month</span>
+                                        </li>
+                                        <li className='flex align-items-center mb-3'>
+                                            <i className='pi pi-check-circle text-green-500 mr-2'></i>
+                                            <span>Basic analytics</span>
+                                        </li>
+                                        <li className='flex align-items-center mb-3'>
+                                            <i className='pi pi-check-circle text-green-500 mr-2'></i>
+                                            <span>Email support</span>
+                                        </li>
+                                    </ul>
+                                    <hr className='mb-3 mx-0 border-top-1 border-bottom-none border-300 mt-auto' />
+                                    <Button label='Buy Now' className='p-3 w-full mt-auto' />
                                 </div>
-                                <Divider className='w-full bg-surface-200'></Divider>
-                                <ul className='my-5 list-none p-0 flex text-900 flex-column'>
-                                    <li className='py-2'>
-                                        <i className='pi pi-fw pi-check text-xl text-cyan-500 mr-2'></i>
-                                        <span className='text-xl line-height-3'>Responsive Layout</span>
-                                    </li>
-                                    <li className='py-2'>
-                                        <i className='pi pi-fw pi-check text-xl text-cyan-500 mr-2'></i>
-                                        <span className='text-xl line-height-3'>Unlimited Push Messages</span>
-                                    </li>
-                                    <li className='py-2'>
-                                        <i className='pi pi-fw pi-check text-xl text-cyan-500 mr-2'></i>
-                                        <span className='text-xl line-height-3'>50 Support Ticket</span>
-                                    </li>
-                                    <li className='py-2'>
-                                        <i className='pi pi-fw pi-check text-xl text-cyan-500 mr-2'></i>
-                                        <span className='text-xl line-height-3'>Free Shipping</span>
-                                    </li>
-                                </ul>
                             </div>
                         </div>
 
-                        <div className='col-12 lg:col-4 p-0 md:p-3 mt-4 md:mt-0'>
-                            <div className='p-3 flex flex-column border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all'>
-                                <h3 className='text-900 text-center my-5'>Startup</h3>
-                                <img
-                                    src='/demo/images/landing/startup.svg'
-                                    className='w-10 h-10 mx-auto'
-                                    alt='startup'
-                                />
-                                <div className='my-5 text-center'>
-                                    <span className='text-5xl font-bold mr-2 text-900'>$1</span>
-                                    <span className='text-600'>per month</span>
-                                    <Button
-                                        label='Try Free'
-                                        rounded
-                                        className='block mx-auto mt-4 border-none ml-3 font-light line-height-2 bg-blue-500 text-white'
-                                    ></Button>
+                        <div className='col-12 lg:col-4'>
+                            <div className='p-3 h-full'>
+                                <div className='shadow-2 p-3 h-full flex flex-column' style={{ borderRadius: '6px' }}>
+                                    <div className='text-900 font-medium text-xl mb-2'>Premium</div>
+                                    <div className='text-600'>For growing businesses</div>
+                                    <hr className='my-3 mx-0 border-top-1 border-bottom-none border-300' />
+                                    <div className='flex align-items-center'>
+                                        <span className='font-bold text-2xl text-900'>$29</span>
+                                        <span className='ml-2 font-medium text-600'>per month</span>
+                                    </div>
+                                    <hr className='my-3 mx-0 border-top-1 border-bottom-none border-300' />
+                                    <ul className='list-none p-0 m-0 flex-grow-1'>
+                                        <li className='flex align-items-center mb-3'>
+                                            <i className='pi pi-check-circle text-green-500 mr-2'></i>
+                                            <span>10,000 messages/month</span>
+                                        </li>
+                                        <li className='flex align-items-center mb-3'>
+                                            <i className='pi pi-check-circle text-green-500 mr-2'></i>
+                                            <span>Advanced analytics</span>
+                                        </li>
+                                        <li className='flex align-items-center mb-3'>
+                                            <i className='pi pi-check-circle text-green-500 mr-2'></i>
+                                            <span>Campaign management</span>
+                                        </li>
+                                        <li className='flex align-items-center mb-3'>
+                                            <i className='pi pi-check-circle text-green-500 mr-2'></i>
+                                            <span>Priority support</span>
+                                        </li>
+                                    </ul>
+                                    <hr className='mb-3 mx-0 border-top-1 border-bottom-none border-300' />
+                                    <Button label='Buy Now' className='p-3 w-full' />
                                 </div>
-                                <Divider className='w-full bg-surface-200'></Divider>
-                                <ul className='my-5 list-none p-0 flex text-900 flex-column'>
-                                    <li className='py-2'>
-                                        <i className='pi pi-fw pi-check text-xl text-cyan-500 mr-2'></i>
-                                        <span className='text-xl line-height-3'>Responsive Layout</span>
-                                    </li>
-                                    <li className='py-2'>
-                                        <i className='pi pi-fw pi-check text-xl text-cyan-500 mr-2'></i>
-                                        <span className='text-xl line-height-3'>Unlimited Push Messages</span>
-                                    </li>
-                                    <li className='py-2'>
-                                        <i className='pi pi-fw pi-check text-xl text-cyan-500 mr-2'></i>
-                                        <span className='text-xl line-height-3'>50 Support Ticket</span>
-                                    </li>
-                                    <li className='py-2'>
-                                        <i className='pi pi-fw pi-check text-xl text-cyan-500 mr-2'></i>
-                                        <span className='text-xl line-height-3'>Free Shipping</span>
-                                    </li>
-                                </ul>
                             </div>
                         </div>
 
-                        <div className='col-12 lg:col-4 p-0 md:p-3 mt-4 md:mt-0'>
-                            <div className='p-3 flex flex-column border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all'>
-                                <h3 className='text-900 text-center my-5'>Enterprise</h3>
-                                <img
-                                    src='/demo/images/landing/enterprise.svg'
-                                    className='w-10 h-10 mx-auto'
-                                    alt='enterprise'
-                                />
-                                <div className='my-5 text-center'>
-                                    <span className='text-5xl font-bold mr-2 text-900'>$999</span>
-                                    <span className='text-600'>per month</span>
-                                    <Button
-                                        label='Get a Quote'
-                                        rounded
-                                        className='block mx-auto mt-4 border-none ml-3 font-light line-height-2 bg-blue-500 text-white'
-                                    ></Button>
+                        <div className='col-12 lg:col-4'>
+                            <div className='p-3 h-full'>
+                                <div className='shadow-2 p-3 flex flex-column' style={{ borderRadius: '6px' }}>
+                                    <div className='text-900 font-medium text-xl mb-2'>Enterprise</div>
+                                    <div className='text-600'>For large organizations</div>
+                                    <hr className='my-3 mx-0 border-top-1 border-bottom-none border-300' />
+                                    <div className='flex align-items-center'>
+                                        <span className='font-bold text-2xl text-900'>$49</span>
+                                        <span className='ml-2 font-medium text-600'>per month</span>
+                                    </div>
+                                    <hr className='my-3 mx-0 border-top-1 border-bottom-none border-300' />
+                                    <ul className='list-none p-0 m-0 flex-grow-1'>
+                                        <li className='flex align-items-center mb-3'>
+                                            <i className='pi pi-check-circle text-green-500 mr-2'></i>
+                                            <span>Unlimited messages</span>
+                                        </li>
+                                        <li className='flex align-items-center mb-3'>
+                                            <i className='pi pi-check-circle text-green-500 mr-2'></i>
+                                            <span>Custom analytics</span>
+                                        </li>
+                                        <li className='flex align-items-center mb-3'>
+                                            <i className='pi pi-check-circle text-green-500 mr-2'></i>
+                                            <span>Advanced automation</span>
+                                        </li>
+                                        <li className='flex align-items-center mb-3'>
+                                            <i className='pi pi-check-circle text-green-500 mr-2'></i>
+                                            <span>Dedicated support</span>
+                                        </li>
+                                        <li className='flex align-items-center mb-3'>
+                                            <i className='pi pi-check-circle text-green-500 mr-2'></i>
+                                            <span>Custom integrations</span>
+                                        </li>
+                                        <li className='flex align-items-center mb-3'>
+                                            <i className='pi pi-check-circle text-green-500 mr-2'></i>
+                                            <span>SLA guarantee</span>
+                                        </li>
+                                    </ul>
+                                    <hr className='mb-3 mx-0 border-top-1 border-bottom-none border-300' />
+                                    <Button label='Buy Now' className='p-3 w-full p-button-outlined' />
                                 </div>
-                                <Divider className='w-full bg-surface-200'></Divider>
-                                <ul className='my-5 list-none p-0 flex text-900 flex-column'>
-                                    <li className='py-2'>
-                                        <i className='pi pi-fw pi-check text-xl text-cyan-500 mr-2'></i>
-                                        <span className='text-xl line-height-3'>Responsive Layout</span>
-                                    </li>
-                                    <li className='py-2'>
-                                        <i className='pi pi-fw pi-check text-xl text-cyan-500 mr-2'></i>
-                                        <span className='text-xl line-height-3'>Unlimited Push Messages</span>
-                                    </li>
-                                    <li className='py-2'>
-                                        <i className='pi pi-fw pi-check text-xl text-cyan-500 mr-2'></i>
-                                        <span className='text-xl line-height-3'>50 Support Ticket</span>
-                                    </li>
-                                    <li className='py-2'>
-                                        <i className='pi pi-fw pi-check text-xl text-cyan-500 mr-2'></i>
-                                        <span className='text-xl line-height-3'>Free Shipping</span>
-                                    </li>
-                                </ul>
                             </div>
                         </div>
                     </div>
+                </div>
+
+                {/* Call to Action */}
+                <div className='surface-0 text-700 text-center py-8 px-4'>
+                    <div className='font-bold mb-3' style={{ color: 'var(--primary-color)' }}>
+                        <i className='pi pi-whatsapp'></i>&nbsp;POWERED BY WHATSAPP
+                    </div>
+                    <div className='text-900 font-bold text-5xl mb-3'>Join Our Community</div>
+                    <div className='text-700 text-2xl mb-5'>
+                        Get started with WaQtor today and transform your WhatsApp Business communication
+                    </div>
+                    <Link href='/auth/signup'>
+                        <Button 
+                            label='Get Started Now' 
+                            icon='pi pi-arrow-right' 
+                            className='font-bold px-5 py-3 p-button-raised p-button-rounded white-space-nowrap'
+                            style={{ backgroundColor: 'var(--primary-color)', borderColor: 'var(--primary-color)' }}
+                        />
+                    </Link>
                 </div>
 
                 <div className='py-4 px-4 mx-0 mt-8 lg:mx-8'>
@@ -619,7 +707,7 @@ const LandingPage = () => {
                                     height='50'
                                     className='mr-2'
                                 />
-                                <span className='font-medium text-3xl text-900'>SAKAI</span>
+                                <span className='font-medium text-3xl text-900'>WaQtor</span>
                             </Link>
                         </div>
 
