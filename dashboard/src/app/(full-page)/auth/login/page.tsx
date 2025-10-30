@@ -8,6 +8,7 @@ import { Password } from 'primereact/password';
 import { LayoutContext } from '../../../../components/layout/context/layoutcontext';
 import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
+import Link from 'next/link';
 
 const LoginPage = () => {
     const [password, setPassword] = useState('');
@@ -37,9 +38,9 @@ const LoginPage = () => {
                 >
                     <div className='w-full surface-card py-8 px-5 sm:px-8' style={{ borderRadius: '53px' }}>
                         <div className='text-center mb-5'>
-                            <img src='/demo/images/login/avatar.png' alt='Image' height='50' className='mb-3' />
-                            <div className='text-900 text-3xl font-medium mb-3'>Welcome, Isabel!</div>
-                            <span className='text-600 font-medium'>Sign in to continue</span>
+                            <i className="pi pi-whatsapp text-6xl mb-3" style={{ color: 'var(--primary-color)' }}></i>
+                            <div className='text-900 text-3xl font-medium mb-3'>Welcome to WaQtor!</div>
+                            <span className='text-600 font-medium'>Sign in to your dashboard</span>
                         </div>
 
                         <div>
@@ -77,18 +78,30 @@ const LoginPage = () => {
                                     ></Checkbox>
                                     <label htmlFor='rememberme1'>Remember me</label>
                                 </div>
-                                <a
+                                <Link
+                                    href='/auth/forgot-password'
                                     className='font-medium no-underline ml-2 text-right cursor-pointer'
                                     style={{ color: 'var(--primary-color)' }}
                                 >
                                     Forgot password?
-                                </a>
+                                </Link>
                             </div>
                             <Button
                                 label='Sign In'
-                                className='w-full p-3 text-xl'
+                                className='w-full p-3 text-xl mb-3'
                                 onClick={() => router.push('/')}
-                            ></Button>
+                            />
+
+                            <div className='text-center'>
+                                <span className='text-600'>Don't have an account? </span>
+                                <Link 
+                                    href='/auth/signup'
+                                    className='font-medium no-underline cursor-pointer'
+                                    style={{ color: 'var(--primary-color)' }}
+                                >
+                                    Sign Up
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>

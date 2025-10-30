@@ -275,16 +275,15 @@
 
 ---
 
-### **المرحلة 7️⃣: تحسين UI Components**
+### **المرحلة 7️⃣: تحسين UI Components** ✅
 
 #### **المطلوب:**
-- [ ] إضافة صفحة Badge في UIKit
-- [ ] إضافة صفحة Tag في UIKit
-- [ ] إضافة صفحة Chip في UIKit
-- [ ] إضافة صفحة Avatar في UIKit
-- [ ] تحسين صفحات Auth الموجودة
-- [ ] تحسين صفحة Landing
-- [ ] تحسين صفحة NotFound
+- [x] إضافة صفحة Badge في UIKit
+- [x] إضافة صفحة Tag في UIKit
+- [x] إضافة صفحة Chip في UIKit
+- [x] إضافة صفحة Avatar في UIKit
+- [x] تحسين صفحات Auth الموجودة
+- [x] تحسين صفحة NotFound
 
 #### **الملفات الجديدة:**
 ```

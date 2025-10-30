@@ -179,6 +179,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                     type='button' 
                     className='p-link layout-topbar-button'
                     title="Quick Actions"
+                    onClick={(e) => quickActionPanelRef.current?.toggle(e)}
                 >
                     <i className='pi pi-th-large'></i>
                 </button>
@@ -187,9 +188,9 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                 <button 
                     type='button' 
                     className='p-link layout-topbar-button'
-                    onClick={() => router.push('/profile')}
+                    onClick={(e) => profileMenuRef.current?.toggle(e)}
                     style={{ position: 'relative' }}
-                    title="Go to Profile"
+                    title="User Profile"
                 >
                     {isClient && (
                         <div style={{ position: 'relative', display: 'inline-block' }}>

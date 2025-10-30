@@ -10,12 +10,11 @@ const AccessDeniedPage = () => {
     return (
         <div className='surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden'>
             <div className='flex flex-column align-items-center justify-content-center'>
-                <img src='/demo/images/access/logo-orange.svg' alt='Sakai logo' className='mb-5 w-6rem flex-shrink-0' />
                 <div
                     style={{
                         borderRadius: '56px',
                         padding: '0.3rem',
-                        background: 'linear-gradient(180deg, rgba(247, 149, 48, 0.4) 10%, rgba(247, 149, 48, 0) 30%)',
+                        background: 'linear-gradient(180deg, rgba(239, 68, 68, 0.4) 10%, rgba(239, 68, 68, 0) 30%)',
                     }}
                 >
                     <div
@@ -23,15 +22,20 @@ const AccessDeniedPage = () => {
                         style={{ borderRadius: '53px' }}
                     >
                         <div
-                            className='flex justify-content-center align-items-center bg-pink-500 border-circle'
-                            style={{ height: '3.2rem', width: '3.2rem' }}
+                            className='flex justify-content-center align-items-center border-circle mb-4'
+                            style={{ height: '5rem', width: '5rem', backgroundColor: '#ef4444' }}
                         >
-                            <i className='pi pi-fw pi-exclamation-circle text-2xl text-white'></i>
+                            <i className='pi pi-lock text-5xl text-white'></i>
                         </div>
                         <h1 className='text-900 font-bold text-5xl mb-2'>Access Denied</h1>
-                        <div className='text-600 mb-5'>You do not have the necessary permisions.</div>
-                        <img src='/demo/images/access/asset-access.svg' alt='Error' className='mb-5' width='80%' />
-                        <Button icon='pi pi-arrow-left' label='Go to Dashboard' text onClick={() => router.push('/')} />
+                        <div className='text-600 mb-5 text-center'>You do not have the necessary permissions to access this resource.</div>
+                        <div className='mb-5 text-center'>
+                            <i className='pi pi-shield text-9xl' style={{ color: '#ef4444', opacity: 0.2 }}></i>
+                        </div>
+                        <div className='flex gap-3'>
+                            <Button icon='pi pi-arrow-left' label='Go to Dashboard' onClick={() => router.push('/')} />
+                            <Button icon='pi pi-sign-in' label='Login' outlined onClick={() => router.push('/auth/login')} />
+                        </div>
                     </div>
                 </div>
             </div>
