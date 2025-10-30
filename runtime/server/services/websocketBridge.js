@@ -280,6 +280,20 @@ class WebSocketBridge {
     }
 
     /**
+     * Broadcast notification event
+     */
+    broadcastNotification(notificationData) {
+        this.broadcast('notification:new', notificationData);
+    }
+
+    /**
+     * Broadcast notification count update
+     */
+    broadcastNotificationCount(countData) {
+        this.broadcast('notification:count', countData);
+    }
+
+    /**
      * Get connected clients count
      */
     getClientCount() {

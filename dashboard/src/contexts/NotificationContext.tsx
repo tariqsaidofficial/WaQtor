@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useNotificationWebSocket } from '../hooks/useNotificationWebSocket';
 
 export interface Notification {
     id: string;
@@ -43,6 +44,20 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(false);
+
+    // WebSocket connection for real-time updates
+    useNotificationWebSocket({
+        onNewNotification: (notification) => {
+            // Add new notification to the list
+            setNotifications(prev => [notification, ...prev]);
+            // Refresh count
+            refreshCount();
+        },
+        onCountUpdate: (count) => {
+            // Update unread count from WebSocket
+            setUnreadCount(count.unread);
+        },
+    });
 
     // Fetch notifications
     const fetchNotifications = async (filter: 'all' | 'unread' = 'all') => {

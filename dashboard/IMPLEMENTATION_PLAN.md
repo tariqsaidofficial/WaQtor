@@ -468,10 +468,13 @@ sidebar_collapsed: boolean
   - In-memory storage (ready for DB integration)
   - Helper function `createNotification()` for other routes
 
-- [ ] WebSocket (Optional):
-  - Real-time notifications
-  - Socket.io integration
-  - Event: `notification:new`
+- [x] WebSocket:
+  - [x] Real-time notifications ✅
+  - [x] WebSocket integration ✅
+  - [x] Event: `notification:new` ✅
+  - [x] Event: `notification:count` ✅
+  - [x] Auto-reconnection with exponential backoff ✅
+  - [x] Fallback to polling if WebSocket fails ✅
 
 ### **Frontend:**
 - [x] Components:
@@ -488,7 +491,7 @@ sidebar_collapsed: boolean
   - [x] Filter (all/unread) ✅
   - [x] Pagination support ✅
   - [x] Auto-refresh (30s polling) ✅
-  - [ ] Real-time updates (WebSocket)
+  - [x] Real-time updates (WebSocket) ✅
   - [ ] Sound notification (optional)
   - [ ] Desktop notification (optional)
 

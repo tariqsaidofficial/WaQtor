@@ -63,10 +63,81 @@ npm run dev
 - **Responsive Design**: تصميم متجاوب
 
 ### 🔄 Pending Features:
-- WebSocket for real-time updates (currently using polling)
+- ~~WebSocket for real-time updates~~ ✅ **IMPLEMENTED**
 - Sound notifications
 - Desktop notifications
 - Animations for new notifications
+
+---
+
+## 🔌 WebSocket Real-Time Updates
+
+### How it Works
+نظام الإشعارات يستخدم WebSocket للتحديثات الفورية:
+
+1. **Auto-Connect**: يتصل تلقائياً عند تحميل Dashboard
+2. **Events**: يستمع لـ `notification:new` و `notification:count`
+3. **Auto-Reconnect**: إعادة اتصال تلقائية مع exponential backoff
+4. **Fallback**: يعود للـ polling إذا فشل WebSocket
+
+### WebSocket Events
+
+#### Event: `notification:new`
+يُرسل عند إنشاء إشعار جديد:
+```json
+{
+  "type": "notification:new",
+  "data": {
+    "id": "123",
+    "userId": "user1",
+    "type": "success",
+    "title": "New Message",
+    "message": "You have a new message",
+    "read": false,
+    "createdAt": "2025-10-31T00:00:00.000Z"
+  },
+  "timestamp": 1698710400000
+}
+```
+
+#### Event: `notification:count`
+يُرسل عند تغيير عدد الإشعارات:
+```json
+{
+  "type": "notification:count",
+  "data": {
+    "userId": "user1",
+    "unread": 5,
+    "total": 10
+  },
+  "timestamp": 1698710400000
+}
+```
+
+### Configuration
+```env
+# في .env.local
+NEXT_PUBLIC_WS_URL=ws://localhost:8080
+NEXT_PUBLIC_API_KEY=your_api_key
+```
+
+### Testing WebSocket
+```javascript
+// في Browser Console
+const ws = new WebSocket('ws://localhost:8080/ws?apiKey=YOUR_API_KEY');
+
+ws.onopen = () => {
+  console.log('Connected');
+  ws.send(JSON.stringify({
+    type: 'subscribe',
+    events: ['notification:new', 'notification:count']
+  }));
+};
+
+ws.onmessage = (event) => {
+  console.log('Message:', JSON.parse(event.data));
+};
+```
 
 ---
 

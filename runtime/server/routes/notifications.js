@@ -1,6 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
+// WebSocket bridge will be injected
+let websocketBridge = null;
+
+// Set WebSocket bridge (called from server.js)
+function setWebSocketBridge(bridge) {
+    websocketBridge = bridge;
+}
+
 // In-memory storage (في الإنتاج سيتم استخدام قاعدة بيانات)
 let notifications = [
     {
@@ -148,6 +156,19 @@ router.post('/', (req, res) => {
 
             notifications.unshift(newNotification);
 
+            // Broadcast to WebSocket clients
+            if (websocketBridge) {
+                websocketBridge.broadcastNotification(newNotification);
+                
+                // Also broadcast updated count
+                const unreadCount = notifications.filter(n => n.userId === userId && !n.read).length;
+                websocketBridge.broadcastNotificationCount({
+                    userId,
+                    unread: unreadCount,
+                    total: notifications.filter(n => n.userId === userId).length
+                });
+            }
+
             return res.json({
                 success: true,
                 message: 'Notification created successfully',
@@ -249,8 +270,23 @@ function createNotification(userId, type, title, message, icon = null, link = nu
     };
 
     notifications.unshift(newNotification);
+
+    // Broadcast to WebSocket clients
+    if (websocketBridge) {
+        websocketBridge.broadcastNotification(newNotification);
+        
+        // Also broadcast updated count
+        const unreadCount = notifications.filter(n => n.userId === userId && !n.read).length;
+        websocketBridge.broadcastNotificationCount({
+            userId,
+            unread: unreadCount,
+            total: notifications.filter(n => n.userId === userId).length
+        });
+    }
+
     return newNotification;
 }
 
 module.exports = router;
 module.exports.createNotification = createNotification;
+module.exports.setWebSocketBridge = setWebSocketBridge;

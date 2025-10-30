@@ -216,6 +216,10 @@ async function startServer() {
         websocketBridge = new WebSocketBridge(server, sessionMonitor);
         websocketBridge.initialize();
 
+        // Connect WebSocket to notification routes
+        notificationRoutes.setWebSocketBridge(websocketBridge);
+        logger.info('WebSocket bridge connected to notification routes');
+
         // Initialize Enhanced WA Client Handler
         logger.info('Initializing enhanced WhatsApp client handler...');
         enhancedWAClientHandler = new EnhancedWAClientHandler();
