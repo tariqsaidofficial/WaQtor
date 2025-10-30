@@ -12,11 +12,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "shell": "node --experimental-repl-await ./shell.js",
-    "generate-docs": "npx jsdoc --configure .jsdoc.json --verbose",
-    "docker:build": "docker build -f docker/Dockerfile -t waqtor:latest .",
-    "docker:run": "docker-compose -f docker/docker-compose.yml up -d",
-    "docker:stop": "docker-compose -f docker/docker-compose.yml down",
-    "docker:logs": "docker-compose -f docker/docker-compose.yml logs -f"
+    "generate-docs": "npx jsdoc --configure .jsdoc.json --verbose"
   },
   "readme": "README.md",
   "repository": {

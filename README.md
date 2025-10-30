@@ -20,8 +20,8 @@
 
 <div align="center">
 
-| 🚀 [Quick Start](#-quick-start) | 📡 [API Docs](./runtime/README.md) | 🎨 [Dashboard](./dashboard/README.md) | 🐳 [Docker Setup](#option-1-docker-recommended) | 🪝 [Webhooks](#-upcoming--todo) | 📝 [Changelog](./CHANGELOG.md) |
-|:---:|:---:|:---:|:---:|:---:|:---:|
+| 🚀 [Quick Start](#-quick-start) | 📡 [API Docs](./runtime/README.md) | 🎨 [Dashboard](./dashboard/README.md) | 🪝 [Webhooks](#-upcoming--todo) | 📝 [Changelog](./CHANGELOG.md) |
+|:---:|:---:|:---:|:---:|:---:|
 
 </div>
 
@@ -134,7 +134,6 @@
 | **whatsapp-web.js** | 1.34.1 | ✅ Stable | Last upstream sync: Oct 28, 2025 |
 | **Puppeteer** | 23.11.1 | ✅ Stable | Chrome/Chromium automation |
 | **Chrome/Chromium** | 131+ | ✅ Compatible | Auto-downloaded by Puppeteer |
-| **Docker** | 20.10+ | ✅ Recommended | Production deployment |
 | **npm** | 9.0+ | ✅ Supported | Package manager |
 
 ### Update Policy
@@ -189,7 +188,6 @@ For comprehensive security practices, see **[SECURITY.md](./SECURITY.md)**:
 - API key management
 - Session file protection
 - Environment variable security
-- Docker security hardening
 - Webhook authentication
 
 ---
@@ -282,7 +280,6 @@ The first stable release of WaQtor, featuring:
 - 🚀 **REST API Layer** - Express.js-based HTTP endpoints
 - 📊 **Campaign Management** - Create, track, and execute messaging campaigns
 - 🗄️ **SQLite Integration** - Persistent storage for campaigns and logs
-- 🐳 **Docker Support** - Production-ready containerization
 - 🔒 **API Authentication** - Secure API key-based access control
 - ⚡ **Rate Limiting** - Protect against API abuse
 - 📝 **Comprehensive Logging** - Winston-based logging system
@@ -407,11 +404,6 @@ The WaQtor engine follows a modular, full-stack design that connects all layers 
 - **JSON Files:** SmartBot rules, history, conversations
 - **File Storage:** Organized uploads with auto-cleanup
 
-#### 🐳 **Docker Layer**
-- **Isolation:** Containerized runtime
-- **Volumes:** Persistent session and upload storage
-- **Security:** Session files never committed to Git
-
 ---
 
 ## 📚 Documentation & Links
@@ -513,27 +505,7 @@ npm info waqtor
 
 ## 🚀 Quick Start
 
-### Option 1: Docker (Recommended)
-
-```bash
-# Copy environment configuration
-cp runtime/config/.env.example runtime/config/.env
-
-# Edit .env and set your API key and test phone number
-nano runtime/config/.env
-
-# Build and run with Docker
-npm run docker:build
-npm run docker:run
-
-# View logs to scan QR code
-npm run docker:logs
-```
-
-Scan the QR code using **WhatsApp → Linked Devices → "Link a device"**.  
-Your REST API will be available at `http://localhost:8080`.
-
-### Option 2: Local Development
+### Installation & Setup
 
 ```bash
 # Install dependencies
@@ -610,7 +582,6 @@ For further details on saving and restoring sessions, explore the provided [Auth
 - **SmartBot System:** AI-powered auto-replies with language detection
 - **Interactive Menus:** Number-based conversation flows
 - **Reports & Analytics:** Real-time statistics with chart visualizations
-- **Docker-first:** One-command deployment with persistent volumes
 - **Session Security:** Session files generated only at runtime, never committed
 - **SQLite Tracking:** Logs every campaign and message delivery
 - **Rate Limiting:** Built-in protection against API abuse
@@ -828,7 +799,7 @@ Something missing? Make an issue and let us know!
 ## 🔐 Session Security
 
 - `server/session/` is ignored in `.gitignore`.
-- Sessions generate only at runtime in Docker volumes.
+- Sessions generate only at runtime.
 - Forks or public deploys can enforce read-only mode via:
 
 ```bash
@@ -843,7 +814,6 @@ READONLY_FORK=true
 
 - Use Cloudflare Worker as reverse proxy to hide API origin.
 - Enforce HTTPS, rate limiting, and IP allowlists.
-- Works natively with Docker Compose or any container runtime.
 
 ---
 
@@ -927,9 +897,9 @@ npm start
 
 ```bash
 # Safe session cleanup
-npm run docker:stop
+npm stop
 rm -rf runtime/server/session/*
-npm run docker:run
+npm start
 ```
 
 **Prevention**: Always stop server before deleting sessions
@@ -949,7 +919,7 @@ curl -H "X-API-Key: your_key" http://localhost:8080/api/status/client
 # Wrong: +966 50 123 4567
 
 # Check logs for errors
-npm run docker:logs
+npm run logs
 ```
 
 **Common Causes**: Wrong number format, client disconnected, rate limiting
@@ -961,9 +931,6 @@ npm run docker:logs
 **Symptoms**: Chrome consuming >2GB RAM
 
 ```bash
-# Restart with memory limits (Docker)
-docker run -m 2g waqtor
-
 # Clear Chrome cache
 rm -rf runtime/server/session/Default/Cache/*
 
@@ -1023,23 +990,6 @@ npm install
 
 # Verify Node version
 node --version  # Should be ≥18.0.0
-```
-
----
-
-#### 8. Docker Build Fails
-
-**Symptoms**: "Error response from daemon"
-
-```bash
-# Clean Docker cache
-docker system prune -a
-
-# Rebuild without cache
-docker build --no-cache -t waqtor .
-
-# Check Docker disk space
-docker system df
 ```
 
 ---
@@ -1125,7 +1075,7 @@ curl -X POST http://localhost:8080/api/settings/generate-key \
 sed -i 's/API_KEY=old_key/API_KEY=new_key/' runtime/config/.env
 
 # Restart server
-npm run docker:restart
+npm restart
 ```
 
 **Frequency**: Every 90 days or after suspected compromise
@@ -1153,7 +1103,7 @@ rm -rf runtime/server/session/*
 
 ```bash
 # Stop server
-npm run docker:stop
+npm stop
 
 # Backup current session (optional)
 cp -r runtime/server/session runtime/server/session.backup
@@ -1162,8 +1112,7 @@ cp -r runtime/server/session runtime/server/session.backup
 rm -rf runtime/server/session/*
 
 # Start and re-scan QR
-npm run docker:run
-npm run docker:logs
+npm start
 ```
 
 **When to Use**: Persistent connection issues, corrupted session, account migration
@@ -1173,15 +1122,12 @@ npm run docker:logs
 #### Restart Worker
 
 ```bash
-# Graceful restart (Docker)
-docker restart waqtor
+# Graceful restart
+npm restart
 
-# Or with npm
-npm run docker:restart
-
-# Force restart (if hung)
-docker kill waqtor
-docker start waqtor
+# Or manually
+npm stop
+npm start
 ```
 
 **Triggers**: High memory usage, slow response times, after updates
@@ -1264,9 +1210,6 @@ curl -H "X-API-Key: your_key" http://localhost:8080/api/status/client
 #### Resource Usage
 
 ```bash
-# Docker stats
-docker stats waqtor
-
 # Memory usage
 free -h
 
@@ -1307,13 +1250,12 @@ ss -o state established '( sport = :8080 )'
 - [ ] Install dependencies: `npm install`
 - [ ] Run database migrations (if any)
 - [ ] Update environment variables
-- [ ] Build Docker image: `npm run docker:build`
-- [ ] Start server: `npm run docker:run`
+- [ ] Start server: `npm start`
 - [ ] Verify health: `curl http://localhost:8080/health`
 
 #### Post-Deployment
 
-- [ ] Check logs for errors: `npm run docker:logs`
+- [ ] Check logs for errors: `npm run logs`
 - [ ] Test API endpoints
 - [ ] Verify WebSocket connection
 - [ ] Test SmartBot responses
@@ -1374,20 +1316,17 @@ npm run lint
 npm run type-check
 ```
 
-#### 4. Build & Test Docker Image
+#### 4. Run Tests
 
 ```bash
-# Build image
-npm run docker:build
+# Run all tests
+npm test
 
-# Test image
-docker run --rm waqtor npm test
+# Run specific test suite
+npm test -- --grep "API"
 
-# Verify image size
-docker images waqtor
-
-# Security scan
-docker scan waqtor
+# Run with coverage
+npm run test:coverage
 ```
 
 #### 5. Update Documentation
@@ -1450,7 +1389,6 @@ npm info waqtor
 - [ ] Update project website (if applicable)
 - [ ] Notify users via email/Discord (if applicable)
 - [ ] Monitor for issues in first 24 hours
-- [ ] Update Docker Hub tags
 
 ---
 
