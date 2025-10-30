@@ -45,6 +45,7 @@ const queueRoutes = require('./routes/queue');
 const smartbotRoutes = require('./routes/smartbot');
 const reportsRoutes = require('./routes/reports');
 const interactiveRoutes = require('./routes/interactive');
+const notificationRoutes = require('./routes/notifications');
 
 // Load environment variables from root .env file
 dotenv.config({ path: path.join(__dirname, '../../.env') });
@@ -151,6 +152,7 @@ app.use('/api/queue', apiKeyAuth, queueRoutes);
 app.use('/api/interactive', apiKeyAuth, interactiveRoutes);
 app.use('/api/smartbot', apiKeyAuth, smartbotRoutes.router);
 app.use('/api/reports', apiKeyAuth, reportsRoutes);
+app.use('/api/notifications', apiKeyAuth, notificationRoutes);
 
 // Quick send message endpoint (for compatibility)
 app.post('/api/sendMessage', apiKeyAuth, async (req, res) => {

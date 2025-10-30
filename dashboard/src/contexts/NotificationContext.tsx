@@ -48,7 +48,14 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     const fetchNotifications = async (filter: 'all' | 'unread' = 'all') => {
         setLoading(true);
         try {
-            const response = await fetch(`/api/notifications?filter=${filter}&limit=50`);
+            const apiKey = localStorage.getItem('api_key') || process.env.NEXT_PUBLIC_API_KEY;
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+            
+            const response = await fetch(`${apiUrl}/api/notifications?filter=${filter}&limit=50`, {
+                headers: {
+                    'X-API-Key': apiKey || '',
+                },
+            });
             const result = await response.json();
             
             if (result.success) {
@@ -64,7 +71,14 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     // Refresh unread count
     const refreshCount = async () => {
         try {
-            const response = await fetch('/api/notifications/count');
+            const apiKey = localStorage.getItem('api_key') || process.env.NEXT_PUBLIC_API_KEY;
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+            
+            const response = await fetch(`${apiUrl}/api/notifications/count`, {
+                headers: {
+                    'X-API-Key': apiKey || '',
+                },
+            });
             const result = await response.json();
             
             if (result.success) {
@@ -78,9 +92,15 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     // Mark as read
     const markAsRead = async (id: string) => {
         try {
-            const response = await fetch(`/api/notifications/${id}`, {
+            const apiKey = localStorage.getItem('api_key') || process.env.NEXT_PUBLIC_API_KEY;
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+            
+            const response = await fetch(`${apiUrl}/api/notifications/${id}`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-API-Key': apiKey || '',
+                },
                 body: JSON.stringify({ read: true }),
             });
 
@@ -100,9 +120,15 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     // Mark all as read
     const markAllAsRead = async () => {
         try {
-            const response = await fetch('/api/notifications', {
+            const apiKey = localStorage.getItem('api_key') || process.env.NEXT_PUBLIC_API_KEY;
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+            
+            const response = await fetch(`${apiUrl}/api/notifications`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-API-Key': apiKey || '',
+                },
                 body: JSON.stringify({ action: 'mark-all-read' }),
             });
 
@@ -120,8 +146,14 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     // Delete notification
     const deleteNotification = async (id: string) => {
         try {
-            const response = await fetch(`/api/notifications/${id}`, {
+            const apiKey = localStorage.getItem('api_key') || process.env.NEXT_PUBLIC_API_KEY;
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+            
+            const response = await fetch(`${apiUrl}/api/notifications/${id}`, {
                 method: 'DELETE',
+                headers: {
+                    'X-API-Key': apiKey || '',
+                },
             });
 
             const result = await response.json();
