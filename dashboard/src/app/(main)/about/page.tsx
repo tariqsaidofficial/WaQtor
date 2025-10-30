@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import { Divider } from 'primereact/divider';
 import { Accordion, AccordionTab } from 'primereact/accordion';
 import { Tag } from 'primereact/tag';
-import { Timeline } from 'primereact/timeline';
 import { Chip } from 'primereact/chip';
 import './about.css';
 
@@ -25,6 +24,22 @@ interface FAQ {
 
 export default function AboutPage() {
     const [activeIndex, setActiveIndex] = useState<number | number[] | null>(null);
+    const [appLogo, setAppLogo] = useState<string>('');
+
+    useEffect(() => {
+        // Load app logo from localStorage
+        const savedLogo = localStorage.getItem('app_logo') || '/layout/images/logo-dark.svg';
+        setAppLogo(savedLogo);
+
+        // Listen for branding updates
+        const handleBrandingUpdate = () => {
+            const updatedLogo = localStorage.getItem('app_logo') || '/layout/images/logo-dark.svg';
+            setAppLogo(updatedLogo);
+        };
+
+        window.addEventListener('branding-update', handleBrandingUpdate);
+        return () => window.removeEventListener('branding-update', handleBrandingUpdate);
+    }, []);
 
     // App Version Info
     const currentVersion = '2.2.0';
@@ -112,26 +127,30 @@ export default function AboutPage() {
             version: '2.2.0',
             date: 'October 2025',
             icon: 'pi pi-star',
-            color: '#10b981',
-            status: 'current'
+            color: 'var(--primary-color)',
+            status: 'current',
+            description: 'SmartBot AI v2, Webhook Dispatcher, WebSocket namespaces'
         },
         {
             version: '2.1.0',
             date: 'September 2025',
             icon: 'pi pi-check',
-            color: '#3b82f6'
+            color: '#6b7280',
+            description: 'Campaign Management, SmartBot auto-reply, Bulk messaging'
         },
         {
             version: '2.0.0',
             date: 'August 2025',
             icon: 'pi pi-check',
-            color: '#8b5cf6'
+            color: '#6b7280',
+            description: 'Dashboard redesign, Real-time WebSocket, REST API'
         },
         {
             version: '1.0.0',
             date: 'July 2025',
             icon: 'pi pi-check',
-            color: '#6b7280'
+            color: '#6b7280',
+            description: 'Initial release with basic messaging features'
         }
     ];
 
@@ -159,38 +178,13 @@ export default function AboutPage() {
             color: '#f59e0b'
         },
         {
-            icon: 'pi pi-github',
-            title: 'GitHub Repository',
-            description: 'View source code and contribute',
-            link: 'https://github.com/tariqsaidofficial/WaQtor',
+            icon: 'pi pi-book',
+            title: 'Developer Guide',
+            description: 'Integration examples and best practices',
+            link: '/docs/developer',
             color: '#6b7280'
         }
     ];
-
-    const customizedMarker = (item: any) => {
-        return (
-            <span 
-                className="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1"
-                style={{ backgroundColor: item.color }}
-            >
-                <i className={item.icon}></i>
-            </span>
-        );
-    };
-
-    const customizedContent = (item: any) => {
-        return (
-            <div>
-                <div className="flex align-items-center gap-2 mb-1">
-                    <h4 className="m-0">Version {item.version}</h4>
-                    {item.status === 'current' && (
-                        <Tag value="Current" severity="success" />
-                    )}
-                </div>
-                <span className="text-500 text-sm">{item.date}</span>
-            </div>
-        );
-    };
 
     return (
         <div className="about-page">
@@ -200,16 +194,27 @@ export default function AboutPage() {
                     <Card className="about-hero">
                         <div className="text-center">
                             <div className="mb-3">
-                                <i className="pi pi-whatsapp" style={{ fontSize: '4rem', color: 'var(--primary-color)' }}></i>
+                                {appLogo ? (
+                                    <img 
+                                        src={appLogo} 
+                                        alt="WaQtor Logo" 
+                                        style={{ height: '4rem', maxWidth: '200px', objectFit: 'contain' }}
+                                        onError={(e) => {
+                                            e.currentTarget.style.display = 'none';
+                                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                        }}
+                                    />
+                                ) : null}
+                                <i className="pi pi-whatsapp hidden" style={{ fontSize: '4rem', color: 'var(--primary-color)' }}></i>
                             </div>
                             <h1 className="text-5xl font-bold mb-3">WaQtor</h1>
                             <p className="text-xl text-600 mb-3">
                                 Professional WhatsApp Automation Platform
                             </p>
                             <div className="flex align-items-center justify-content-center gap-2 mb-4">
-                                <Tag value={`Version ${currentVersion}`} severity="info" />
-                                <Tag value={releaseDate} severity="success" />
-                                <Tag value="Open Source" icon="pi pi-github" />
+                                <Tag value={`v${currentVersion}`} severity="info" style={{ minWidth: '80px' }} />
+                                <Tag value={releaseDate} severity="success" style={{ minWidth: '120px' }} />
+                                <Tag value="Apache 2.0" icon="pi pi-shield" style={{ minWidth: '110px' }} />
                             </div>
                             <p className="text-600 max-w-30rem mx-auto">
                                 Streamline your WhatsApp communication with powerful automation, 
@@ -318,12 +323,25 @@ export default function AboutPage() {
                 {/* Version History */}
                 <div className="col-12">
                     <Card title="Version History" subTitle="Track our progress and updates">
-                        <Timeline 
-                            value={versionHistory} 
-                            align="alternate" 
-                            marker={customizedMarker}
-                            content={customizedContent}
-                        />
+                        <div className="version-history-list">
+                            {versionHistory.map((version, index) => (
+                                <div key={index} className="version-item">
+                                    <div className="version-marker" style={{ backgroundColor: version.color }}>
+                                        <i className={version.icon}></i>
+                                    </div>
+                                    <div className="version-content">
+                                        <div className="flex align-items-center gap-2 mb-2">
+                                            <h3 className="version-number">v{version.version}</h3>
+                                            {version.status === 'current' && (
+                                                <Tag value="Current" severity="success" />
+                                            )}
+                                        </div>
+                                        <div className="version-date mb-2">{version.date}</div>
+                                        <p className="version-description">{version.description}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </Card>
                 </div>
 
@@ -331,15 +349,33 @@ export default function AboutPage() {
                 <div className="col-12 lg:col-6">
                     <Card title="Technology Stack">
                         <div className="flex flex-wrap gap-2">
-                            <Chip label="Node.js" icon="pi pi-server" />
-                            <Chip label="Next.js" icon="pi pi-code" />
-                            <Chip label="React" icon="pi pi-code" />
-                            <Chip label="TypeScript" icon="pi pi-code" />
-                            <Chip label="Socket.IO" icon="pi pi-bolt" />
-                            <Chip label="SQLite" icon="pi pi-database" />
+                            <Chip 
+                                label="Node.js" 
+                                image="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg"
+                            />
+                            <Chip 
+                                label="Next.js" 
+                                image="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg"
+                            />
+                            <Chip 
+                                label="React" 
+                                image="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg"
+                            />
+                            <Chip 
+                                label="TypeScript" 
+                                image="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg"
+                            />
+                            <Chip 
+                                label="Socket.IO" 
+                                image="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/socketio/socketio-original.svg"
+                            />
+                            <Chip 
+                                label="SQLite" 
+                                image="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sqlite/sqlite-original.svg"
+                            />
                             <Chip label="PrimeReact" icon="pi pi-palette" />
                             <Chip label="Zustand" icon="pi pi-box" />
-                            <Chip label="Whatsapp-web.js" icon="pi pi-whatsapp" />
+                            <Chip label="WhatsApp Web.js" icon="pi pi-whatsapp" />
                         </div>
                     </Card>
                 </div>
@@ -352,22 +388,7 @@ export default function AboutPage() {
                                 <i className="pi pi-envelope text-2xl text-primary"></i>
                                 <div>
                                     <div className="font-semibold">Email Support</div>
-                                    <a href="mailto:support@waqtor.com" className="text-600 text-sm">support@waqtor.com</a>
-                                </div>
-                            </div>
-                            <Divider />
-                            <div className="flex align-items-center gap-3">
-                                <i className="pi pi-github text-2xl text-primary"></i>
-                                <div>
-                                    <div className="font-semibold">GitHub Issues</div>
-                                    <a 
-                                        href="https://github.com/tariqsaidofficial/WaQtor/issues" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        className="text-600 text-sm"
-                                    >
-                                        Report bugs or request features
-                                    </a>
+                                    <a href="mailto:support@dxbmark.com" className="text-600 text-sm">support@dxbmark.com</a>
                                 </div>
                             </div>
                             <Divider />
@@ -393,28 +414,26 @@ export default function AboutPage() {
                 <div className="col-12">
                     <Card>
                         <div className="text-center">
-                            <h4 className="mb-3">Open Source License</h4>
-                            <p className="text-600 mb-4">
-                                WaQtor is released under the MIT License. Feel free to use, modify, and distribute.
-                            </p>
+                            <h4 className="mb-3">License Information</h4>
+                            <div className="mb-4">
+                                <p className="text-600 mb-2">
+                                    <strong>Dashboard UI:</strong> MIT License - Free to use and modify
+                                </p>
+                                <p className="text-600 mb-0">
+                                    <strong>Core Technology:</strong> Apache License 2.0 - Enterprise ready
+                                </p>
+                            </div>
                             <div className="flex align-items-center justify-content-center gap-3 flex-wrap">
                                 <Button 
                                     label="View License" 
                                     icon="pi pi-file" 
                                     outlined 
-                                    onClick={() => window.open('https://github.com/tariqsaidofficial/WaQtor/blob/main/LICENSE', '_blank')}
+                                    onClick={() => window.open('https://www.apache.org/licenses/LICENSE-2.0', '_blank')}
                                 />
                                 <Button 
-                                    label="Star on GitHub" 
-                                    icon="pi pi-github" 
-                                    onClick={() => window.open('https://github.com/tariqsaidofficial/WaQtor', '_blank')}
-                                />
-                                <Button 
-                                    label="Report Issue" 
-                                    icon="pi pi-exclamation-circle" 
-                                    severity="warning"
-                                    outlined
-                                    onClick={() => window.open('https://github.com/tariqsaidofficial/WaQtor/issues/new', '_blank')}
+                                    label="Documentation" 
+                                    icon="pi pi-book" 
+                                    onClick={() => window.location.href = '/docs'}
                                 />
                             </div>
                             <Divider />
