@@ -53,14 +53,21 @@ export default function ProfilePage() {
     }, []);
 
     const loadActivityLogs = () => {
-        // Mock activity logs
-        const logs: ActivityLog[] = [
-            { id: '1', action: 'Logged in to dashboard', timestamp: new Date(), type: 'login' },
-            { id: '2', action: 'Updated profile information', timestamp: new Date(Date.now() - 3600000), type: 'update' },
-            { id: '3', action: 'Sent 50 messages', timestamp: new Date(Date.now() - 7200000), type: 'message' },
-            { id: '4', action: 'Created new campaign', timestamp: new Date(Date.now() - 86400000), type: 'campaign' },
-        ];
-        setActivityLogs(logs);
+        // Load from localStorage
+        const savedLogs = localStorage.getItem('activity_logs');
+        if (savedLogs) {
+            try {
+                const logs = JSON.parse(savedLogs);
+                setActivityLogs(logs.map((log: any) => ({
+                    ...log,
+                    timestamp: new Date(log.timestamp)
+                })));
+            } catch (e) {
+                setActivityLogs([]);
+            }
+        } else {
+            setActivityLogs([]);
+        }
     };
 
     const handleSave = () => {
@@ -221,19 +228,15 @@ export default function ProfilePage() {
 
                             <Divider />
 
-                            {/* Stats */}
+                            {/* Account Info */}
                             <div className="w-full">
                                 <div className="flex justify-content-between mb-2">
-                                    <span className="text-500">Messages Sent</span>
-                                    <span className="font-semibold">1,234</span>
-                                </div>
-                                <div className="flex justify-content-between mb-2">
-                                    <span className="text-500">Campaigns</span>
-                                    <span className="font-semibold">12</span>
+                                    <span className="text-500">Account Status</span>
+                                    <span className="font-semibold text-green-500">Active</span>
                                 </div>
                                 <div className="flex justify-content-between">
                                     <span className="text-500">Member Since</span>
-                                    <span className="font-semibold">Oct 2025</span>
+                                    <span className="font-semibold">{new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
                                 </div>
                             </div>
                         </div>

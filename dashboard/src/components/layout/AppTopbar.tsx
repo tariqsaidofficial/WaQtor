@@ -178,19 +178,18 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                 <button 
                     type='button' 
                     className='p-link layout-topbar-button'
-                    onClick={(e) => quickActionPanelRef.current?.toggle(e)}
                     title="Quick Actions"
                 >
                     <i className='pi pi-th-large'></i>
                 </button>
 
-                {/* Profile Button */}
+                {/* User Avatar with Badge */}
                 <button 
                     type='button' 
                     className='p-link layout-topbar-button'
-                    onClick={(e) => profileMenuRef.current?.toggle(e)}
-                    title="Profile"
+                    onClick={() => router.push('/profile')}
                     style={{ position: 'relative' }}
+                    title="Go to Profile"
                 >
                     {isClient && (
                         <div style={{ position: 'relative', display: 'inline-block' }}>
@@ -199,7 +198,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                                     image={userAvatar}
                                     size="normal" 
                                     shape="circle"
-                                    style={{ width: '2.5rem', height: '2.5rem' }}
+                                    style={{ width: '2.5rem', height: '2.5rem', cursor: 'pointer' }}
                                 />
                             ) : (
                                 <Avatar 
@@ -212,7 +211,8 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                                         width: '2.5rem', 
                                         height: '2.5rem',
                                         fontSize: '1rem',
-                                        fontWeight: '600'
+                                        fontWeight: '600',
+                                        cursor: 'pointer'
                                     }}
                                 />
                             )}
