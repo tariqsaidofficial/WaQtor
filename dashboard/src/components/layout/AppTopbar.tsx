@@ -88,7 +88,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
         {
             template: () => (
                 <div className="profile-menu-header" style={{ padding: '1rem', borderBottom: '1px solid var(--surface-border)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }} onClick={() => router.push('/profile')}>
                         {userAvatar ? (
                             <Avatar 
                                 image={userAvatar}
@@ -105,7 +105,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                         )}
                         <div>
                             <div style={{ fontWeight: 600, fontSize: '1rem' }}>{userName}</div>
-                            <div style={{ fontSize: '0.875rem', color: 'var(--text-color-secondary)', cursor: 'pointer' }} onClick={() => router.push('/profile')}>View Profile</div>
+                            <div style={{ fontSize: '0.875rem', color: 'var(--text-color-secondary)' }}>View Profile</div>
                         </div>
                     </div>
                 </div>

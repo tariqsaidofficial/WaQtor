@@ -16,6 +16,29 @@
     padding: 2rem;
 }
 
+/* Unify button styles */
+.profile-card .p-fileupload-choose {
+    height: 2.5rem !important;
+    padding: 0.5rem 1rem !important;
+}
+
+.profile-card .p-button-sm {
+    height: 2.5rem !important;
+    padding: 0.5rem 1rem !important;
+}
+
+/* Remove outline from Remove button */
+.profile-card .p-button-danger {
+    background-color: var(--red-500) !important;
+    border-color: var(--red-500) !important;
+    color: white !important;
+}
+
+.profile-card .p-button-danger:hover {
+    background-color: var(--red-600) !important;
+    border-color: var(--red-600) !important;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .profile-avatar {
