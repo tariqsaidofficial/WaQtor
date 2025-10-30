@@ -22,12 +22,6 @@ interface FAQ {
     answer: string;
 }
 
-interface Version {
-    version: string;
-    date: string;
-    changes: string[];
-    status?: string;
-}
 
 export default function AboutPage() {
     const [activeIndex, setActiveIndex] = useState<number | number[] | null>(null);
@@ -113,40 +107,31 @@ export default function AboutPage() {
     ];
 
     // Version History
-    const versionHistory: Version[] = [
+    const versionHistory = [
         {
             version: '2.2.0',
             date: 'October 2025',
-            status: 'current',
-            changes: [
-                'Added SmartBot AI Engine v2 with semantic matching',
-                'Implemented Webhook Dispatcher with HMAC security',
-                'Enhanced WebSocket with namespaces and auto-reconnect',
-                'Improved dashboard UI with real-time updates',
-                'Added comprehensive API documentation'
-            ]
+            icon: 'pi pi-star',
+            color: '#10b981',
+            status: 'current'
         },
         {
             version: '2.1.0',
             date: 'September 2025',
-            changes: [
-                'Added Campaign Management system',
-                'Implemented SmartBot auto-reply',
-                'Enhanced message templates',
-                'Added bulk messaging capabilities',
-                'Improved session management'
-            ]
+            icon: 'pi pi-check',
+            color: '#3b82f6'
         },
         {
             version: '2.0.0',
             date: 'August 2025',
-            changes: [
-                'Complete dashboard redesign',
-                'Added real-time WebSocket updates',
-                'Implemented REST API',
-                'Added message history',
-                'Enhanced security features'
-            ]
+            icon: 'pi pi-check',
+            color: '#8b5cf6'
+        },
+        {
+            version: '1.0.0',
+            date: 'July 2025',
+            icon: 'pi pi-check',
+            color: '#6b7280'
         }
     ];
 
@@ -182,35 +167,28 @@ export default function AboutPage() {
         }
     ];
 
-    const customizedMarker = (item: Version) => {
+    const customizedMarker = (item: any) => {
         return (
             <span 
                 className="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1"
-                style={{ backgroundColor: item.status === 'current' ? 'var(--primary-color)' : '#6b7280' }}
+                style={{ backgroundColor: item.color }}
             >
-                <i className={item.status === 'current' ? 'pi pi-star' : 'pi pi-check'}></i>
+                <i className={item.icon}></i>
             </span>
         );
     };
 
-    const customizedContent = (item: Version) => {
+    const customizedContent = (item: any) => {
         return (
-            <Card className="mt-3">
-                <div className="flex align-items-center justify-content-between mb-2">
-                    <div className="flex align-items-center gap-2">
-                        <h4 className="m-0">Version {item.version}</h4>
-                        {item.status === 'current' && (
-                            <Tag value="Current" severity="success" />
-                        )}
-                    </div>
-                    <span className="text-500 text-sm">{item.date}</span>
+            <div>
+                <div className="flex align-items-center gap-2 mb-1">
+                    <h4 className="m-0">Version {item.version}</h4>
+                    {item.status === 'current' && (
+                        <Tag value="Current" severity="success" />
+                    )}
                 </div>
-                <ul className="mt-3 mb-0 pl-3">
-                    {item.changes.map((change, index) => (
-                        <li key={index} className="mb-2 text-600">{change}</li>
-                    ))}
-                </ul>
-            </Card>
+                <span className="text-500 text-sm">{item.date}</span>
+            </div>
         );
     };
 
@@ -343,7 +321,6 @@ export default function AboutPage() {
                         <Timeline 
                             value={versionHistory} 
                             align="alternate" 
-                            className="customized-timeline"
                             marker={customizedMarker}
                             content={customizedContent}
                         />

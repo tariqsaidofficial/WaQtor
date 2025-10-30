@@ -43,12 +43,12 @@
 }
 
 /* Timeline Customization */
-.customized-timeline .p-timeline-event-content {
-    padding: 0 1rem;
+.about-page .p-timeline-event-content {
+    padding: 0.5rem 1rem;
 }
 
-.customized-timeline .p-timeline-event-opposite {
-    flex: 0;
+.about-page .p-timeline-event-opposite {
+    padding: 0.5rem 1rem;
 }
 
 /* Accordion Customization */
@@ -78,12 +78,9 @@
         margin-bottom: 1rem;
     }
 
-    .customized-timeline {
-        padding: 0;
-    }
-
-    .customized-timeline .p-timeline-event-content {
-        padding: 0 0.5rem;
+    .about-page .p-timeline-event-content,
+    .about-page .p-timeline-event-opposite {
+        padding: 0.5rem;
     }
 }
 
