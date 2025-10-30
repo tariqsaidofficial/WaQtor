@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Dialog } from 'primereact/dialog';
-import { InputOtp } from 'primereact/inputotp';
+import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Message } from 'primereact/message';
 
@@ -14,7 +14,7 @@ interface OtpDialogProps {
 }
 
 export default function OtpDialog({ visible, onHide, onVerify, featureName }: OtpDialogProps) {
-    const [otp, setOtp] = useState<any>('');
+    const [otp, setOtp] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -40,6 +40,12 @@ export default function OtpDialog({ visible, onHide, onVerify, featureName }: Ot
         setOtp('');
         setError('');
         onHide();
+    };
+
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && otp.length === 4) {
+            handleVerify();
+        }
     };
 
     const footer = (
@@ -81,18 +87,26 @@ export default function OtpDialog({ visible, onHide, onVerify, featureName }: Ot
                 )}
 
                 <div className="flex justify-content-center">
-                    <InputOtp
+                    <InputText
                         value={otp}
-                        onChange={(e) => setOtp(e.value)}
-                        length={4}
-                        mask
-                        integerOnly
+                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                        onKeyPress={handleKeyPress}
+                        placeholder="••••"
+                        maxLength={4}
+                        className="text-center"
+                        style={{ 
+                            fontSize: '2rem', 
+                            letterSpacing: '1rem',
+                            width: '200px',
+                            fontWeight: 'bold'
+                        }}
+                        type="password"
                     />
                 </div>
 
                 <div className="text-center">
                     <small className="text-500">
-                        Don't have an access code? <a href="https://waqtor.com/pricing" target="_blank" rel="noopener noreferrer" className="text-primary">Get one here</a>
+                        Don't have an access code? <a href="https://waqtor.dxbmark.com/pricing" target="_blank" rel="noopener noreferrer" className="text-primary">Get one here</a>
                     </small>
                 </div>
             </div>

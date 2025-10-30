@@ -54,22 +54,20 @@ export default function ProtectedPage({
     const blockTemplate = (
         <div className="flex flex-column align-items-center justify-content-center p-5" style={{ minHeight: '400px' }}>
             <i className="pi pi-lock" style={{ fontSize: '4rem', color: 'var(--primary-color)', marginBottom: '1rem' }}></i>
-            <h2 className="text-center mb-3">Premium Feature</h2>
-            <p className="text-center text-600 mb-4" style={{ maxWidth: '500px' }}>
+            <h2 className="text-center mb-3" style={{ color: 'var(--primary-color)', fontWeight: 'bold' }}>Premium Feature</h2>
+            <p className="text-center mb-4" style={{ maxWidth: '500px', color: 'var(--text-color-secondary)' }}>
                 This feature is available for premium users. Subscribe to unlock or enter your access code.
             </p>
             <div className="flex gap-2">
                 <Button 
                     label="Subscribe Now" 
                     icon="pi pi-star"
-                    severity="success"
-                    onClick={() => window.open('https://waqtor.com/pricing', '_blank')}
+                    onClick={() => window.open('https://waqtor.dxbmark.com/pricing', '_blank')}
                 />
                 <Button 
                     label="Enter Access Code" 
                     icon="pi pi-key"
-                    severity="info"
-                    outlined
+                    severity="secondary"
                     onClick={handleUnlock}
                 />
             </div>
