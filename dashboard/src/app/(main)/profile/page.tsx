@@ -393,7 +393,7 @@ export default function ProfilePage() {
                                     <div className="col-12">
                                         <h4 className="mb-3">Change Password</h4>
                                         <div className="grid">
-                                            <div className="col-12 md:col-4">
+                                            <div className="col-12">
                                                 <label className="block mb-2">Current Password</label>
                                                 <Password
                                                     value={currentPassword}
@@ -401,25 +401,28 @@ export default function ProfilePage() {
                                                     className="w-full"
                                                     toggleMask
                                                     feedback={false}
+                                                    placeholder="Enter current password"
                                                 />
                                             </div>
-                                            <div className="col-12 md:col-4">
+                                            <div className="col-12">
                                                 <label className="block mb-2">New Password</label>
                                                 <Password
                                                     value={newPassword}
                                                     onChange={(e) => setNewPassword(e.target.value)}
                                                     className="w-full"
                                                     toggleMask
+                                                    placeholder="Enter new password"
                                                 />
                                             </div>
-                                            <div className="col-12 md:col-4">
-                                                <label className="block mb-2">Confirm Password</label>
+                                            <div className="col-12">
+                                                <label className="block mb-2">Confirm New Password</label>
                                                 <Password
                                                     value={confirmPassword}
                                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                                     className="w-full"
                                                     toggleMask
                                                     feedback={false}
+                                                    placeholder="Confirm new password"
                                                 />
                                             </div>
                                             <div className="col-12">
