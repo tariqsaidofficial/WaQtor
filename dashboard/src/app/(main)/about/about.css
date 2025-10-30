@@ -1,0 +1,151 @@
+.about-page {
+    padding: 1rem;
+}
+
+.about-hero {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-600) 100%);
+    color: white;
+    border: none;
+}
+
+.about-hero .p-card-body {
+    padding: 3rem 2rem;
+}
+
+.about-hero h1 {
+    color: white;
+}
+
+.about-hero .text-600 {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.feature-card {
+    height: 100%;
+    border: 1px solid var(--surface-border);
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.doc-link-card {
+    border: 1px solid var(--surface-border);
+    transition: all 0.3s ease;
+}
+
+.doc-link-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-color);
+}
+
+/* Timeline Customization */
+.customized-timeline .p-timeline-event-content {
+    padding: 0 1rem;
+}
+
+.customized-timeline .p-timeline-event-opposite {
+    flex: 0;
+}
+
+/* Accordion Customization */
+.p-accordion .p-accordion-header-link {
+    padding: 1rem 1.5rem;
+}
+
+.p-accordion .p-accordion-content {
+    padding: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .about-hero .p-card-body {
+        padding: 2rem 1rem;
+    }
+
+    .about-hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .about-hero .text-xl {
+        font-size: 1rem;
+    }
+
+    .feature-card {
+        margin-bottom: 1rem;
+    }
+
+    .customized-timeline {
+        padding: 0;
+    }
+
+    .customized-timeline .p-timeline-event-content {
+        padding: 0 0.5rem;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .feature-card,
+    .doc-link-card {
+        border-color: var(--surface-border);
+    }
+
+    .feature-card:hover,
+    .doc-link-card:hover {
+        background-color: var(--surface-hover);
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.about-page .p-card {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.about-page .p-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.about-page .p-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.about-page .p-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+/* Chip Styling */
+.p-chip {
+    background-color: var(--surface-100);
+    color: var(--text-color);
+}
+
+.p-chip .p-chip-icon {
+    color: var(--primary-color);
+}
+
+/* Link Styling */
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--primary-600);
+    text-decoration: underline;
+}
