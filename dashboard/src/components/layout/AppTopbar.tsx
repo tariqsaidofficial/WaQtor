@@ -3,13 +3,14 @@
 import Link from 'next/link';
 import { classNames } from 'primereact/utils';
 import React, { forwardRef, useContext, useImperativeHandle, useRef, useState, useEffect } from 'react';
-import { AppTopbarRef } from '@/types';
+import { ChildContainerProps, LayoutState, AppTopbarRef } from '@/types';
 import { LayoutContext } from './context/layoutcontext';
 import { Avatar } from 'primereact/avatar';
 import { Badge } from 'primereact/badge';
 import { Menu } from 'primereact/menu';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import { useRouter } from 'next/navigation';
+import NotificationBell from '../Notifications/NotificationBell';
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     const { layoutConfig, layoutState, onMenuToggle, showProfileSidebar } = useContext(LayoutContext);
@@ -174,6 +175,9 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
             </button>
 
             <div className='layout-topbar-menu' style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
+                {/* Notification Bell */}
+                <NotificationBell />
+
                 {/* Quick Action Button */}
                 <button 
                     type='button' 

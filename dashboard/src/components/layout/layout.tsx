@@ -15,6 +15,7 @@ import { PrimeReactContext } from 'primereact/api';
 import { ChildContainerProps, LayoutState, AppTopbarRef } from '@/types';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useWebSocket } from '../../hooks/useWebSocket';
+import { NotificationProvider } from '../../contexts/NotificationContext';
 
 const Layout = ({ children }: ChildContainerProps) => {
     // 🔌 Initialize WebSocket connection
@@ -139,25 +140,27 @@ const Layout = ({ children }: ChildContainerProps) => {
     });
 
     return (
-        <React.Fragment>
-            <div className={containerClass}>
-                <AppTopbar ref={topbarRef} />
-                <div ref={sidebarRef} className='layout-sidebar'>
-                    <AppSidebar />
+        <NotificationProvider>
+            <React.Fragment>
+                <div className={containerClass}>
+                    <AppTopbar ref={topbarRef} />
+                    <div ref={sidebarRef} className='layout-sidebar'>
+                        <AppSidebar />
+                    </div>
+                    <div className='layout-main-container'>
+                        <div className='layout-main'>{children}</div>
+                        <AppFooter />
+                    </div>
+                    <AppConfig />
+                    <div className='layout-mask'></div>
                 </div>
-                <div className='layout-main-container'>
-                    <div className='layout-main'>{children}</div>
-                    <AppFooter />
-                </div>
-                <AppConfig />
-                <div className='layout-mask'></div>
-            </div>
-            <ScrollTop 
-                threshold={400} 
-                icon="pi pi-arrow-up"
-                className="custom-scrolltop"
-            />
-        </React.Fragment>
+                <ScrollTop 
+                    threshold={400} 
+                    icon="pi pi-arrow-up"
+                    className="custom-scrolltop"
+                />
+            </React.Fragment>
+        </NotificationProvider>
     );
 };
 

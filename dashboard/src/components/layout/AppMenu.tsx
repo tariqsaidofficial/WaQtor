@@ -28,6 +28,11 @@ const AppMenu = () => {
                     to: '/messages' 
                 },
                 { 
+                    label: 'Notifications', 
+                    icon: 'pi pi-fw pi-bell', 
+                    to: '/notifications' 
+                },
+                { 
                     label: 'SmartBot', 
                     icon: 'pi pi-fw pi-bolt', 
                     to: '/smartbot' 
