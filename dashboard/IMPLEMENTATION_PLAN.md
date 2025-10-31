@@ -6,6 +6,32 @@
 
 ---
 
+## 🔒 **الأمان والخصوصية:**
+
+### ✅ **End-to-End Encryption (E2E)**
+- **الحالة:** ✅ **مدعوم بالكامل**
+- **التفاصيل:** WaQtor مبني على whatsapp-web.js v1.34.1 الذي يستخدم بروتوكول WhatsApp الرسمي
+- **الميزة:** جميع الرسائل مشفرة من طرف لطرف تلقائياً عبر WhatsApp
+- **المصدر:** Landing page - "Your messages are secured with WhatsApp's end-to-end encryption protocol"
+
+### 🔄 **GDPR Compliance (قيد التطوير)**
+- **الحالة:** 🔄 **Partially Implemented**
+- **موجود حالياً:**
+  - ✅ Privacy Policy link (في Landing page)
+  - ✅ Data stored locally (SQLite)
+  - ✅ No third-party data sharing
+- **مطلوب إضافته:**
+  - ❌ Privacy Policy صفحة كاملة
+  - ❌ Terms of Service صفحة
+  - ❌ Cookie Consent Banner
+  - ❌ Data Export functionality (تصدير البيانات)
+  - ❌ Right to be Forgotten (حذف البيانات)
+  - ❌ Data Retention Policies
+  - ❌ User Consent Management
+  - ❌ Audit Logs للبيانات الحساسة
+
+---
+
 ## 📊 **الملفات الموجودة حالياً:**
 
 ### ✅ **الصفحات الرئيسية:**
@@ -44,291 +70,41 @@
 └── table/              ✅ موجودة
 ```
 
----
 
 ## 🚀 **المراحل المطلوبة:**
 
 ---
 
-### **المرحلة 1️⃣: تحديثات Topbar** ✅ (مكتملة)
+### **المراحل المكتملة (1-7):** ✅
 
-#### **المطلوب:**
-- [x] تحريك زر Menu Toggle أكثر لليسار
-- [x] Profile dropdown مع Avatar
-- [x] Quick Actions panel
-- [x] **تحسين Avatar System:**
-  - [x] استخدام Label + Circle للمستخدمين بدون صورة
-  - [x] استخدام Image + Circle للمستخدمين بصورة
-  - [x] دعم Gravatar
-  - [x] إضافة Badge للإشعارات
+#### **المرحلة 1: تحديثات Topbar** ✅
+- تحسين Avatar System (Label + Circle, Image + Circle, Gravatar, Badge)
+- Profile dropdown مع Quick Actions
+- **الملفات:** `/components/layout/AppTopbar.tsx`, `/_topbar.scss`
 
-#### **الملفات:**
-```
-✅ /components/layout/AppTopbar.tsx
-✅ /components/ui/layout/_topbar.scss
-```
+#### **المرحلة 2: صفحة Profile** ✅
+- عرض وتعديل معلومات المستخدم، تغيير كلمة المرور
+- **الملفات:** `/app/(main)/profile/page.tsx`, `/components/profile/ProfileCard.tsx`
 
-#### **الكود المطلوب:**
-```typescript
-// Avatar بدون صورة (Label + Circle)
-<Avatar 
-    label={userName.charAt(0).toUpperCase()} 
-    shape="circle"
-    size="large"
-    style={{ backgroundColor: '#0f766e', color: '#ffffff' }}
-/>
+#### **المرحلة 3: صفحة About** ✅
+- معلومات التطبيق، الإصدار، الفريق
+- **الملفات:** `/app/(main)/about/page.tsx`
 
-// Avatar بصورة (Image + Circle)
-<Avatar 
-    image={userAvatar}
-    shape="circle"
-    size="large"
-/>
+#### **المرحلة 4: نظام BlockUI** ✅
+- تطبيق BlockUI على Campaigns, Messages, SmartBot
+- **الملفات:** `/app/(main)/{campaigns,messages,smartbot}/page.tsx`
 
-// Avatar مع Badge
-<Avatar 
-    label="U" 
-    size="xlarge" 
-    className="p-overlay-badge"
-    shape="circle"
->
-    <Badge value="4" severity="danger" />
-</Avatar>
-```
+#### **المرحلة 5: Tag "New"** ✅
+- إضافة Tag للصفحات الجديدة في Sidebar
+- **الملفات:** `/components/layout/AppMenu.tsx`
 
----
+#### **المرحلة 6: ScrollTop** ✅
+- زر ScrollTop في Layout الرئيسي
+- **الملفات:** `/app/(main)/layout.tsx`
 
-### **المرحلة 2️⃣: إنشاء صفحة Profile** ✅ (مكتملة)
-
-#### **المطلوب:**
-- [x] إنشاء `/app/(main)/profile/page.tsx`
-- [x] تصميم صفحة Profile احترافية
-- [x] إضافة Avatar مع إمكانية رفع صورة
-- [x] معلومات المستخدم (الاسم، البريد، رقم الهاتف)
-- [x] إعدادات الحساب
-- [x] تاريخ النشاط
-
-#### **المكونات المطلوبة:**
-```typescript
-- Avatar (Image/Label + Circle)
-- FileUpload (لرفع الصورة)
-- InputText (للمعلومات)
-- Button (حفظ/إلغاء)
-- Card (لتنظيم الأقسام)
-- Divider (للفصل بين الأقسام)
-```
-
-#### **الملفات:**
-```
-📁 /app/(main)/profile/
-├── page.tsx           (الصفحة الرئيسية)
-└── profile.css        (التنسيقات)
-```
-
----
-
-### **المرحلة 3️⃣: إنشاء صفحة About** ✅
-
-#### **المطلوب:**
-- [x] إنشاء `/app/(main)/about/page.tsx`
-- [x] معلومات عن النظام (WaQtor)
-- [x] Documentation links
-- [x] FAQ section
-- [x] تعليمات الاستخدام
-- [x] معلومات الإصدار
-- [x] روابط الدعم
-
-#### **الأقسام:**
-```
-1. About WaQtor
-   - نبذة عن النظام
-   - الميزات الرئيسية
-   - الإصدار الحالي
-
-2. Documentation
-   - Quick Start Guide
-   - API Documentation
-   - User Manual
-
-3. FAQ
-   - أسئلة شائعة
-   - Accordion component
-
-4. Support
-   - روابط التواصل
-   - GitHub Issues
-   - Email Support
-```
-
-#### **الملفات:**
-```
-📁 /app/(main)/about/
-├── page.tsx           (الصفحة الرئيسية)
-└── about.css          (التنسيقات)
-```
-
----
-
-### **المرحلة 4️⃣: نظام BlockUI للصفحات المحمية** ✅ (مكتملة)
-
-#### **المطلوب:**
-- [x] تطبيق BlockUI على 3 صفحات:
-  - `/campaigns`
-  - `/reports`
-  - `/interactive`
-- [x] إضافة نافذة InputOtp عند الضغط
-- [x] التحقق من الكود (1234 مؤقتاً)
-- [x] حفظ حالة الاشتراك في localStorage
-
-#### **الكود:**
-```typescript
-// BlockUI Template
-<BlockUI 
-    blocked={!isSubscribed} 
-    template={
-        <div className="block-ui-template">
-            <i className="pi pi-lock" style={{ fontSize: '3rem' }}></i>
-            <h3>Premium Feature</h3>
-            <p>Subscribe or enter access code</p>
-        </div>
-    }
->
-    {/* محتوى الصفحة */}
-</BlockUI>
-
-// InputOtp Dialog
-<Dialog visible={showOtpDialog} onHide={() => setShowOtpDialog(false)}>
-    <h3>Enter Access Code</h3>
-    <InputOtp 
-        value={otp} 
-        onChange={(e) => setOtp(e.value)} 
-        mask 
-        length={4}
-    />
-    <Button 
-        label="Verify" 
-        onClick={verifyOtp}
-    />
-</Dialog>
-```
-
-#### **الملفات:**
-```
-📁 /components/BlockUI/
-├── ProtectedPage.tsx  (مكون قابل لإعادة الاستخدام)
-└── OtpDialog.tsx      (نافذة الـ OTP)
-```
-
----
-
-### **المرحلة 5️⃣: إضافة Tag "New" للصفحات الجديدة** ✅ (مكتملة)
-
-#### **المطلوب:**
-- [x] إضافة Tag "New" في Sidebar Menu
-- [x] تطبيق على 3 صفحات:
-  - Campaigns
-  - Reports
-  - Interactive
-
-#### **الكود:**
-```typescript
-// في AppMenu.tsx
-{
-    label: 'Campaigns',
-    icon: 'pi pi-fw pi-megaphone',
-    to: '/campaigns',
-    badge: 'New',
-    badgeClass: 'p-badge-success'
-}
-```
-
-#### **الملفات:**
-```
-✏️ /components/layout/AppMenu.tsx
-✏️ /components/layout/AppMenuitem.tsx (إضافة دعم Badge)
-```
-
----
-
-### **المرحلة 6️⃣: إضافة ScrollTop للتطبيق** ✅ (مكتملة)
-
-#### **المطلوب:**
-- [x] إضافة ScrollTop component في Layout الرئيسي
-- [x] يظهر عند التمرير لأسفل
-- [x] تصميم متناسق مع الثيم
-
-#### **الكود:**
-```typescript
-// في layout.tsx
-<ScrollTop 
-    threshold={400}
-    icon="pi pi-arrow-up"
-    className="custom-scrolltop"
-/>
-```
-
-#### **الملفات:**
-```
-✏️ /app/(main)/layout.tsx
-📁 /components/ui/layout/_scrolltop.scss
-```
-
----
-
-### **المرحلة 7️⃣: تحسين UI Components** ✅
-
-#### **المطلوب:**
-- [x] إضافة صفحة Badge في UIKit
-- [x] إضافة صفحة Tag في UIKit
-- [x] إضافة صفحة Chip في UIKit
-- [x] إضافة صفحة Avatar في UIKit
-- [x] تحسين صفحات Auth الموجودة
-- [x] تحسين صفحة NotFound
-
-#### **الملفات الجديدة:**
-```
-📁 /app/(main)/uikit/
-├── badge/
-│   └── page.tsx
-├── tag/
-│   └── page.tsx
-├── chip/
-│   └── page.tsx
-└── avatar/
-    └── page.tsx
-```
-
----
-
-## 📦 **المكونات المشتركة المطلوبة:**
-
-### **1. ProtectedPage Component:**
-```typescript
-interface ProtectedPageProps {
-    children: React.ReactNode;
-    requireSubscription?: boolean;
-    accessCode?: string;
-}
-```
-
-### **2. OtpDialog Component:**
-```typescript
-interface OtpDialogProps {
-    visible: boolean;
-    onHide: () => void;
-    onVerify: (code: string) => void;
-}
-```
-
-### **3. PageHeader Component:**
-```typescript
-interface PageHeaderProps {
-    title: string;
-    subtitle?: string;
-    badge?: string;
-    actions?: React.ReactNode;
-}
-```
+#### **المرحلة 7: تحسين UI Components** ✅
+- صفحات Badge, Tag, Chip, Avatar في UIKit
+- **الملفات:** `/app/(main)/uikit/{badge,tag,chip,avatar}/page.tsx`
 
 ---
 
@@ -437,189 +213,41 @@ sidebar_collapsed: boolean
 
 ---
 
-## **المرحلة 6️⃣: Notification System** 🔔 ✅
+## **المرحلة 6: Notification System** 🔔 ✅
 
-### **Backend:**
-- [x] API Endpoints:
-  - `GET /api/notifications` - جلب الإشعارات ✅
-  - `PATCH /api/notifications/:id` - تحديد كمقروء ✅
-  - `POST /api/notifications` (action: mark-all-read) - تحديد الكل كمقروء ✅
-  - `DELETE /api/notifications/:id` - حذف إشعار ✅
-  - `GET /api/notifications/count` - عدد غير المقروءة ✅
+**الميزات المكتملة:**
+- ✅ Backend API (GET, POST, PATCH, DELETE, count)
+- ✅ WebSocket real-time notifications
+- ✅ Frontend Components (Bell, Dropdown, Item, Page)
+- ✅ Mark as read (single/all), Delete, Filter, Pagination
+- ✅ Auto-refresh (30s polling) + WebSocket fallback
+- ✅ NotificationContext + Global state management
 
-- [x] Database Schema:
-  ```typescript
-  interface Notification {
-      id: string;
-      userId: string;
-      type: 'info' | 'success' | 'warning' | 'error';
-      title: string;
-      message: string;
-      icon?: string;
-      link?: string;
-      read: boolean;
-      createdAt: Date;
-  }
-  ```
-
-- [x] Backend Integration:
-  - `/runtime/server/routes/notifications.js` ✅
-  - Integrated in `/runtime/server/index.js` ✅
-  - In-memory storage (ready for DB integration)
-  - Helper function `createNotification()` for other routes
-
-- [x] WebSocket:
-  - [x] Real-time notifications ✅
-  - [x] WebSocket integration ✅
-  - [x] Event: `notification:new` ✅
-  - [x] Event: `notification:count` ✅
-  - [x] Auto-reconnection with exponential backoff ✅
-  - [x] Fallback to polling if WebSocket fails ✅
-
-### **Frontend:**
-- [x] Components:
-  - `NotificationBell.tsx` - أيقونة الجرس مع Badge ✅
-  - `NotificationDropdown.tsx` - قائمة الإشعارات ✅
-  - `NotificationItem.tsx` - عنصر إشعار واحد ✅
-  - `NotificationsPage.tsx` - صفحة كاملة للإشعارات ✅
-
-- [x] Features:
-  - [x] عرض عدد غير المقروءة في Badge ✅
-  - [x] Dropdown menu عند الضغط ✅
-  - [x] Mark as read (single/all) ✅
-  - [x] Delete notification ✅
-  - [x] Filter (all/unread) ✅
-  - [x] Pagination support ✅
-  - [x] Auto-refresh (30s polling) ✅
-  - [x] Real-time updates (WebSocket) ✅
-  - [ ] Sound notification (optional)
-  - [ ] Desktop notification (optional)
-
-- [x] UI/UX:
-  - [x] Different icons per type (color-coded) ✅
-  - [x] Time ago (e.g., "5 minutes ago") ✅
-  - [x] Empty state ✅
-  - [x] Loading state ✅
-  - [x] Error handling ✅
-  - [x] Responsive design ✅
-  - [x] Hover effects ✅
-  - [ ] Animation عند وصول إشعار جديد
-
-### **Integration:**
-- [x] AppTopbar.tsx:
-  - [x] Replace static Badge with real data ✅
-  - [x] Add NotificationBell component ✅
-  
-- [x] Context/Store:
-  - [x] NotificationContext ✅
-  - [x] Global state management ✅
-  
-- [x] API Integration:
-  - [x] Fetch notifications on mount ✅
-  - [x] Poll every 30 seconds ✅
-  - [x] Update count in real-time ✅
-  - [x] Connected to Backend API ✅
-  - [x] API Key authentication ✅
-
-- [x] Layout Integration:
-  - [x] NotificationProvider in Layout ✅
-  - [x] Sidebar menu item added ✅
-
-### **الملفات:**
-```
-📁 /components/Notifications/
-├── NotificationBell.tsx
-├── NotificationDropdown.tsx
-├── NotificationItem.tsx
-└── NotificationCenter.tsx
-
-📁 /app/(main)/notifications/
-└── page.tsx
-
-📁 /api/notifications/
-├── route.ts (GET, POST)
-├── [id]/route.ts (DELETE, PATCH)
-└── count/route.ts (GET)
-
-📁 /contexts/
-└── NotificationContext.tsx
-
-📁 /hooks/
-└── useNotifications.ts
-```
+**الملفات:**
+- `/components/Notifications/` - NotificationBell, Dropdown, Item, Center
+- `/app/(main)/notifications/page.tsx`
+- `/api/notifications/` - route.ts, [id]/route.ts, count/route.ts
+- `/contexts/NotificationContext.tsx`
+- `/runtime/server/routes/notifications.js`
 
 ---
 
-## 🪝 **المرحلة 8️⃣: Webhook Dispatcher - آمن وقابل للإدارة** ✅ **COMPLETE!**
+## **المرحلة 8: Webhook Dispatcher** 🪝 ✅
 
-### **🎯 الأهداف:**
-- ✅ نظام Webhooks آمن مع HMAC Signature ✅
-- ✅ دعم أحداث متعددة (8 events) ✅
-- ✅ لوحة إدارة في Settings لإدارة Webhooks ✅
-- ✅ Retry mechanism مع exponential backoff ✅
-- ✅ Webhook logs & monitoring ✅
+**الميزات المكتملة:**
+- ✅ HMAC SHA-256 Signature System (timing-safe)
+- ✅ Webhook Manager (register, dispatch, retry, logs, stats)
+- ✅ Event Integration (8 events: message_received, message_sent, campaign_executed, campaign_completed, client_connected, client_disconnected, smartbot_reply, session_qr)
+- ✅ API Routes (CRUD, test, logs, statistics)
+- ✅ Settings Page UI (create/edit/delete, event selection, secret generation, retry config)
+- ✅ Retry mechanism with exponential backoff (3 attempts)
 
-### **✅ Completed Features:**
+**الملفات:**
+- `/runtime/server/webhooks/` - WebhookManager.js, signature.js, eventIntegration.js
+- `/runtime/server/routes/webhooks.js`
+- `/app/(main)/settings/webhooks/page.tsx`
 
-#### **Backend:**
-- ✅ **HMAC Signature System** (`signature.js`)
-  - SHA-256 signing
-  - Timing-safe comparison
-  - Prevents timing attacks
-
-- ✅ **Webhook Manager** (`WebhookManager.js`)
-  - Register/unregister webhooks
-  - Dispatch events to subscribers
-  - Retry with exponential backoff
-  - Logs (last 1000 attempts)
-  - Statistics tracking
-
-- ✅ **Event Integration** (`eventIntegration.js`)
-  - WhatsApp events integration
-  - Campaign events
-  - SmartBot events
-  - Session events
-
-- ✅ **API Routes** (`/api/webhooks`)
-  - Full CRUD operations
-  - Test endpoint
-  - Logs & statistics endpoints
-
-#### **Frontend:**
-- ✅ **Webhooks Settings Page** (`/settings/webhooks`)
-  - Create/Edit/Delete webhooks
-  - Event selection (MultiSelect)
-  - Secret key generation
-  - Retry configuration
-  - Enable/disable toggle
-  - Test webhook button
-
-#### **Webhook Events:**
-- ✅ `message_received` - When message is received
-- ✅ `message_sent` - When message is sent (ACK=3)
-- ✅ `campaign_executed` - During campaign execution
-- ✅ `campaign_completed` - When campaign completes
-- ✅ `client_connected` - WhatsApp client connected
-- ✅ `client_disconnected` - WhatsApp client disconnected
-- ✅ `smartbot_reply` - SmartBot auto-reply sent
-- ✅ `session_qr` - QR code generated
-
-#### **Security:**
-- ✅ HMAC SHA-256 signature in `X-WaQtor-Signature` header
-- ✅ Timing-safe comparison
-- ✅ Secret key per webhook
-- ✅ API Key authentication required
-
-#### **Features:**
-- ✅ **Multiple Events**: 8 supported events
-- ✅ **Retry Mechanism**: Exponential backoff (3 attempts)
-- ✅ **Dashboard UI**: Full CRUD interface
-- ✅ **Test Endpoint**: Send test webhooks
-- ✅ **Logs & Monitoring**: Track webhook deliveries
-- ✅ **Enable/Disable**: Toggle webhooks on/off
-- ✅ **Secret Management**: Auto-generate or custom secrets
-
-**Status**: 🎉 **100% Complete** - Production Ready!
+**Status**: 🎉 Production Ready!
 
 ---
 
@@ -1295,119 +923,37 @@ WEBHOOK_TIMEOUT=10000
 
 ---
 
-### **✅ Features:**
-
-- ✅ **HMAC Signature**: Secure webhook verification
-- ✅ **Multiple Events**: 8 supported events
-- ✅ **Retry Mechanism**: Exponential backoff (3 attempts)
-- ✅ **Dashboard UI**: Full CRUD interface
-- ✅ **Test Endpoint**: Send test webhooks
-- ✅ **Logs & Monitoring**: Track webhook deliveries
-- ✅ **Enable/Disable**: Toggle webhooks on/off
-- ✅ **Secret Management**: Auto-generate or custom secrets
-
 ---
 
-## 🤖 **المرحلة 9️⃣: SmartBot AI Engine v2 - من Fuzzy إلى Semantic Matching**
+## 🤖 **المرحلة 9: SmartBot AI Engine v2** ✅
 
-### **🎯 الأهداف:**
-- ✅ ترقية من Fuzzy Matching إلى Semantic Matching
-- ✅ استخدام Embeddings (MiniLM/MPNet) للبحث المتجهي
-- ✅ Confidence scoring لكل رد
+**الميزات المكتملة:**
+- ✅ Semantic Matching (Embeddings: MiniLM/MPNet)
+- ✅ Confidence scoring
 - ✅ Template expansion مع متغيرات ديناميكية
 - ✅ Learning loop مع مراجعة بشرية
-- ✅ نقل التخزين من JSON إلى قاعدة بيانات علائقية
+- ✅ Database Schema (smartbot_rules, smartbot_embeddings, smartbot_history, smartbot_suggestions)
 
-### **📊 Pipeline: Message → Language Detection → Embedding → Semantic Search → Safety → Template → Response → Learning**
-
-### **🗄️ Database Schema:**
-- `smartbot_rules` (enhanced with tone, variables, priority)
-- `smartbot_embeddings` (NEW - stores 384-dim vectors)
-- `smartbot_history` (migrated from JSON)
-- `smartbot_suggestions` (NEW - learning loop)
-
-### **🔧 Components:**
-- EmbeddingService (Xenova transformers)
-- SmartBotEngineV2 (main pipeline)
-- TemplateEngine (variable expansion)
-- SafetyLayer (profanity + no-reply rules)
-
-### **💻 Dashboard Features:**
-- Rule List + "Generate Embedding" button
-- Test Bench (Top-3 matches + confidence)
-- Auto-Improve (suggestions from unmatched queries)
+**الملفات:**
+- `/runtime/server/ai/` - SemanticMatcher.js, EmbeddingService.js
+- `/runtime/server/database/smartbot.db`
 
 ---
 
-## 🏗️ **المرحلة 10: Architecture Evolution - من Monolith إلى Modular Microkernel**
+## 🏗️ **المرحلة 10: Architecture Evolution** ✅
 
-### **🎯 الأهداف:**
-- ✅ تحديث المحرك بدون كسر الواجهة (Backward Compatibility)
-- ✅ دعم Multi-Instance مستقبلاً
-- ✅ نشر SDK رسمي (Node.js + Python)
-- ✅ فصل المسؤوليات (Separation of Concerns)
-- ✅ قابلية الاختبار والصيانة
+**الميزات المكتملة:**
+- ✅ Modular Microkernel Architecture
+- ✅ Backward Compatibility
+- ✅ Plugin System
+- ✅ Event-driven Architecture
 
----
-
-### **📦 الهيكل المقترح (Mono-Repo):**
-
-```
-waqtor/
-├─ packages/
-│  ├─ core/                 # @waqtor/core  ← المحرك الأساسي
-│  │  ├─ src/
-│  │  │  ├─ engine/         # WhatsAppClient, SessionManager, EventBus
-│  │  │  ├─ campaigns/      # CampaignEngine (الحد الأدنى)
-│  │  │  ├─ storage/        # Storage adapters: sqlite | memory
-│  │  │  └─ plugins/        # Plugin interfaces (اختيارية)
-│  │  ├─ index.ts
-│  │  └─ package.json
-│  │
-│  ├─ server/               # @waqtor/server ← REST + WS + Webhooks
-│  │  ├─ src/
-│  │  │  ├─ api/            # Routes: /messages, /campaigns, /status, /webhooks
-│  │  │  ├─ ws/             # WebSocket 2.0 namespaces
-│  │  │  ├─ middleware/     # Auth, Rate limiting, CORS
-│  │  │  └─ bootstrap.ts    # Dependency Injection (يحقن Core)
-│  │  ├─ index.ts
-│  │  └─ package.json
-│  │
-│  ├─ sdk-node/             # @waqtor/sdk (Node.js SDK)
-│  │  ├─ src/
-│  │  │  ├─ client.ts       # WaqtorClient class
-│  │  │  ├─ types.ts        # TypeScript definitions
-│  │  │  └─ utils.ts        # Helper functions
-│  │  ├─ index.ts
-│  │  └─ package.json
-│  │
-│  └─ sdk-py/               # waqtor (Python SDK)
-│     ├─ waqtor/
-│     │  ├─ __init__.py
-│     │  ├─ client.py       # WaqtorClient class
-│     │  └─ types.py        # Type hints
-│     ├─ setup.py
-│     └─ README.md
-│
-└─ apps/
-   ├─ dashboard/            # Next.js 14 (Sakai Theme)
-   │  └─ (current structure)
-   │
-   └─ examples/
-      ├─ basic-bot/
-      ├─ campaign-scheduler/
-      └─ webhook-handler/
-```
+**الملفات:**
+- `/runtime/server/core/` - EventBus.js, PluginManager.js
 
 ---
 
-### **🔒 حدود النظافة (Separation of Concerns):**
-
-#### **1. @waqtor/core** (المحرك الأساسي)
-```typescript
-// ✅ المسؤوليات:
-- إدارة جلسة WhatsApp (SessionManager)
-- معالجة الأحداث (EventBus)
+---
 - إرسال/استقبال الرسائل
 - إدارة الحملات (Campaign Engine)
 - Storage abstraction
@@ -1875,1402 +1421,6 @@ describe('WaqtorClient', () => {
 
 ---
 
-## 🔌 **المرحلة 9️⃣: Integration Layer - WebSocket 2.0 (Event-Driven + Namespaces)**
-
-### **🎯 الأهداف:**
-- ✅ تنظيم القنوات عبر Namespaces
-- ✅ Heartbeat + Auto-Reconnect
-- ✅ Backpressure handling للحملات الكثيفة
-- ✅ Reliable real-time communication
-- ✅ Better error handling & recovery
-
----
-
-### **📡 WebSocket Architecture:**
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Backend (@waqtor/server)                  │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │              Socket.io Server                         │  │
-│  │  ┌────────────┐  ┌────────────┐  ┌────────────┐     │  │
-│  │  │ /status    │  │ /campaigns │  │ /smartbot  │     │  │
-│  │  │ namespace  │  │ namespace  │  │ namespace  │     │  │
-│  │  └─────┬──────┘  └─────┬──────┘  └─────┬──────┘     │  │
-│  └────────┼───────────────┼───────────────┼────────────┘  │
-│           │               │               │                │
-│           └───────────────┴───────────────┘                │
-│                           │                                │
-│                    ┌──────▼──────┐                         │
-│                    │  EventBus   │                         │
-│                    │  (@waqtor/  │                         │
-│                    │   core)     │                         │
-│                    └─────────────┘                         │
-└─────────────────────────────────────────────────────────────┘
-                            ▲
-                            │ WebSocket
-                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    Frontend (Dashboard)                      │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │           Socket.io Client (Multiple Namespaces)     │  │
-│  │  ┌────────────┐  ┌────────────┐  ┌────────────┐     │  │
-│  │  │ /status    │  │ /campaigns │  │ /smartbot  │     │  │
-│  │  │ client     │  │ client     │  │ client     │     │  │
-│  │  └─────┬──────┘  └─────┬──────┘  └─────┬──────┘     │  │
-│  └────────┼───────────────┼───────────────┼────────────┘  │
-│           │               │               │                │
-│           ▼               ▼               ▼                │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │              Zustand Store / Context                  │  │
-│  └──────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
-```
-
----
-
-### **🔧 Server Implementation (@waqtor/server):**
-
-#### **1. WebSocket Server Setup:**
-
-```typescript
-// ws/index.ts
-import { Server } from 'socket.io';
-import { EventBus } from '@waqtor/core';
-
-export function setupWebSocket(httpServer: any, eventBus: EventBus) {
-  const io = new Server(httpServer, {
-    cors: {
-      origin: process.env.DASHBOARD_URL || 'http://localhost:3000',
-      credentials: true
-    },
-    transports: ['websocket', 'polling'],
-    pingInterval: 15000,      // Heartbeat every 15s
-    pingTimeout: 10000,       // Timeout after 10s
-    maxHttpBufferSize: 1e6    // 1MB max message size
-  });
-
-  // Middleware: Authentication
-  io.use((socket, next) => {
-    const token = socket.handshake.auth.token;
-    if (isValidToken(token)) {
-      next();
-    } else {
-      next(new Error('Authentication failed'));
-    }
-  });
-
-  // Setup namespaces
-  setupStatusNamespace(io, eventBus);
-  setupCampaignsNamespace(io, eventBus);
-  setupSmartBotNamespace(io, eventBus);
-
-  return io;
-}
-```
-
-#### **2. Status Namespace (/status):**
-
-```typescript
-// ws/namespaces/status.ts
-import { Namespace } from 'socket.io';
-import { EventBus } from '@waqtor/core';
-
-export function setupStatusNamespace(io: Server, bus: EventBus) {
-  const statusNs = io.of('/status');
-
-  statusNs.on('connection', (socket) => {
-    console.log(`[/status] Client connected: ${socket.id}`);
-
-    // Send current state immediately
-    socket.emit('status', {
-      status: bus.getSessionStatus(),
-      timestamp: new Date().toISOString()
-    });
-
-    // Listen to core events
-    const qrHandler = (event: any) => {
-      socket.emit('qr', {
-        qr: event.data.qr,
-        timestamp: event.data.timestamp
-      });
-    };
-
-    const statusHandler = (event: any) => {
-      socket.emit('status', {
-        status: event.data.status,
-        clientInfo: event.data.clientInfo,
-        timestamp: event.data.timestamp
-      });
-    };
-
-    const statsHandler = (event: any) => {
-      socket.emit('stats', {
-        messagesSent: event.data.sent,
-        messagesReceived: event.data.received,
-        timestamp: event.data.timestamp
-      });
-    };
-
-    // Register handlers
-    bus.on('session.qr', qrHandler);
-    bus.on('session.status', statusHandler);
-    bus.on('session.stats', statsHandler);
-
-    // Cleanup on disconnect
-    socket.on('disconnect', () => {
-      console.log(`[/status] Client disconnected: ${socket.id}`);
-      bus.off('session.qr', qrHandler);
-      bus.off('session.status', statusHandler);
-      bus.off('session.stats', statsHandler);
-    });
-
-    // Heartbeat monitoring
-    socket.on('ping', () => {
-      socket.emit('pong', { timestamp: Date.now() });
-    });
-  });
-}
-```
-
-#### **3. Campaigns Namespace (/campaigns):**
-
-```typescript
-// ws/namespaces/campaigns.ts
-import { Namespace } from 'socket.io';
-import { EventBus } from '@waqtor/core';
-
-export function setupCampaignsNamespace(io: Server, bus: EventBus) {
-  const campaignsNs = io.of('/campaigns');
-
-  // Backpressure queue
-  const messageQueue: any[] = [];
-  const MAX_BROADCAST_RATE = 100; // messages per second
-  let lastBroadcast = Date.now();
-
-  campaignsNs.on('connection', (socket) => {
-    console.log(`[/campaigns] Client connected: ${socket.id}`);
-
-    // Campaign progress with backpressure
-    const progressHandler = (event: any) => {
-      const now = Date.now();
-      const timeSinceLastBroadcast = now - lastBroadcast;
-
-      if (timeSinceLastBroadcast < (1000 / MAX_BROADCAST_RATE)) {
-        // Queue the message
-        messageQueue.push({ event: 'progress', data: event.data });
-      } else {
-        // Broadcast immediately
-        socket.emit('progress', {
-          campaignId: event.data.campaignId,
-          sent: event.data.sent,
-          total: event.data.total,
-          failed: event.data.failed,
-          status: event.data.status,
-          timestamp: event.data.timestamp
-        });
-        lastBroadcast = now;
-      }
-    };
-
-    const completedHandler = (event: any) => {
-      socket.emit('completed', {
-        campaignId: event.data.campaignId,
-        totalSent: event.data.sent,
-        totalFailed: event.data.failed,
-        duration: event.data.duration,
-        timestamp: event.data.timestamp
-      });
-    };
-
-    // Register handlers
-    bus.on('campaign.progress', progressHandler);
-    bus.on('campaign.completed', completedHandler);
-
-    // Process queued messages
-    const queueInterval = setInterval(() => {
-      if (messageQueue.length > 0) {
-        const batch = messageQueue.splice(0, 10); // Send 10 at a time
-        batch.forEach(msg => socket.emit(msg.event, msg.data));
-      }
-    }, 100);
-
-    // Cleanup
-    socket.on('disconnect', () => {
-      console.log(`[/campaigns] Client disconnected: ${socket.id}`);
-      bus.off('campaign.progress', progressHandler);
-      bus.off('campaign.completed', completedHandler);
-      clearInterval(queueInterval);
-    });
-  });
-}
-```
-
-#### **4. SmartBot Namespace (/smartbot):**
-
-```typescript
-// ws/namespaces/smartbot.ts
-import { Namespace } from 'socket.io';
-import { EventBus } from '@waqtor/core';
-
-export function setupSmartBotNamespace(io: Server, bus: EventBus) {
-  const smartbotNs = io.of('/smartbot');
-
-  smartbotNs.on('connection', (socket) => {
-    console.log(`[/smartbot] Client connected: ${socket.id}`);
-
-    // Incoming messages
-    const messageHandler = (event: any) => {
-      socket.emit('incoming', {
-        from: event.data.from,
-        body: event.data.body,
-        messageId: event.data.messageId,
-        isGroup: event.data.isGroup,
-        timestamp: event.data.timestamp
-      });
-    };
-
-    // SmartBot replies
-    const replyHandler = (event: any) => {
-      socket.emit('reply', {
-        to: event.data.to,
-        trigger: event.data.trigger,
-        response: event.data.response,
-        timestamp: event.data.timestamp
-      });
-    };
-
-    // Rule updates
-    const ruleUpdateHandler = (event: any) => {
-      socket.emit('rule-updated', {
-        ruleId: event.data.ruleId,
-        action: event.data.action, // 'created' | 'updated' | 'deleted'
-        timestamp: event.data.timestamp
-      });
-    };
-
-    // Register handlers
-    bus.on('message.received', messageHandler);
-    bus.on('smartbot.reply', replyHandler);
-    bus.on('smartbot.rule-updated', ruleUpdateHandler);
-
-    // Cleanup
-    socket.on('disconnect', () => {
-      console.log(`[/smartbot] Client disconnected: ${socket.id}`);
-      bus.off('message.received', messageHandler);
-      bus.off('smartbot.reply', replyHandler);
-      bus.off('smartbot.rule-updated', ruleUpdateHandler);
-    });
-  });
-}
-```
-
----
-
-### **💻 Client Implementation (Dashboard):**
-
-#### **1. WebSocket Hook:**
-
-```typescript
-// hooks/useWebSocket.ts
-import { useEffect, useRef, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
-
-interface UseWebSocketOptions {
-  namespace: string;
-  autoConnect?: boolean;
-  onConnect?: () => void;
-  onDisconnect?: () => void;
-  onError?: (error: Error) => void;
-}
-
-export function useWebSocket(options: UseWebSocketOptions) {
-  const { namespace, autoConnect = true, onConnect, onDisconnect, onError } = options;
-  
-  const [isConnected, setIsConnected] = useState(false);
-  const [latency, setLatency] = useState<number>(0);
-  const socketRef = useRef<Socket | null>(null);
-
-  useEffect(() => {
-    const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:8080';
-    const token = localStorage.getItem('api_key');
-
-    const socket = io(`${WS_URL}${namespace}`, {
-      transports: ['websocket'],
-      auth: { token },
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-      reconnectionAttempts: Infinity
-    });
-
-    socketRef.current = socket;
-
-    // Connection events
-    socket.on('connect', () => {
-      console.log(`[${namespace}] Connected`);
-      setIsConnected(true);
-      onConnect?.();
-    });
-
-    socket.on('disconnect', (reason) => {
-      console.log(`[${namespace}] Disconnected:`, reason);
-      setIsConnected(false);
-      onDisconnect?.();
-    });
-
-    socket.on('connect_error', (error) => {
-      console.error(`[${namespace}] Connection error:`, error);
-      onError?.(error);
-    });
-
-    // Heartbeat
-    const heartbeatInterval = setInterval(() => {
-      const start = Date.now();
-      socket.emit('ping');
-      
-      socket.once('pong', () => {
-        const latency = Date.now() - start;
-        setLatency(latency);
-      });
-    }, 15000);
-
-    // Cleanup
-    return () => {
-      clearInterval(heartbeatInterval);
-      socket.disconnect();
-    };
-  }, [namespace, onConnect, onDisconnect, onError]);
-
-  const emit = (event: string, data: any) => {
-    socketRef.current?.emit(event, data);
-  };
-
-  const on = (event: string, handler: (...args: any[]) => void) => {
-    socketRef.current?.on(event, handler);
-  };
-
-  const off = (event: string, handler?: (...args: any[]) => void) => {
-    socketRef.current?.off(event, handler);
-  };
-
-  return {
-    socket: socketRef.current,
-    isConnected,
-    latency,
-    emit,
-    on,
-    off
-  };
-}
-```
-
-#### **2. Status WebSocket (Dashboard):**
-
-```typescript
-// hooks/useStatusWebSocket.ts
-import { useEffect } from 'react';
-import { useWebSocket } from './useWebSocket';
-import { useAppStore } from '@/store/useAppStore';
-
-export function useStatusWebSocket() {
-  const { setQrCode, setSessionStatus, setClientInfo, setStats } = useAppStore();
-
-  const { isConnected, latency, on, off } = useWebSocket({
-    namespace: '/status',
-    onConnect: () => {
-      console.log('Status WebSocket connected');
-    },
-    onDisconnect: () => {
-      console.log('Status WebSocket disconnected');
-    }
-  });
-
-  useEffect(() => {
-    // QR Code updates
-    const handleQr = (data: any) => {
-      setQrCode(data.qr);
-    };
-
-    // Status updates
-    const handleStatus = (data: any) => {
-      setSessionStatus(data.status);
-      if (data.clientInfo) {
-        setClientInfo(data.clientInfo);
-      }
-    };
-
-    // Stats updates
-    const handleStats = (data: any) => {
-      setStats({
-        sent: data.messagesSent,
-        received: data.messagesReceived
-      });
-    };
-
-    // Register listeners
-    on('qr', handleQr);
-    on('status', handleStatus);
-    on('stats', handleStats);
-
-    // Cleanup
-    return () => {
-      off('qr', handleQr);
-      off('status', handleStatus);
-      off('stats', handleStats);
-    };
-  }, [on, off, setQrCode, setSessionStatus, setClientInfo, setStats]);
-
-  return { isConnected, latency };
-}
-```
-
-#### **3. Campaigns WebSocket:**
-
-```typescript
-// hooks/useCampaignsWebSocket.ts
-import { useEffect } from 'react';
-import { useWebSocket } from './useWebSocket';
-import { useCampaignStore } from '@/store/useCampaignStore';
-
-export function useCampaignsWebSocket() {
-  const { updateCampaignProgress, markCampaignCompleted } = useCampaignStore();
-
-  const { isConnected, on, off } = useWebSocket({
-    namespace: '/campaigns'
-  });
-
-  useEffect(() => {
-    const handleProgress = (data: any) => {
-      updateCampaignProgress(data.campaignId, {
-        sent: data.sent,
-        total: data.total,
-        failed: data.failed,
-        status: data.status
-      });
-    };
-
-    const handleCompleted = (data: any) => {
-      markCampaignCompleted(data.campaignId, {
-        totalSent: data.totalSent,
-        totalFailed: data.totalFailed,
-        duration: data.duration
-      });
-    };
-
-    on('progress', handleProgress);
-    on('completed', handleCompleted);
-
-    return () => {
-      off('progress', handleProgress);
-      off('completed', handleCompleted);
-    };
-  }, [on, off, updateCampaignProgress, markCampaignCompleted]);
-
-  return { isConnected };
-}
-```
-
-#### **4. SmartBot WebSocket:**
-
-```typescript
-// hooks/useSmartBotWebSocket.ts
-import { useEffect } from 'react';
-import { useWebSocket } from './useWebSocket';
-import { useSmartBotStore } from '@/store/useSmartBotStore';
-
-export function useSmartBotWebSocket() {
-  const { addIncomingMessage, addReply, updateRule } = useSmartBotStore();
-
-  const { isConnected, on, off } = useWebSocket({
-    namespace: '/smartbot'
-  });
-
-  useEffect(() => {
-    const handleIncoming = (data: any) => {
-      addIncomingMessage({
-        from: data.from,
-        body: data.body,
-        messageId: data.messageId,
-        isGroup: data.isGroup,
-        timestamp: new Date(data.timestamp)
-      });
-    };
-
-    const handleReply = (data: any) => {
-      addReply({
-        to: data.to,
-        trigger: data.trigger,
-        response: data.response,
-        timestamp: new Date(data.timestamp)
-      });
-    };
-
-    const handleRuleUpdate = (data: any) => {
-      updateRule(data.ruleId, data.action);
-    };
-
-    on('incoming', handleIncoming);
-    on('reply', handleReply);
-    on('rule-updated', handleRuleUpdate);
-
-    return () => {
-      off('incoming', handleIncoming);
-      off('reply', handleReply);
-      off('rule-updated', handleRuleUpdate);
-    };
-  }, [on, off, addIncomingMessage, addReply, updateRule]);
-
-  return { isConnected };
-}
-```
-
----
-
-### **📊 Connection Status Component:**
-
-```typescript
-// components/WebSocketStatus.tsx
-'use client';
-
-import { Badge } from 'primereact/badge';
-import { useStatusWebSocket } from '@/hooks/useStatusWebSocket';
-
-export function WebSocketStatus() {
-  const { isConnected, latency } = useStatusWebSocket();
-
-  return (
-    <div className="flex align-items-center gap-2">
-      <i 
-        className={`pi ${isConnected ? 'pi-wifi' : 'pi-wifi-slash'}`}
-        style={{ color: isConnected ? '#16a34a' : '#ef4444' }}
-      />
-      <Badge 
-        value={isConnected ? `${latency}ms` : 'Offline'} 
-        severity={isConnected ? 'success' : 'danger'}
-      />
-    </div>
-  );
-}
-```
-
----
-
-### **🔄 Auto-Reconnect Strategy:**
-
-```typescript
-// utils/websocket-reconnect.ts
-export class WebSocketReconnectManager {
-  private reconnectAttempts = 0;
-  private maxReconnectAttempts = Infinity;
-  private reconnectDelay = 1000;
-  private maxReconnectDelay = 30000;
-
-  calculateDelay(): number {
-    // Exponential backoff with jitter
-    const delay = Math.min(
-      this.reconnectDelay * Math.pow(2, this.reconnectAttempts),
-      this.maxReconnectDelay
-    );
-    
-    const jitter = Math.random() * 1000;
-    return delay + jitter;
-  }
-
-  onReconnectAttempt() {
-    this.reconnectAttempts++;
-    console.log(`Reconnect attempt ${this.reconnectAttempts}`);
-  }
-
-  onReconnectSuccess() {
-    this.reconnectAttempts = 0;
-    console.log('Reconnected successfully');
-  }
-
-  shouldReconnect(): boolean {
-    return this.reconnectAttempts < this.maxReconnectAttempts;
-  }
-}
-```
-
----
-
-### **📝 الملفات المطلوبة:**
-
-```
-📁 packages/server/src/ws/
-├── index.ts                    # WebSocket server setup
-├── namespaces/
-│   ├── status.ts               # /status namespace
-│   ├── campaigns.ts            # /campaigns namespace
-│   └── smartbot.ts             # /smartbot namespace
-├── middleware/
-│   ├── auth.ts                 # Socket authentication
-│   └── rateLimit.ts            # Rate limiting per socket
-└── utils/
-    ├── backpressure.ts         # Backpressure queue
-    └── heartbeat.ts            # Heartbeat monitoring
-
-📁 dashboard/src/hooks/
-├── useWebSocket.ts             # Base WebSocket hook
-├── useStatusWebSocket.ts       # Status namespace hook
-├── useCampaignsWebSocket.ts    # Campaigns namespace hook
-└── useSmartBotWebSocket.ts     # SmartBot namespace hook
-
-📁 dashboard/src/components/
-└── WebSocketStatus.tsx         # Connection status indicator
-
-📁 dashboard/src/utils/
-└── websocket-reconnect.ts      # Reconnection manager
-```
-
----
-
-### **⚙️ Configuration:**
-
-```typescript
-// .env (Server)
-WS_PORT=8080
-WS_PING_INTERVAL=15000
-WS_PING_TIMEOUT=10000
-WS_MAX_BUFFER_SIZE=1048576
-DASHBOARD_URL=http://localhost:3000
-
-// .env (Dashboard)
-NEXT_PUBLIC_WS_URL=ws://localhost:8080
-NEXT_PUBLIC_WS_RECONNECT_DELAY=1000
-NEXT_PUBLIC_WS_MAX_RECONNECT_DELAY=30000
-```
-
----
-
-### **🎯 Benefits (الفوائد):**
-
-#### **1. Organization (التنظيم)**
-- ✅ Namespaces منفصلة لكل feature
-- ✅ Event isolation (لا تداخل بين الأحداث)
-- ✅ Easier debugging
-
-#### **2. Performance (الأداء)**
-- ✅ Backpressure handling للحملات الكثيفة
-- ✅ Message queuing
-- ✅ Rate limiting per namespace
-
-#### **3. Reliability (الموثوقية)**
-- ✅ Auto-reconnect مع exponential backoff
-- ✅ Heartbeat monitoring
-- ✅ Connection status tracking
-- ✅ Error recovery
-
-#### **4. Developer Experience**
-- ✅ Type-safe events
-- ✅ Reusable hooks
-- ✅ Clear separation of concerns
-- ✅ Easy to test
-
----
-
-### **🧪 Testing:**
-
-```typescript
-// tests/ws/status.test.ts
-describe('Status Namespace', () => {
-  it('should emit QR code on session.qr event', (done) => {
-    const client = io('http://localhost:8080/status');
-    
-    client.on('qr', (data) => {
-      expect(data).toHaveProperty('qr');
-      expect(data).toHaveProperty('timestamp');
-      client.disconnect();
-      done();
-    });
-    
-    // Trigger QR event from core
-    eventBus.emit('session.qr', { qr: 'test_qr', timestamp: new Date() });
-  });
-
-  it('should handle heartbeat', (done) => {
-    const client = io('http://localhost:8080/status');
-    
-    client.emit('ping');
-    client.on('pong', (data) => {
-      expect(data).toHaveProperty('timestamp');
-      client.disconnect();
-      done();
-    });
-  });
-});
-```
-
----
-
-### **📈 Monitoring:**
-
-```typescript
-// ws/monitoring.ts
-export class WebSocketMonitor {
-  private connections = new Map<string, number>();
-  
-  trackConnection(namespace: string) {
-    const count = this.connections.get(namespace) || 0;
-    this.connections.set(namespace, count + 1);
-  }
-  
-  trackDisconnection(namespace: string) {
-    const count = this.connections.get(namespace) || 0;
-    this.connections.set(namespace, Math.max(0, count - 1));
-  }
-  
-  getStats() {
-    return {
-      total: Array.from(this.connections.values()).reduce((a, b) => a + b, 0),
-      byNamespace: Object.fromEntries(this.connections)
-    };
-  }
-}
-```
-
----
-
-## 🔄 **Migration Guide: من WebSocket الخام إلى Socket.IO**
-
-### **🧭 المرحلة 1: فحص الـ WebSocket الحالي**
-
-#### **📍 الهدف:**
-معرفة:
-- أين يبدأ تشغيل الـ WebSocket حالياً؟
-- ما الـ events المفعلة؟
-- ما نوع الاتصال بين backend وDashboard؟ (`ws://` أو `wss://`)
-
-#### **🧩 خطوات الفحص:**
-
-**1. ابحث عن WebSocket الخام في Backend:**
-
-```bash
-grep -R "WebSocket" runtime/server
-grep -R "new Server" runtime/server
-grep -R "ws" runtime/server
-```
-
-**إذا ظهر:**
-```javascript
-const WebSocket = require('ws');
-const wss = new WebSocket.Server({ server });
-```
-→ يستخدم مكتبة `ws` الخام
-
-**2. تحقق من منطق broadcast:**
-
-```javascript
-wss.on('connection', socket => {
-  socket.on('message', data => { ... })
-});
-
-// Broadcast pattern
-wss.clients.forEach(client => {
-  client.send(JSON.stringify({ type: 'update', data: ... }))
-});
-```
-
-**3. افحص الواجهة (Dashboard):**
-
-```javascript
-// dashboard/src/hooks/useWebSocket.js
-const ws = new WebSocket(import.meta.env.VITE_WS_URL);
-ws.onmessage = (msg) => { ... }
-```
-
-**4. تحقق من .env:**
-
-```bash
-VITE_WS_URL=ws://localhost:8080
-```
-
-#### **📋 الملخص بعد الفحص:**
-- ✅ Backend = `ws` library
-- ✅ Frontend = Native `WebSocket`
-- ✅ الأحداث: `qr`, `status`, `campaign_update`
-- ❌ لا يوجد heartbeat أو reconnect تلقائي
-
----
-
-### **🔧 المرحلة 2: تحويل النظام إلى Socket.IO**
-
-#### **⚙️ أولاً: تثبيت المكتبات**
-
-**Backend:**
-```bash
-cd runtime/server
-npm install socket.io
-```
-
-**Frontend (Dashboard):**
-```bash
-cd dashboard
-npm install socket.io-client
-```
-
-#### **🏗️ ثانياً: تعديل السيرفر (Backend)**
-
-**✳️ قبل (WebSocket الخام):**
-
-```javascript
-const WebSocket = require('ws');
-const wss = new WebSocket.Server({ server });
-
-wss.on('connection', (socket) => {
-  socket.send(JSON.stringify({ type: 'welcome', data: 'Connected' }));
-  
-  socket.on('message', (data) => {
-    const message = JSON.parse(data);
-    // Handle message
-  });
-});
-```
-
-**✅ بعد (Socket.IO):**
-
-```javascript
-// runtime/server/index.js
-const httpServer = require('http').createServer(app);
-const { Server } = require('socket.io');
-
-const io = new Server(httpServer, {
-  path: '/ws',
-  cors: {
-    origin: process.env.DASHBOARD_URL || '*',
-    methods: ['GET', 'POST'],
-    credentials: true
-  },
-  pingInterval: 15000,      // Heartbeat every 15s
-  pingTimeout: 30000,       // Timeout after 30s
-  transports: ['websocket', 'polling']
-});
-
-// =============== Namespaces =================
-const statusNS = io.of('/status');
-const campaignsNS = io.of('/campaigns');
-const smartbotNS = io.of('/smartbot');
-
-// =============== Status Namespace ===========
-statusNS.on('connection', (socket) => {
-  console.log('🔌 Status client connected:', socket.id);
-
-  // بث QR جديد
-  socket.emit('qr', { qrCode: 'data:image/png;base64,...' });
-
-  // بث الحالة
-  socket.emit('status', { 
-    state: 'ready',
-    isConnected: true,
-    phoneNumber: '971...'
-  });
-
-  // بث الإحصائيات
-  socket.emit('stats', {
-    totalMessages: 1234,
-    totalCampaigns: 56,
-    activeUsers: 12
-  });
-
-  socket.on('disconnect', (reason) => {
-    console.log('⚠️ Client disconnected:', reason);
-  });
-});
-
-// =============== Campaigns Namespace ========
-campaignsNS.on('connection', (socket) => {
-  console.log('📢 Campaign socket connected:', socket.id);
-
-  socket.on('start_campaign', (payload) => {
-    console.log('Received campaign start:', payload);
-    
-    // Emit progress updates
-    socket.emit('campaign_progress', { 
-      campaignId: payload.id,
-      progress: 30,
-      sent: 30,
-      total: 100
-    });
-  });
-
-  socket.on('pause_campaign', (payload) => {
-    console.log('Pausing campaign:', payload.id);
-    socket.emit('campaign_paused', { campaignId: payload.id });
-  });
-});
-
-// =============== SmartBot Namespace =========
-smartbotNS.on('connection', (socket) => {
-  console.log('🤖 SmartBot socket connected:', socket.id);
-
-  socket.on('test_rule', (payload) => {
-    // Test SmartBot rule
-    socket.emit('test_result', {
-      matches: [...],
-      confidence: 0.85
-    });
-  });
-});
-
-// =============== Authentication Middleware ==
-io.use((socket, next) => {
-  const apiKey = socket.handshake.auth?.key;
-  if (apiKey === process.env.API_KEY) {
-    next();
-  } else {
-    next(new Error('Unauthorized'));
-  }
-});
-
-// =============== Connection Monitoring ======
-io.engine.on('connection_error', (err) => {
-  console.error('❌ Connection error:', err.code, err.message);
-});
-
-setInterval(() => {
-  console.log('🧩 Active connections:', {
-    status: statusNS.sockets.size,
-    campaigns: campaignsNS.sockets.size,
-    smartbot: smartbotNS.sockets.size
-  });
-}, 30000);
-
-// =============== Start Server ===============
-const PORT = process.env.PORT || 8080;
-httpServer.listen(PORT, () => {
-  console.log(`🚀 Server listening on port ${PORT}`);
-});
-```
-
-#### **🧩 ثالثاً: تحديث WebSocket Client في Dashboard**
-
-**✳️ قبل (WebSocket الخام):**
-
-```javascript
-// dashboard/src/hooks/useWebSocket.js
-const ws = new WebSocket(import.meta.env.VITE_WS_URL);
-
-ws.onopen = () => console.log('Connected');
-ws.onmessage = (msg) => {
-  const data = JSON.parse(msg.data);
-  if (data.type === 'qr') setQr(data.qrCode);
-  if (data.type === 'status') setStatus(data.state);
-};
-ws.onerror = (err) => console.error(err);
-ws.onclose = () => console.log('Disconnected');
-```
-
-**✅ بعد (Socket.IO Client):**
-
-```typescript
-// dashboard/src/hooks/useStatusWebSocket.ts
-import { io, Socket } from 'socket.io-client';
-import { useEffect, useRef } from 'react';
-import { useAppStore } from '../store/useAppStore';
-
-export function useStatusWebSocket() {
-  const { setQrCode, setSessionStatus, setStats } = useAppStore();
-  const socketRef = useRef<Socket | null>(null);
-
-  useEffect(() => {
-    // Create connection
-    const socket = io(`${import.meta.env.VITE_WS_URL}/status`, {
-      path: '/ws',
-      transports: ['websocket', 'polling'],
-      reconnection: true,
-      reconnectionAttempts: 10,
-      reconnectionDelay: 3000,
-      reconnectionDelayMax: 10000,
-      timeout: 20000,
-      auth: {
-        key: import.meta.env.VITE_API_KEY
-      }
-    });
-
-    socketRef.current = socket;
-
-    // Connection events
-    socket.on('connect', () => {
-      console.log('✅ Connected to /status namespace');
-    });
-
-    socket.on('disconnect', (reason) => {
-      console.log('⚠️ Disconnected from /status:', reason);
-    });
-
-    socket.on('connect_error', (error) => {
-      console.error('❌ Connection error:', error.message);
-    });
-
-    // Data events
-    socket.on('qr', (data) => {
-      console.log('📱 QR Code received');
-      setQrCode(data.qrCode);
-    });
-
-    socket.on('status', (data) => {
-      console.log('📊 Status update:', data.state);
-      setSessionStatus(data);
-    });
-
-    socket.on('stats', (data) => {
-      console.log('📈 Stats update:', data);
-      setStats(data);
-    });
-
-    // Cleanup
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
-
-  return socketRef.current;
-}
-```
-
-**Campaigns WebSocket Hook:**
-
-```typescript
-// dashboard/src/hooks/useCampaignsWebSocket.ts
-import { io, Socket } from 'socket.io-client';
-import { useEffect, useRef } from 'react';
-import { useCampaignStore } from '../store/useCampaignStore';
-
-export function useCampaignsWebSocket() {
-  const { updateCampaignProgress, setCampaignStatus } = useCampaignStore();
-  const socketRef = useRef<Socket | null>(null);
-
-  useEffect(() => {
-    const socket = io(`${import.meta.env.VITE_WS_URL}/campaigns`, {
-      path: '/ws',
-      transports: ['websocket'],
-      reconnection: true,
-      auth: {
-        key: import.meta.env.VITE_API_KEY
-      }
-    });
-
-    socketRef.current = socket;
-
-    socket.on('connect', () => {
-      console.log('✅ Connected to /campaigns namespace');
-    });
-
-    socket.on('campaign_progress', (data) => {
-      updateCampaignProgress(data.campaignId, data);
-    });
-
-    socket.on('campaign_completed', (data) => {
-      setCampaignStatus(data.campaignId, 'completed');
-    });
-
-    socket.on('campaign_paused', (data) => {
-      setCampaignStatus(data.campaignId, 'paused');
-    });
-
-    socket.on('campaign_failed', (data) => {
-      setCampaignStatus(data.campaignId, 'failed');
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
-
-  // Helper functions
-  const startCampaign = (campaignId: string) => {
-    socketRef.current?.emit('start_campaign', { id: campaignId });
-  };
-
-  const pauseCampaign = (campaignId: string) => {
-    socketRef.current?.emit('pause_campaign', { id: campaignId });
-  };
-
-  return {
-    socket: socketRef.current,
-    startCampaign,
-    pauseCampaign
-  };
-}
-```
-
-**Update .env:**
-
-```bash
-# Before
-VITE_WS_URL=ws://localhost:8080
-
-# After
-VITE_WS_URL=http://localhost:8080
-VITE_API_KEY=your_secret_api_key_here
-```
-
-**Note:** Socket.IO يستخدم `http://` وليس `ws://` لأن البروتوكول يُدار تلقائياً.
-
----
-
-### **🧪 المرحلة 3: اختبار التشغيل والمراقبة**
-
-#### **✅ 1) تشغيل السيرفر**
-
-```bash
-cd runtime/server
-node index.js
-```
-
-**Expected output:**
-```
-🚀 Server listening on port 8080
-🔌 Status client connected: abc123
-📢 Campaign socket connected: def456
-```
-
-#### **✅ 2) تشغيل Dashboard**
-
-```bash
-cd dashboard
-npm run dev
-```
-
-**Browser Console:**
-```
-✅ Connected to /status namespace
-✅ Connected to /campaigns namespace
-📱 QR Code received
-📊 Status update: ready
-```
-
-#### **✅ 3) اختبار Auto-Reconnect**
-
-1. أوقف السيرفر (`Ctrl+C`)
-2. راقب Dashboard console:
-   ```
-   ⚠️ Disconnected from /status: transport close
-   🔄 Trying to reconnect... attempt 1
-   🔄 Trying to reconnect... attempt 2
-   ```
-3. شغل السيرفر مرة أخرى
-4. يجب أن ترى:
-   ```
-   ✅ Connected to /status namespace
-   ```
-
-#### **✅ 4) اختبار مراقبة الاتصالات**
-
-**Add to backend:**
-
-```javascript
-// Monitor connections every 10 seconds
-setInterval(() => {
-  const stats = {
-    status: statusNS.sockets.size,
-    campaigns: campaignsNS.sockets.size,
-    smartbot: smartbotNS.sockets.size,
-    total: io.engine.clientsCount
-  };
-  
-  console.log('🧩 Active connections:', stats);
-}, 10000);
-
-// Log connection errors
-io.engine.on('connection_error', (err) => {
-  console.error('❌ Connection error:', {
-    code: err.code,
-    message: err.message,
-    context: err.context
-  });
-});
-```
-
----
-
-### **🧠 المرحلة 4: التوسعة والتحسين**
-
-#### **1. Custom Heartbeat:**
-
-```javascript
-// runtime/server/ws/heartbeat.js
-export function setupHeartbeat(io) {
-  io.on('connection', (socket) => {
-    let heartbeatInterval;
-
-    socket.on('ping', () => {
-      socket.emit('pong', { timestamp: Date.now() });
-    });
-
-    heartbeatInterval = setInterval(() => {
-      socket.emit('heartbeat', { timestamp: Date.now() });
-    }, 15000);
-
-    socket.on('disconnect', () => {
-      clearInterval(heartbeatInterval);
-    });
-  });
-}
-```
-
-#### **2. Auth Middleware:**
-
-```javascript
-// runtime/server/middleware/wsAuth.js
-export function wsAuthMiddleware(socket, next) {
-  const apiKey = socket.handshake.auth?.key;
-  const token = socket.handshake.auth?.token;
-
-  // Verify API Key
-  if (apiKey === process.env.API_KEY) {
-    return next();
-  }
-
-  // Verify JWT Token
-  if (token) {
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      socket.user = decoded;
-      return next();
-    } catch (err) {
-      return next(new Error('Invalid token'));
-    }
-  }
-
-  next(new Error('Unauthorized'));
-}
-
-// Usage
-io.use(wsAuthMiddleware);
-```
-
-#### **3. Logging & Metrics:**
-
-```javascript
-// runtime/server/utils/wsLogger.js
-export class WebSocketLogger {
-  constructor() {
-    this.metrics = {
-      connections: 0,
-      disconnections: 0,
-      messages: 0,
-      errors: 0
-    };
-  }
-
-  logConnection(namespace, socketId) {
-    this.metrics.connections++;
-    console.log(`[${new Date().toISOString()}] 🔌 Connection: ${namespace} - ${socketId}`);
-  }
-
-  logDisconnection(namespace, socketId, reason) {
-    this.metrics.disconnections++;
-    console.log(`[${new Date().toISOString()}] ⚠️ Disconnection: ${namespace} - ${socketId} - ${reason}`);
-  }
-
-  logMessage(namespace, event, data) {
-    this.metrics.messages++;
-    console.log(`[${new Date().toISOString()}] 📨 Message: ${namespace}/${event}`, data);
-  }
-
-  logError(error) {
-    this.metrics.errors++;
-    console.error(`[${new Date().toISOString()}] ❌ Error:`, error);
-  }
-
-  getMetrics() {
-    return {
-      ...this.metrics,
-      uptime: process.uptime(),
-      timestamp: new Date().toISOString()
-    };
-  }
-}
-```
-
-#### **4. Redis Adapter (للـ Multi-Instance):**
-
-```bash
-npm install @socket.io/redis-adapter redis
-```
-
-```javascript
-// runtime/server/index.js
-import { createAdapter } from '@socket.io/redis-adapter';
-import { createClient } from 'redis';
-
-const pubClient = createClient({ url: 'redis://localhost:6379' });
-const subClient = pubClient.duplicate();
-
-Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
-  io.adapter(createAdapter(pubClient, subClient));
-  console.log('✅ Redis adapter connected');
-});
-```
-
----
-
-### **🔒 نصائح أمنية**
-
-#### **1. Rate Limiting:**
-
-```javascript
-import rateLimit from 'socket.io-rate-limit';
-
-io.use(rateLimit({
-  tokensPerInterval: 100,
-  interval: 60000, // 1 minute
-  fireImmediately: true
-}));
-```
-
-#### **2. Message Validation:**
-
-```javascript
-socket.on('start_campaign', (payload) => {
-  // Validate payload
-  if (!payload.id || typeof payload.id !== 'string') {
-    socket.emit('error', { message: 'Invalid campaign ID' });
-    return;
-  }
-
-  // Sanitize input
-  const sanitizedId = payload.id.trim();
-  
-  // Process...
-});
-```
-
-#### **3. CORS Configuration:**
-
-```javascript
-const io = new Server(httpServer, {
-  cors: {
-    origin: [
-      'http://localhost:3000',
-      'https://yourdomain.com'
-    ],
-    methods: ['GET', 'POST'],
-    credentials: true,
-    allowedHeaders: ['Authorization']
-  }
-});
-```
-
----
-
-### **🏁 الخلاصة**
-
-| العنصر | قبل (WebSocket الخام) | بعد (Socket.IO) |
-|--------|----------------------|-----------------|
-| **اتصال ثابت** | ❌ يتطلب إعادة اتصال يدوية | ✅ Auto-reconnect |
-| **Namespaces** | ❌ غير مدعوم | ✅ `/status`, `/campaigns`, `/smartbot` |
-| **Heartbeat** | ❌ يدوي | ✅ تلقائي (15s) |
-| **Error Handling** | ❌ محدود | ✅ شامل مع retry |
-| **Scalability** | ❌ صعب | ✅ Redis adapter |
-| **Authentication** | ❌ يدوي | ✅ Middleware built-in |
-| **Monitoring** | ❌ محدود | ✅ Metrics + Logging |
-| **Browser Support** | ⚠️ WebSocket فقط | ✅ WebSocket + Polling fallback |
-
----
-
 ## 🗺️ **خطة التنفيذ العملية (Incremental Roadmap)**
 
 ### **Phase A: التهيئة المعمارية (4-6 أسابيع)**
@@ -3684,6 +1834,3820 @@ Dashboard Update (real-time)
 - No persistence
 - Auto-reconnect on disconnect
 ```
+
+---
+
+## 🔧 **المرحلة 9️⃣: WebSocket & Notification Enhancements** 📊 **PLANNED**
+
+### **🎯 الأهداف:**
+- 🗄️ نقل Notifications من In-Memory إلى Database
+- 🛡️ إضافة Rate Limiting للـ WebSocket
+- 📦 إضافة Compression للرسائل الكبيرة
+- 💓 Heartbeat قوي وإنهاء الاتصالات الميتة
+- 🛡️ Backpressure وحماية الذاكرة
+
+---
+
+### **📋 المهام:**
+
+#### **0. تحسينات Native WebSocket (ws)** 🚀
+
+**الحالة الحالية:**
+```javascript
+// /runtime/server/services/websocketBridge.js
+// WebSocket بدون heartbeat قوي أو backpressure
+```
+
+**المطلوب:**
+- ✅ Heartbeat قوي مع ping/pong
+- ✅ إنهاء الاتصالات الميتة تلقائياً
+- ✅ Backpressure handling
+- ✅ حماية من رسائل ضخمة
+- ✅ Compression تلقائي للرسائل الكبيرة
+
+---
+
+##### **0.1 Heartbeat قوي وإنهاء الاتصالات الميتة** 💓
+
+**Implementation:**
+
+```javascript
+// /runtime/server/services/websocketBridge.js
+
+class WebSocketBridge {
+    constructor(server, sessionMonitor) {
+        this.server = server;
+        this.sessionMonitor = sessionMonitor;
+        this.apiKey = process.env.API_KEY;
+        this.clients = new Set();  // تعقب يدوي للعملاء
+        this.healthInterval = null;
+    }
+
+    initialize() {
+        try {
+            this.wss = new WebSocket.Server({ 
+                server: this.server,
+                path: '/ws',
+                clientTracking: false,           // ✅ نمسك إحنا الـ clients
+                perMessageDeflate: {
+                    threshold: 1024,              // ✅ ضغط للرسائل > 1KB فقط
+                    zlibDeflateOptions: {
+                        level: 6,                 // توازن بين السرعة والضغط
+                    },
+                    zlibInflateOptions: {
+                        chunkSize: 10 * 1024
+                    },
+                    clientNoContextTakeover: true,
+                    serverNoContextTakeover: true,
+                    serverMaxWindowBits: 10,
+                    concurrencyLimit: 10,
+                },
+                maxPayload: 1024 * 1024,         // ✅ 1MB حماية من رسائل ضخمة
+            });
+
+            this.setupEventHandlers();
+            this.setupHealthCheck();
+            
+            // Connect to session monitor
+            if (this.sessionMonitor) {
+                this.sessionMonitor.setWebSocketBroadcast(
+                    this.broadcast.bind(this)
+                );
+            }
+
+            logger.info('WebSocket bridge initialized with heartbeat & compression');
+        } catch (error) {
+            logger.error('Failed to initialize WebSocket bridge:', error);
+            throw error;
+        }
+    }
+
+    setupEventHandlers() {
+        this.wss.on('connection', (ws, req) => {
+            // ✅ تعقب حالة الاتصال
+            ws.isAlive = true;
+            ws.ip = req.socket.remoteAddress;
+            ws.connectedAt = Date.now();
+
+            logger.info(`WebSocket client connected from ${ws.ip}`);
+
+            // Authentication check
+            const apiKey = this.extractApiKey(req);
+            if (!this.validateApiKey(apiKey)) {
+                logger.warn('WebSocket connection rejected: Invalid API key');
+                ws.close(1008, 'Invalid API key');
+                return;
+            }
+
+            // ✅ Add to clients set
+            this.clients.add(ws);
+            ws.isAuthenticated = true;
+
+            // ✅ Pong handler - تحديث حالة الاتصال
+            ws.on('pong', () => { 
+                ws.isAlive = true;
+                logger.debug(`Pong received from ${ws.ip}`);
+            });
+
+            // Send initial session state
+            this.sendSessionState(ws);
+            this.sendQRCode(ws);
+
+            // Handle messages from client
+            ws.on('message', (message) => {
+                this.handleClientMessage(ws, message);
+            });
+
+            // Handle client disconnect
+            ws.on('close', (code, reason) => {
+                this.clients.delete(ws);
+                const duration = Date.now() - ws.connectedAt;
+                logger.info(`WebSocket client disconnected: ${ws.ip} (code: ${code}, duration: ${Math.round(duration/1000)}s)`);
+            });
+
+            // Handle errors
+            ws.on('error', (error) => {
+                logger.error('WebSocket client error:', error);
+                this.clients.delete(ws);
+            });
+        });
+
+        this.wss.on('error', (error) => {
+            logger.error('WebSocket server error:', error);
+        });
+    }
+
+    /**
+     * ✅ Setup health check - فحص الصحة كل 30 ثانية
+     */
+    setupHealthCheck() {
+        this.healthInterval = setInterval(() => {
+            let alive = 0;
+            let dead = 0;
+
+            for (const ws of this.clients) {
+                // ✅ إذا لم يرد على آخر ping، اقطع الاتصال
+                if (ws.isAlive === false) {
+                    logger.warn(`Terminating dead connection from ${ws.ip}`);
+                    try { 
+                        ws.terminate(); 
+                    } catch (err) {
+                        logger.error('Error terminating connection:', err);
+                    }
+                    this.clients.delete(ws);
+                    dead++;
+                    continue;
+                }
+
+                // ✅ ارسل ping جديد
+                ws.isAlive = false;
+                try { 
+                    ws.ping();
+                    alive++;
+                } catch (err) {
+                    logger.error('Error sending ping:', err);
+                    this.clients.delete(ws);
+                    dead++;
+                }
+            }
+
+            if (alive > 0 || dead > 0) {
+                logger.debug(`Health check: ${alive} alive, ${dead} dead connections cleaned`);
+            }
+        }, 30000); // كل 30 ثانية
+
+        logger.info('WebSocket health check started (30s interval)');
+    }
+
+    // ... rest of the methods
+}
+```
+
+---
+
+##### **0.2 Backpressure وحماية الذاكرة** 🛡️
+
+**Implementation:**
+
+```javascript
+// /runtime/server/services/websocketBridge.js
+
+class WebSocketBridge {
+    /**
+     * ✅ Safe send - لا تبعث لو الـ buffer مزدحم
+     */
+    safeSend(ws, data) {
+        // Check if connection is open
+        if (ws.readyState !== WebSocket.OPEN) {
+            logger.debug('Cannot send: WebSocket not open');
+            return false;
+        }
+
+        // ✅ Check backpressure - لو الـ buffer > 512KB، لا ترسل
+        if (ws.bufferedAmount > 512 * 1024) {
+            logger.warn(`Backpressure detected: ${ws.bufferedAmount} bytes buffered for ${ws.ip}`);
+            return false;
+        }
+
+        try {
+            const message = typeof data === 'string' ? data : JSON.stringify(data);
+            ws.send(message);
+            return true;
+        } catch (error) {
+            logger.error('Error sending message:', error);
+            return false;
+        }
+    }
+
+    /**
+     * ✅ Send message to a specific client (with backpressure)
+     */
+    send(ws, data) {
+        const message = {
+            type: data.type || 'message',
+            data: data.data || data,
+            timestamp: Date.now()
+        };
+
+        return this.safeSend(ws, message);
+    }
+
+    /**
+     * ✅ Broadcast message to all connected clients (with backpressure)
+     */
+    broadcast(type, data) {
+        const message = {
+            type,
+            data,
+            timestamp: Date.now()
+        };
+
+        let sent = 0;
+        let skipped = 0;
+
+        for (const client of this.clients) {
+            if (!client.isAuthenticated) {
+                continue;
+            }
+
+            // Check subscriptions
+            if (client.subscriptions && 
+                !client.subscriptions.includes('all') && 
+                !client.subscriptions.includes(type)) {
+                continue;
+            }
+
+            // ✅ Use safeSend with backpressure check
+            if (this.safeSend(client, message)) {
+                sent++;
+            } else {
+                skipped++;
+            }
+        }
+
+        if (sent > 0) {
+            logger.debug(`Broadcast sent to ${sent} clients: ${type} (${skipped} skipped due to backpressure)`);
+        }
+
+        return { sent, skipped };
+    }
+
+    /**
+     * ✅ Broadcast with priority (for critical messages)
+     */
+    broadcastPriority(type, data) {
+        const message = {
+            type,
+            data,
+            timestamp: Date.now(),
+            priority: 'high'
+        };
+
+        let sent = 0;
+
+        for (const client of this.clients) {
+            if (!client.isAuthenticated) continue;
+
+            // ✅ For priority messages, send even if buffer is slightly full
+            if (client.readyState === WebSocket.OPEN) {
+                // Allow up to 1MB for priority messages
+                if (client.bufferedAmount < 1024 * 1024) {
+                    try {
+                        client.send(JSON.stringify(message));
+                        sent++;
+                    } catch (error) {
+                        logger.error('Error sending priority message:', error);
+                    }
+                }
+            }
+        }
+
+        logger.info(`Priority broadcast sent to ${sent} clients: ${type}`);
+        return sent;
+    }
+
+    /**
+     * ✅ Get buffer statistics
+     */
+    getBufferStats() {
+        const stats = {
+            clients: this.clients.size,
+            totalBuffered: 0,
+            maxBuffered: 0,
+            avgBuffered: 0,
+            overloaded: 0
+        };
+
+        for (const client of this.clients) {
+            const buffered = client.bufferedAmount;
+            stats.totalBuffered += buffered;
+            stats.maxBuffered = Math.max(stats.maxBuffered, buffered);
+            
+            if (buffered > 512 * 1024) {
+                stats.overloaded++;
+            }
+        }
+
+        if (stats.clients > 0) {
+            stats.avgBuffered = Math.round(stats.totalBuffered / stats.clients);
+        }
+
+        return stats;
+    }
+
+    /**
+     * ✅ Cleanup on shutdown
+     */
+    shutdown() {
+        // Clear health check interval
+        if (this.healthInterval) {
+            clearInterval(this.healthInterval);
+            this.healthInterval = null;
+        }
+
+        // Close all connections gracefully
+        for (const client of this.clients) {
+            try {
+                client.close(1000, 'Server shutting down');
+            } catch (error) {
+                logger.error('Error closing client connection:', error);
+            }
+        }
+
+        this.clients.clear();
+
+        // Close WebSocket server
+        if (this.wss) {
+            this.wss.close(() => {
+                logger.info('WebSocket server closed');
+            });
+        }
+    }
+}
+
+module.exports = WebSocketBridge;
+```
+
+---
+
+##### **0.3 Monitoring & Statistics** 📊
+
+**Implementation:**
+
+```javascript
+// /runtime/server/services/websocketBridge.js
+
+class WebSocketBridge {
+    /**
+     * ✅ Get detailed connection statistics
+     */
+    getDetailedStats() {
+        const stats = {
+            connections: {
+                total: this.clients.size,
+                authenticated: 0,
+                alive: 0,
+                dead: 0
+            },
+            buffer: this.getBufferStats(),
+            uptime: process.uptime(),
+            timestamp: new Date().toISOString()
+        };
+
+        for (const client of this.clients) {
+            if (client.isAuthenticated) stats.connections.authenticated++;
+            if (client.isAlive) stats.connections.alive++;
+            else stats.connections.dead++;
+        }
+
+        return stats;
+    }
+
+    /**
+     * ✅ Log statistics periodically
+     */
+    startStatsLogging(intervalMs = 60000) {
+        setInterval(() => {
+            const stats = this.getDetailedStats();
+            logger.info('WebSocket Statistics:', {
+                clients: stats.connections.total,
+                authenticated: stats.connections.authenticated,
+                alive: stats.connections.alive,
+                avgBuffer: `${Math.round(stats.buffer.avgBuffered / 1024)}KB`,
+                maxBuffer: `${Math.round(stats.buffer.maxBuffered / 1024)}KB`,
+                overloaded: stats.buffer.overloaded
+            });
+        }, intervalMs);
+    }
+}
+```
+
+---
+
+##### **0.4 Configuration** ⚙️
+
+**Environment Variables:**
+
+```bash
+# .env
+
+# WebSocket Settings
+WEBSOCKET_MAX_PAYLOAD=1048576              # 1MB
+WEBSOCKET_COMPRESSION_THRESHOLD=1024       # 1KB
+WEBSOCKET_BACKPRESSURE_LIMIT=524288        # 512KB
+WEBSOCKET_HEALTH_CHECK_INTERVAL=30000      # 30s
+WEBSOCKET_STATS_LOG_INTERVAL=60000         # 60s
+
+# Compression Settings
+WEBSOCKET_COMPRESSION_LEVEL=6              # 1-9 (6 = balanced)
+```
+
+---
+
+##### **0.5 Testing** 🧪
+
+**Test Heartbeat:**
+
+```javascript
+// tests/websocket-heartbeat.test.js
+const WebSocket = require('ws');
+
+describe('WebSocket Heartbeat', () => {
+    it('should terminate dead connections after 30s', (done) => {
+        const ws = new WebSocket('ws://localhost:8080/ws?apiKey=test');
+        
+        ws.on('open', () => {
+            // Don't respond to pings
+            ws.on('ping', () => {
+                // Ignore ping - simulate dead connection
+            });
+        });
+
+        ws.on('close', (code) => {
+            expect(code).toBe(1006); // Abnormal closure
+            done();
+        });
+
+        // Should be terminated after 30s
+    }, 35000);
+});
+```
+
+**Test Backpressure:**
+
+```javascript
+// tests/websocket-backpressure.test.js
+describe('WebSocket Backpressure', () => {
+    it('should skip messages when buffer is full', (done) => {
+        const ws = new WebSocket('ws://localhost:8080/ws?apiKey=test');
+        
+        ws.on('open', () => {
+            // Pause reading to fill buffer
+            ws.pause();
+            
+            // Try to send many messages
+            for (let i = 0; i < 1000; i++) {
+                // Some messages should be skipped
+            }
+            
+            done();
+        });
+    });
+});
+```
+
+---
+
+##### **0.6 Benefits** ✨
+
+**الفوائد:**
+
+1. **✅ Stability (الاستقرار)**
+   - إنهاء الاتصالات الميتة تلقائياً
+   - لا تراكم للـ zombie connections
+   - Memory leak prevention
+
+2. **✅ Performance (الأداء)**
+   - Compression تلقائي للرسائل > 1KB
+   - Backpressure handling يمنع تجميد السيرفر
+   - Buffer overflow protection
+
+3. **✅ Reliability (الموثوقية)**
+   - Heartbeat كل 30 ثانية
+   - Dead connection detection
+   - Graceful shutdown
+
+4. **✅ Monitoring (المراقبة)**
+   - Buffer statistics
+   - Connection health tracking
+   - Detailed logging
+
+---
+
+##### **0.7 Topics/Rooms خفيفة (بدل Namespaces)** 📢
+
+**المشكلة:**
+- حالياً broadcast عام لجميع العملاء
+- لا يوجد تصنيف للأحداث
+
+**الحل:**
+- ✅ Topics خفيفة بدون Socket.io
+- ✅ Subscribe/Unsubscribe ديناميكي
+- ✅ Publish لـ topic محدد فقط
+
+**Implementation:**
+
+```javascript
+// /runtime/server/services/websocketBridge.js
+
+class WebSocketBridge {
+    constructor(server, sessionMonitor) {
+        // ... existing code
+        this.topics = new Map(); // topic => Set<ws>
+    }
+
+    /**
+     * ✅ Subscribe client to a topic
+     */
+    subscribe(ws, topic) {
+        if (!this.topics.has(topic)) {
+            this.topics.set(topic, new Set());
+        }
+        
+        this.topics.get(topic).add(ws);
+        logger.debug(`Client ${ws.ip} subscribed to topic: ${topic}`);
+
+        // Auto-unsubscribe on close
+        ws.on('close', () => {
+            this.topics.get(topic)?.delete(ws);
+            logger.debug(`Client ${ws.ip} unsubscribed from topic: ${topic}`);
+        });
+    }
+
+    /**
+     * ✅ Unsubscribe client from a topic
+     */
+    unsubscribe(ws, topic) {
+        const subscribers = this.topics.get(topic);
+        if (subscribers) {
+            subscribers.delete(ws);
+            logger.debug(`Client ${ws.ip} unsubscribed from topic: ${topic}`);
+        }
+    }
+
+    /**
+     * ✅ Publish message to a specific topic
+     */
+    publish(topic, payload) {
+        const subscribers = this.topics.get(topic);
+        if (!subscribers || subscribers.size === 0) {
+            logger.debug(`No subscribers for topic: ${topic}`);
+            return { sent: 0, skipped: 0 };
+        }
+
+        const message = {
+            topic,
+            data: payload,
+            timestamp: Date.now()
+        };
+
+        let sent = 0;
+        let skipped = 0;
+
+        for (const ws of subscribers) {
+            if (this.safeSend(ws, message)) {
+                sent++;
+            } else {
+                skipped++;
+            }
+        }
+
+        logger.debug(`Published to topic '${topic}': ${sent} sent, ${skipped} skipped`);
+        return { sent, skipped };
+    }
+
+    /**
+     * ✅ Get topic statistics
+     */
+    getTopicStats() {
+        const stats = {};
+        for (const [topic, subscribers] of this.topics.entries()) {
+            stats[topic] = subscribers.size;
+        }
+        return stats;
+    }
+
+    /**
+     * ✅ Handle subscribe message from client
+     */
+    handleClientMessage(ws, message) {
+        try {
+            const data = JSON.parse(message);
+
+            switch (data.type) {
+                case 'subscribe':
+                    // Subscribe to topics
+                    if (Array.isArray(data.topics)) {
+                        data.topics.forEach(topic => this.subscribe(ws, topic));
+                        this.send(ws, { 
+                            type: 'subscribed', 
+                            topics: data.topics 
+                        });
+                    }
+                    break;
+
+                case 'unsubscribe':
+                    // Unsubscribe from topics
+                    if (Array.isArray(data.topics)) {
+                        data.topics.forEach(topic => this.unsubscribe(ws, topic));
+                        this.send(ws, { 
+                            type: 'unsubscribed', 
+                            topics: data.topics 
+                        });
+                    }
+                    break;
+
+                // ... existing cases
+            }
+        } catch (error) {
+            logger.error('Error handling WebSocket message:', error);
+        }
+    }
+}
+```
+
+**Usage Examples:**
+
+```javascript
+// Publish QR code to 'session' topic
+websocketBridge.publish('session', { 
+    type: 'qr', 
+    qr: qrCode 
+});
+
+// Publish notification to 'notifications' topic
+websocketBridge.publish('notifications', { 
+    type: 'new', 
+    notification: notificationData 
+});
+
+// Publish campaign progress to 'campaigns' topic
+websocketBridge.publish('campaigns', { 
+    type: 'progress', 
+    campaignId: id,
+    progress: 50 
+});
+```
+
+**Frontend Subscription:**
+
+```javascript
+// dashboard/src/hooks/useWebSocket.js
+
+// Subscribe to topics on connect
+ws.onopen = () => {
+    ws.send(JSON.stringify({
+        type: 'subscribe',
+        topics: ['session', 'notifications', 'campaigns']
+    }));
+};
+
+// Handle topic messages
+ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    
+    if (data.topic) {
+        // Handle by topic
+        switch (data.topic) {
+            case 'session':
+                handleSessionUpdate(data.data);
+                break;
+            case 'notifications':
+                handleNotification(data.data);
+                break;
+            case 'campaigns':
+                handleCampaignUpdate(data.data);
+                break;
+        }
+    }
+};
+```
+
+---
+
+##### **0.8 Reconnect محسّن مع Jitter** 🔄
+
+**التحسينات:**
+- ✅ Exponential backoff مع jitter
+- ✅ حد أقصى 30 ثانية
+- ✅ Reset على الاتصال الناجح
+
+**Implementation:**
+
+```javascript
+// /dashboard/src/hooks/useWebSocket.js
+
+export function useWebSocket() {
+    const [isConnected, setIsConnected] = useState(false);
+    const [reconnectAttempts, setReconnectAttempts] = useState(0);
+    const wsRef = useRef(null);
+    const reconnectTimeoutRef = useRef(null);
+
+    /**
+     * ✅ Calculate next reconnect delay with jitter
+     */
+    const getReconnectDelay = useCallback((attempts) => {
+        // Exponential backoff: 1s, 2s, 4s, 8s, 16s, 30s (max)
+        const base = Math.min(1000 * Math.pow(2, attempts), 30000);
+        
+        // Add random jitter (0-1000ms) to avoid thundering herd
+        const jitter = Math.floor(Math.random() * 1000);
+        
+        return base + jitter;
+    }, []);
+
+    /**
+     * ✅ Schedule reconnection
+     */
+    const scheduleReconnect = useCallback(() => {
+        if (reconnectTimeoutRef.current) {
+            clearTimeout(reconnectTimeoutRef.current);
+        }
+
+        const delay = getReconnectDelay(reconnectAttempts);
+        console.log(`🔄 Reconnecting in ${delay}ms (attempt ${reconnectAttempts + 1})`);
+
+        reconnectTimeoutRef.current = setTimeout(() => {
+            setReconnectAttempts(prev => prev + 1);
+            connect();
+        }, delay);
+    }, [reconnectAttempts, getReconnectDelay]);
+
+    const connect = useCallback(() => {
+        try {
+            const wsUrl = getWebSocketUrl();
+            const apiKey = process.env.NEXT_PUBLIC_API_KEY || '';
+            const fullUrl = apiKey ? `${wsUrl}?apiKey=${apiKey}` : wsUrl;
+
+            const ws = new WebSocket(fullUrl);
+            wsRef.current = ws;
+
+            ws.onopen = () => {
+                console.log('✅ WebSocket connected');
+                setIsConnected(true);
+                setReconnectAttempts(0); // ✅ Reset attempts on successful connection
+
+                // Subscribe to topics
+                ws.send(JSON.stringify({
+                    type: 'subscribe',
+                    topics: ['session', 'notifications', 'campaigns']
+                }));
+            };
+
+            ws.onmessage = (event) => {
+                // ... existing message handling
+            };
+
+            ws.onerror = (error) => {
+                console.error('❌ WebSocket error:', error);
+                setIsConnected(false);
+            };
+
+            ws.onclose = (event) => {
+                console.warn('⚠️ WebSocket disconnected:', event.code, event.reason);
+                setIsConnected(false);
+                
+                // ✅ Schedule reconnect with backoff
+                scheduleReconnect();
+            };
+        } catch (err) {
+            console.error('❌ Failed to create WebSocket:', err);
+            scheduleReconnect();
+        }
+    }, [scheduleReconnect]);
+
+    useEffect(() => {
+        connect();
+
+        return () => {
+            if (reconnectTimeoutRef.current) {
+                clearTimeout(reconnectTimeoutRef.current);
+            }
+            if (wsRef.current) {
+                wsRef.current.close();
+            }
+        };
+    }, [connect]);
+
+    return {
+        isConnected,
+        reconnectAttempts,
+        // ... other returns
+    };
+}
+```
+
+---
+
+##### **0.9 Message Validation مع Zod** ✅
+
+**المشكلة:**
+- لا يوجد validation للرسائل الواردة
+- خطر من رسائل malformed
+
+**الحل:**
+- ✅ Zod schema validation
+- ✅ Type-safe message handling
+- ✅ Reject invalid messages
+
+**Implementation:**
+
+```javascript
+// /runtime/server/services/websocketBridge.js
+const { z } = require('zod');
+
+// ✅ Define message schemas
+const SubscribeSchema = z.object({
+    type: z.literal('subscribe'),
+    topics: z.array(z.string()).min(1)
+});
+
+const UnsubscribeSchema = z.object({
+    type: z.literal('unsubscribe'),
+    topics: z.array(z.string()).min(1)
+});
+
+const PingSchema = z.object({
+    type: z.literal('ping')
+});
+
+const GetStateSchema = z.object({
+    type: z.literal('get_state')
+});
+
+// ✅ Union of all valid message types
+const IncomingMessageSchema = z.discriminatedUnion('type', [
+    SubscribeSchema,
+    UnsubscribeSchema,
+    PingSchema,
+    GetStateSchema
+]);
+
+class WebSocketBridge {
+    /**
+     * ✅ Handle incoming message with validation
+     */
+    handleClientMessage(ws, rawMessage) {
+        // Parse JSON
+        let message;
+        try {
+            message = JSON.parse(rawMessage);
+        } catch (error) {
+            logger.warn(`Invalid JSON from ${ws.ip}`);
+            this.send(ws, { 
+                type: 'error', 
+                message: 'Invalid JSON format' 
+            });
+            return;
+        }
+
+        // ✅ Validate with Zod
+        const result = IncomingMessageSchema.safeParse(message);
+        
+        if (!result.success) {
+            logger.warn(`Invalid message schema from ${ws.ip}:`, result.error.errors);
+            this.send(ws, { 
+                type: 'error', 
+                message: 'Invalid message format',
+                errors: result.error.errors 
+            });
+            return;
+        }
+
+        // ✅ Handle validated message
+        const validatedMessage = result.data;
+
+        switch (validatedMessage.type) {
+            case 'subscribe':
+                validatedMessage.topics.forEach(topic => this.subscribe(ws, topic));
+                this.send(ws, { 
+                    type: 'subscribed', 
+                    topics: validatedMessage.topics 
+                });
+                break;
+
+            case 'unsubscribe':
+                validatedMessage.topics.forEach(topic => this.unsubscribe(ws, topic));
+                this.send(ws, { 
+                    type: 'unsubscribed', 
+                    topics: validatedMessage.topics 
+                });
+                break;
+
+            case 'ping':
+                this.send(ws, { type: 'pong', timestamp: Date.now() });
+                break;
+
+            case 'get_state':
+                this.sendSessionState(ws);
+                break;
+
+            default:
+                // TypeScript will ensure this is never reached
+                break;
+        }
+    }
+}
+```
+
+**Dependencies:**
+
+```json
+// package.json
+{
+  "dependencies": {
+    "zod": "^3.22.4"
+  }
+}
+```
+
+---
+
+##### **0.10 Metrics Endpoint** 📊
+
+**Implementation:**
+
+```javascript
+// /runtime/server/index.js
+
+// ✅ Metrics object
+const metrics = {
+    connections: 0,
+    disconnections: 0,
+    messages: 0,
+    errors: 0,
+    broadcasts: 0,
+    lastQR: null,
+    startTime: Date.now()
+};
+
+// ✅ Track events
+websocketBridge.on('connection', () => {
+    metrics.connections++;
+});
+
+websocketBridge.on('disconnect', () => {
+    metrics.disconnections++;
+});
+
+websocketBridge.on('message', () => {
+    metrics.messages++;
+});
+
+websocketBridge.on('error', () => {
+    metrics.errors++;
+});
+
+websocketBridge.on('broadcast', (topic) => {
+    metrics.broadcasts++;
+    if (topic === 'session' || topic === 'qr') {
+        metrics.lastQR = new Date().toISOString();
+    }
+});
+
+// ✅ Metrics endpoint
+app.get('/api/metrics', authenticateApiKey, (req, res) => {
+    const stats = websocketBridge.getDetailedStats();
+    const topicStats = websocketBridge.getTopicStats();
+    
+    res.json({
+        metrics: {
+            ...metrics,
+            uptime: Math.floor((Date.now() - metrics.startTime) / 1000),
+            uptimeFormatted: formatUptime(Date.now() - metrics.startTime)
+        },
+        websocket: {
+            clients: stats.connections.total,
+            authenticated: stats.connections.authenticated,
+            alive: stats.connections.alive,
+            dead: stats.connections.dead
+        },
+        topics: topicStats,
+        buffer: stats.buffer,
+        timestamp: new Date().toISOString()
+    });
+});
+
+function formatUptime(ms) {
+    const seconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    
+    if (days > 0) return `${days}d ${hours % 24}h`;
+    if (hours > 0) return `${hours}h ${minutes % 60}m`;
+    if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
+    return `${seconds}s`;
+}
+```
+
+**Update WebSocketBridge to emit events:**
+
+```javascript
+// /runtime/server/services/websocketBridge.js
+const EventEmitter = require('events');
+
+class WebSocketBridge extends EventEmitter {
+    setupEventHandlers() {
+        this.wss.on('connection', (ws, req) => {
+            // ... existing code
+            this.emit('connection'); // ✅ Emit event
+        });
+
+        ws.on('close', () => {
+            // ... existing code
+            this.emit('disconnect'); // ✅ Emit event
+        });
+
+        ws.on('message', (message) => {
+            this.emit('message'); // ✅ Emit event
+            this.handleClientMessage(ws, message);
+        });
+
+        ws.on('error', (error) => {
+            this.emit('error', error); // ✅ Emit event
+        });
+    }
+
+    publish(topic, payload) {
+        // ... existing code
+        this.emit('broadcast', topic); // ✅ Emit event
+        return { sent, skipped };
+    }
+}
+```
+
+**Access Metrics:**
+
+```bash
+# Get metrics
+curl -H "X-API-Key: your-key" http://localhost:8080/api/metrics
+
+# Response:
+{
+  "metrics": {
+    "connections": 150,
+    "disconnections": 145,
+    "messages": 5234,
+    "errors": 2,
+    "broadcasts": 1523,
+    "lastQR": "2025-10-31T08:15:30.123Z",
+    "uptime": 86400,
+    "uptimeFormatted": "1d 0h"
+  },
+  "websocket": {
+    "clients": 5,
+    "authenticated": 5,
+    "alive": 5,
+    "dead": 0
+  },
+  "topics": {
+    "session": 5,
+    "notifications": 3,
+    "campaigns": 2
+  },
+  "buffer": {
+    "clients": 5,
+    "totalBuffered": 2048,
+    "maxBuffered": 512,
+    "avgBuffered": 410,
+    "overloaded": 0
+  },
+  "timestamp": "2025-10-31T08:19:00.000Z"
+}
+```
+
+---
+
+##### **0.11 Summary** 📝
+
+**التحسينات المُضافة:**
+
+1. **✅ Topics/Rooms** - Subscribe/Publish خفيف
+2. **✅ Reconnect محسّن** - Exponential backoff + jitter
+3. **✅ Message Validation** - Zod schema validation
+4. **✅ Metrics Endpoint** - HTTP endpoint للمراقبة
+
+**الفوائد:**
+
+- 🎯 **Targeted Broadcasting** - إرسال للمشتركين فقط
+- 🔄 **Smart Reconnection** - تجنب thundering herd
+- ✅ **Type Safety** - Zod validation
+- 📊 **Observability** - Metrics endpoint
+
+---
+
+##### **0.12 الجانب الأمني - Native WebSocket Security** 🔒
+
+**المشكلة:**
+- WebSocket لا يطبق CORS تلقائياً
+- لا يوجد حماية من replay attacks
+- لا يوجد IP whitelisting
+- Rate limiting بسيط جداً
+
+**الحل:**
+- ✅ HMAC Authentication مع timestamp
+- ✅ Origin validation
+- ✅ IP whitelisting
+- ✅ Token bucket rate limiting
+- ✅ Message size limits
+
+---
+
+###### **0.12.1 HMAC Authentication + Timestamp + IP** 🔐
+
+**Implementation:**
+
+```javascript
+// /runtime/server/services/websocketBridge.js
+const crypto = require('crypto');
+
+class WebSocketBridge {
+    constructor(server, sessionMonitor) {
+        // ... existing code
+        this.serverSecret = process.env.SERVER_SECRET || 'change-me-in-production';
+        this.allowedIPs = process.env.ALLOWED_IPS ? 
+            process.env.ALLOWED_IPS.split(',') : [];
+    }
+
+    /**
+     * ✅ Generate HMAC signature
+     */
+    generateHMAC(data, secret) {
+        return crypto.createHmac('sha256', secret)
+            .update(data)
+            .digest('hex');
+    }
+
+    /**
+     * ✅ Validate handshake with HMAC + timestamp + IP
+     */
+    validateHandshake(reqUrl, ip) {
+        try {
+            const url = new URL(reqUrl, 'http://placeholder');
+            const apiKey = url.searchParams.get('apiKey');
+            const ts = url.searchParams.get('ts');
+            const sig = url.searchParams.get('sig');
+
+            // ✅ Check required parameters
+            if (!apiKey || !ts || !sig) {
+                logger.warn(`Missing auth parameters from ${ip}`);
+                return false;
+            }
+
+            // ✅ Check timestamp (reject if older than 60 seconds)
+            const timestamp = Number(ts);
+            const now = Date.now();
+            const age = Math.abs(now - timestamp);
+            
+            if (age > 60_000) {
+                logger.warn(`Expired timestamp from ${ip}: ${age}ms old`);
+                return false;
+            }
+
+            // ✅ Check IP whitelist (if configured)
+            if (this.allowedIPs.length > 0 && !this.allowedIPs.includes(ip)) {
+                logger.warn(`IP not whitelisted: ${ip}`);
+                return false;
+            }
+
+            // ✅ Verify HMAC signature
+            const data = apiKey + ts + ip;
+            const expectedSig = this.generateHMAC(data, this.serverSecret);
+            
+            // Use timing-safe comparison
+            const sigBuffer = Buffer.from(sig, 'hex');
+            const expectedBuffer = Buffer.from(expectedSig, 'hex');
+            
+            if (sigBuffer.length !== expectedBuffer.length) {
+                logger.warn(`Invalid signature length from ${ip}`);
+                return false;
+            }
+
+            const isValid = crypto.timingSafeEqual(sigBuffer, expectedBuffer);
+            
+            if (!isValid) {
+                logger.warn(`Invalid signature from ${ip}`);
+                return false;
+            }
+
+            // ✅ Verify API key
+            if (apiKey !== process.env.API_KEY) {
+                logger.warn(`Invalid API key from ${ip}`);
+                return false;
+            }
+
+            logger.info(`✅ Valid handshake from ${ip}`);
+            return { apiKey, ip, timestamp };
+        } catch (error) {
+            logger.error('Error validating handshake:', error);
+            return false;
+        }
+    }
+
+    setupEventHandlers() {
+        this.wss.on('connection', (ws, req) => {
+            const ip = req.socket.remoteAddress;
+            
+            // ✅ Validate handshake
+            const auth = this.validateHandshake(req.url, ip);
+            if (!auth) {
+                logger.warn(`Unauthorized connection attempt from ${ip}`);
+                try {
+                    ws.close(1008, 'Unauthorized');
+                } catch (error) {
+                    logger.error('Error closing unauthorized connection:', error);
+                }
+                return;
+            }
+
+            // ✅ Store authenticated user info
+            ws.user = {
+                apiKey: auth.apiKey,
+                ip: auth.ip,
+                authenticatedAt: auth.timestamp
+            };
+            ws.isAuthenticated = true;
+            ws.isAlive = true;
+            ws.ip = ip;
+            ws.connectedAt = Date.now();
+
+            logger.info(`✅ Authenticated connection from ${ip}`);
+
+            // ... rest of connection handling
+        });
+    }
+}
+```
+
+**Frontend - Generate Signature:**
+
+```javascript
+// /dashboard/src/hooks/useWebSocket.js
+import CryptoJS from 'crypto-js';
+
+function generateSignature(apiKey, timestamp, serverSecret) {
+    const data = apiKey + timestamp;
+    return CryptoJS.HmacSHA256(data, serverSecret).toString();
+}
+
+function getWebSocketUrl() {
+    const baseUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8080';
+    const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+    const serverSecret = process.env.NEXT_PUBLIC_SERVER_SECRET;
+    
+    // ✅ Generate timestamp
+    const timestamp = Date.now();
+    
+    // ✅ Generate signature (client IP will be added by server)
+    // Note: In production, get IP from server first or use server-side auth
+    const signature = generateSignature(apiKey, timestamp, serverSecret);
+    
+    return `${baseUrl}/ws?apiKey=${apiKey}&ts=${timestamp}&sig=${signature}`;
+}
+```
+
+**Dependencies:**
+
+```json
+// Frontend package.json
+{
+  "dependencies": {
+    "crypto-js": "^4.2.0"
+  }
+}
+```
+
+---
+
+###### **0.12.2 Origin Validation (CORS للـ WebSocket)** 🌐
+
+**Implementation:**
+
+```javascript
+// /runtime/server/services/websocketBridge.js
+
+class WebSocketBridge {
+    constructor(server, sessionMonitor) {
+        // ... existing code
+        this.allowedOrigins = process.env.ALLOWED_ORIGINS ? 
+            process.env.ALLOWED_ORIGINS.split(',') : [
+                'http://localhost:3000',
+                'http://localhost:3001',
+                'https://dashboard.yourdomain.com'
+            ];
+    }
+
+    /**
+     * ✅ Check if origin is allowed
+     */
+    isAllowedOrigin(origin) {
+        if (!origin) {
+            logger.warn('No origin header provided');
+            return false;
+        }
+
+        // Allow all origins in development
+        if (process.env.NODE_ENV === 'development') {
+            return true;
+        }
+
+        return this.allowedOrigins.includes(origin);
+    }
+
+    initialize() {
+        try {
+            this.wss = new WebSocket.Server({ 
+                server: this.server,
+                path: '/ws',
+                clientTracking: false,
+                perMessageDeflate: {
+                    threshold: 1024,
+                    zlibDeflateOptions: { level: 6 },
+                    zlibInflateOptions: { chunkSize: 10 * 1024 },
+                    clientNoContextTakeover: true,
+                    serverNoContextTakeover: true,
+                    serverMaxWindowBits: 10,
+                    concurrencyLimit: 10,
+                },
+                maxPayload: 1024 * 1024,
+                
+                // ✅ Verify client before upgrade
+                verifyClient: (info, callback) => {
+                    const origin = info.req.headers.origin;
+                    const ip = info.req.socket.remoteAddress;
+
+                    // ✅ Check origin
+                    if (!this.isAllowedOrigin(origin)) {
+                        logger.warn(`Origin not allowed: ${origin} from ${ip}`);
+                        callback(false, 403, 'Origin not allowed');
+                        return;
+                    }
+
+                    // ✅ Pre-validate handshake (optional early check)
+                    const auth = this.validateHandshake(info.req.url, ip);
+                    if (!auth) {
+                        logger.warn(`Invalid handshake from ${ip}`);
+                        callback(false, 401, 'Unauthorized');
+                        return;
+                    }
+
+                    callback(true);
+                }
+            });
+
+            this.setupEventHandlers();
+            this.setupHealthCheck();
+            
+            logger.info('WebSocket bridge initialized with security features');
+        } catch (error) {
+            logger.error('Failed to initialize WebSocket bridge:', error);
+            throw error;
+        }
+    }
+}
+```
+
+---
+
+###### **0.12.3 Token Bucket Rate Limiting** 🪣
+
+**Implementation:**
+
+```javascript
+// /runtime/server/services/websocketBridge.js
+
+class WebSocketBridge {
+    constructor(server, sessionMonitor) {
+        // ... existing code
+        this.rateLimitBuckets = new Map(); // ip => { tokens, lastRefill }
+        this.rateLimitConfig = {
+            capacity: 60,        // 60 tokens
+            refillRate: 1,       // 1 token per interval
+            refillInterval: 1000 // 1 second
+        };
+    }
+
+    /**
+     * ✅ Token bucket rate limiting
+     */
+    isRateLimitAllowed(ip, cost = 1) {
+        const now = Date.now();
+        const config = this.rateLimitConfig;
+        
+        // Get or create bucket
+        let bucket = this.rateLimitBuckets.get(ip);
+        if (!bucket) {
+            bucket = {
+                tokens: config.capacity,
+                lastRefill: now
+            };
+            this.rateLimitBuckets.set(ip, bucket);
+        }
+
+        // ✅ Refill tokens based on elapsed time
+        const elapsed = now - bucket.lastRefill;
+        const refillCount = Math.floor(elapsed / config.refillInterval) * config.refillRate;
+        
+        if (refillCount > 0) {
+            bucket.tokens = Math.min(config.capacity, bucket.tokens + refillCount);
+            bucket.lastRefill = now;
+        }
+
+        // ✅ Check if enough tokens
+        if (bucket.tokens < cost) {
+            logger.warn(`Rate limit exceeded for ${ip}: ${bucket.tokens} tokens remaining`);
+            return false;
+        }
+
+        // ✅ Consume tokens
+        bucket.tokens -= cost;
+        this.rateLimitBuckets.set(ip, bucket);
+        
+        return true;
+    }
+
+    /**
+     * ✅ Clean up old buckets (call periodically)
+     */
+    cleanupRateLimitBuckets() {
+        const now = Date.now();
+        const maxAge = 5 * 60 * 1000; // 5 minutes
+
+        for (const [ip, bucket] of this.rateLimitBuckets.entries()) {
+            if (now - bucket.lastRefill > maxAge) {
+                this.rateLimitBuckets.delete(ip);
+            }
+        }
+
+        logger.debug(`Rate limit buckets cleaned: ${this.rateLimitBuckets.size} active`);
+    }
+
+    setupEventHandlers() {
+        this.wss.on('connection', (ws, req) => {
+            // ... existing auth code
+
+            // Handle messages with rate limiting
+            ws.on('message', (rawMessage) => {
+                // ✅ Check rate limit
+                if (!this.isRateLimitAllowed(ws.ip)) {
+                    logger.warn(`Rate limit exceeded for ${ws.ip}, ignoring message`);
+                    
+                    // Send warning to client
+                    this.send(ws, {
+                        type: 'rate_limit_warning',
+                        message: 'Too many messages, please slow down'
+                    });
+                    
+                    // Optional: close connection after repeated violations
+                    ws.rateLimitViolations = (ws.rateLimitViolations || 0) + 1;
+                    if (ws.rateLimitViolations >= 5) {
+                        logger.error(`Closing connection from ${ws.ip} due to repeated rate limit violations`);
+                        try {
+                            ws.close(1008, 'Rate limit exceeded');
+                        } catch (error) {
+                            logger.error('Error closing connection:', error);
+                        }
+                    }
+                    
+                    return;
+                }
+
+                // ✅ Reset violation counter on successful message
+                ws.rateLimitViolations = 0;
+
+                // Handle message
+                this.handleClientMessage(ws, rawMessage);
+            });
+
+            // ... rest of connection handling
+        });
+    }
+
+    setupHealthCheck() {
+        this.healthInterval = setInterval(() => {
+            // ... existing health check code
+
+            // ✅ Cleanup rate limit buckets
+            this.cleanupRateLimitBuckets();
+        }, 30000);
+    }
+}
+```
+
+---
+
+###### **0.12.4 Message Size & Type Limits** 📏
+
+**Implementation:**
+
+```javascript
+// /runtime/server/services/websocketBridge.js
+
+class WebSocketBridge {
+    constructor(server, sessionMonitor) {
+        // ... existing code
+        this.messageLimits = {
+            maxSize: 10 * 1024,      // 10KB per message
+            maxLength: 1000,          // 1000 characters for string fields
+            allowedTypes: ['subscribe', 'unsubscribe', 'ping', 'get_state']
+        };
+    }
+
+    /**
+     * ✅ Validate message size and content
+     */
+    validateMessageSecurity(rawMessage, ws) {
+        // ✅ Check message size
+        const size = Buffer.byteLength(rawMessage);
+        if (size > this.messageLimits.maxSize) {
+            logger.warn(`Message too large from ${ws.ip}: ${size} bytes`);
+            this.send(ws, {
+                type: 'error',
+                message: `Message too large: ${size} bytes (max: ${this.messageLimits.maxSize})`
+            });
+            return false;
+        }
+
+        // ✅ Parse JSON
+        let message;
+        try {
+            message = JSON.parse(rawMessage);
+        } catch (error) {
+            logger.warn(`Invalid JSON from ${ws.ip}`);
+            this.send(ws, {
+                type: 'error',
+                message: 'Invalid JSON format'
+            });
+            return false;
+        }
+
+        // ✅ Check message type
+        if (!message.type || !this.messageLimits.allowedTypes.includes(message.type)) {
+            logger.warn(`Invalid message type from ${ws.ip}: ${message.type}`);
+            this.send(ws, {
+                type: 'error',
+                message: `Invalid message type: ${message.type}`
+            });
+            return false;
+        }
+
+        // ✅ Check string field lengths
+        for (const [key, value] of Object.entries(message)) {
+            if (typeof value === 'string' && value.length > this.messageLimits.maxLength) {
+                logger.warn(`Field too long from ${ws.ip}: ${key} = ${value.length} chars`);
+                this.send(ws, {
+                    type: 'error',
+                    message: `Field '${key}' too long: ${value.length} chars (max: ${this.messageLimits.maxLength})`
+                });
+                return false;
+            }
+        }
+
+        return message;
+    }
+
+    handleClientMessage(ws, rawMessage) {
+        // ✅ Validate security first
+        const message = this.validateMessageSecurity(rawMessage, ws);
+        if (!message) return;
+
+        // ✅ Then validate with Zod
+        const result = IncomingMessageSchema.safeParse(message);
+        if (!result.success) {
+            logger.warn(`Invalid message schema from ${ws.ip}:`, result.error.errors);
+            this.send(ws, {
+                type: 'error',
+                message: 'Invalid message format',
+                errors: result.error.errors
+            });
+            return;
+        }
+
+        // ✅ Handle validated message
+        const validatedMessage = result.data;
+        // ... existing message handling
+    }
+}
+```
+
+---
+
+###### **0.12.5 Security Configuration** ⚙️
+
+**Environment Variables:**
+
+```bash
+# .env
+
+# Security Settings
+SERVER_SECRET=your-secret-key-change-in-production
+ALLOWED_ORIGINS=http://localhost:3000,https://dashboard.yourdomain.com
+ALLOWED_IPS=                                    # Empty = allow all, or comma-separated IPs
+
+# Rate Limiting
+RATE_LIMIT_CAPACITY=60                          # 60 tokens
+RATE_LIMIT_REFILL_RATE=1                        # 1 token per interval
+RATE_LIMIT_REFILL_INTERVAL=1000                 # 1 second
+RATE_LIMIT_MAX_VIOLATIONS=5                     # Close after 5 violations
+
+# Message Limits
+MESSAGE_MAX_SIZE=10240                          # 10KB
+MESSAGE_MAX_STRING_LENGTH=1000                  # 1000 chars
+MESSAGE_ALLOWED_TYPES=subscribe,unsubscribe,ping,get_state
+
+# Handshake
+HANDSHAKE_MAX_AGE=60000                         # 60 seconds
+```
+
+---
+
+###### **0.12.6 Security Monitoring** 📊
+
+**Add to Metrics:**
+
+```javascript
+// /runtime/server/index.js
+
+const securityMetrics = {
+    unauthorizedAttempts: 0,
+    rateLimitViolations: 0,
+    invalidOrigins: 0,
+    expiredHandshakes: 0,
+    invalidSignatures: 0,
+    oversizedMessages: 0
+};
+
+// Track security events
+websocketBridge.on('unauthorized', () => {
+    securityMetrics.unauthorizedAttempts++;
+});
+
+websocketBridge.on('rate_limit_violation', () => {
+    securityMetrics.rateLimitViolations++;
+});
+
+websocketBridge.on('invalid_origin', () => {
+    securityMetrics.invalidOrigins++;
+});
+
+// Add to metrics endpoint
+app.get('/api/metrics', authenticateApiKey, (req, res) => {
+    res.json({
+        // ... existing metrics
+        security: securityMetrics,
+        // ...
+    });
+});
+```
+
+**Emit Security Events:**
+
+```javascript
+// /runtime/server/services/websocketBridge.js
+
+class WebSocketBridge extends EventEmitter {
+    validateHandshake(reqUrl, ip) {
+        // ... validation code
+        
+        if (!apiKey || !ts || !sig) {
+            this.emit('unauthorized', { reason: 'missing_params', ip });
+            return false;
+        }
+
+        if (age > 60_000) {
+            this.emit('unauthorized', { reason: 'expired_timestamp', ip, age });
+            return false;
+        }
+
+        if (!isValid) {
+            this.emit('unauthorized', { reason: 'invalid_signature', ip });
+            return false;
+        }
+
+        return { apiKey, ip, timestamp };
+    }
+
+    isRateLimitAllowed(ip, cost = 1) {
+        // ... rate limit code
+        
+        if (bucket.tokens < cost) {
+            this.emit('rate_limit_violation', { ip, tokens: bucket.tokens });
+            return false;
+        }
+
+        return true;
+    }
+}
+```
+
+---
+
+###### **0.12.7 Security Summary** 📝
+
+**الحماية المُطبّقة:**
+
+1. **✅ HMAC Authentication**
+   - Signature verification
+   - Timestamp validation (60s window)
+   - IP binding
+   - Timing-safe comparison
+
+2. **✅ Origin Validation**
+   - Whitelist-based
+   - Pre-upgrade verification
+   - Development mode bypass
+
+3. **✅ IP Whitelisting**
+   - Optional configuration
+   - Logged violations
+
+4. **✅ Token Bucket Rate Limiting**
+   - 60 messages per minute per IP
+   - Auto-refill
+   - Violation tracking
+   - Auto-disconnect after 5 violations
+
+5. **✅ Message Validation**
+   - Size limits (10KB)
+   - Type whitelist
+   - String length limits
+   - Zod schema validation
+
+6. **✅ Security Monitoring**
+   - Event tracking
+   - Metrics endpoint
+   - Detailed logging
+
+**الفوائد:**
+
+- 🔒 **Strong Authentication** - HMAC + timestamp + IP
+- 🌐 **Origin Protection** - CORS-like for WebSocket
+- 🛡️ **DDoS Protection** - Rate limiting per IP
+- ✅ **Input Validation** - Multiple layers
+- 📊 **Security Observability** - Metrics & logs
+
+---
+
+##### **0.13 Auto-Reconnect الرسمي (RFC 6455 Compliant)** 🔄
+
+**🎯 الهدف:**
+- تطبيق قواعد البروتوكول الرسمي RFC 6455 تماماً
+- Auto-reconnect ذكي (backoff + jitter)
+- Heartbeat صارم يكتشف الاتصالات الميتة
+- واجهة برمجية نظيفة وسهلة الصيانة
+
+---
+
+###### **0.13.1 Server-Side Implementation (RFC 6455)** 🖥️
+
+**التهيئة الصحيحة وفق دليل `ws` الرسمي:**
+
+```javascript
+// /runtime/server/services/websocketBridge.js
+import { WebSocketServer } from 'ws';
+import { EventEmitter } from 'events';
+
+export class WebSocketBridge extends EventEmitter {
+    constructor(server, sessionMonitor) {
+        super();
+        this.server = server;
+        this.sessionMonitor = sessionMonitor;
+        this.clients = new Set();
+        this.heartbeatInterval = null;
+    }
+
+    /**
+     * ✅ Initialize WebSocket Server (RFC 6455 Compliant)
+     */
+    initialize() {
+        this.wss = new WebSocketServer({
+            server: this.server,
+            path: '/ws',
+            
+            // ✅ Compression (RFC 7692)
+            perMessageDeflate: {
+                threshold: 1024,              // Compress messages > 1KB
+                zlibDeflateOptions: {
+                    level: 6,                 // Balanced compression
+                },
+                zlibInflateOptions: {
+                    chunkSize: 10 * 1024
+                },
+                clientNoContextTakeover: true,
+                serverNoContextTakeover: true,
+                serverMaxWindowBits: 10,
+                concurrencyLimit: 10,
+            },
+            
+            // ✅ Security limits
+            maxPayload: 1024 * 1024,          // 1 MB max message size
+            clientTracking: true,             // Track clients automatically
+            
+            // ✅ Verify client before upgrade
+            verifyClient: (info, callback) => {
+                const origin = info.req.headers.origin;
+                const ip = info.req.socket.remoteAddress;
+
+                // Check origin
+                if (!this.isAllowedOrigin(origin)) {
+                    logger.warn(`Origin not allowed: ${origin} from ${ip}`);
+                    callback(false, 403, 'Origin not allowed');
+                    return;
+                }
+
+                // Validate handshake
+                const auth = this.validateHandshake(info.req.url, ip);
+                if (!auth) {
+                    logger.warn(`Invalid handshake from ${ip}`);
+                    callback(false, 401, 'Unauthorized');
+                    return;
+                }
+
+                callback(true);
+            }
+        });
+
+        this.setupEvents();
+        this.startHeartbeat();
+        
+        logger.info('✅ WebSocket Server initialized (RFC 6455 compliant)');
+    }
+
+    /**
+     * ✅ Setup connection events
+     */
+    setupEvents() {
+        this.wss.on('connection', (ws, req) => {
+            // ✅ Initialize connection state
+            ws.isAlive = true;
+            ws.ip = req.socket.remoteAddress;
+            ws.connectedAt = Date.now();
+            ws.subscriptions = [];
+
+            logger.info(`✅ Client connected: ${ws.ip}`);
+
+            // ✅ Pong handler - mark as alive
+            ws.on('pong', () => {
+                ws.isAlive = true;
+                logger.debug(`💓 Pong received from ${ws.ip}`);
+            });
+
+            // ✅ Add to clients set
+            this.clients.add(ws);
+            this.emit('connection');
+
+            // ✅ Send welcome message
+            this.safeSend(ws, {
+                type: 'welcome',
+                message: 'Connected successfully',
+                timestamp: Date.now(),
+                server: 'WaQtor WebSocket Server v1.0'
+            });
+
+            // ✅ Handle incoming messages
+            ws.on('message', (data) => {
+                this.handleMessage(ws, data);
+            });
+
+            // ✅ Handle close
+            ws.on('close', (code, reason) => {
+                this.clients.delete(ws);
+                const duration = Date.now() - ws.connectedAt;
+                logger.info(`❌ Client disconnected: ${ws.ip} (code: ${code}, duration: ${Math.round(duration/1000)}s)`);
+                this.emit('disconnect');
+            });
+
+            // ✅ Handle errors
+            ws.on('error', (error) => {
+                logger.error(`⚠️ WebSocket error from ${ws.ip}:`, error);
+                this.emit('error', error);
+            });
+        });
+
+        this.wss.on('error', (error) => {
+            logger.error('❌ WebSocket Server error:', error);
+        });
+    }
+
+    /**
+     * ✅ Handle incoming messages
+     */
+    handleMessage(ws, raw) {
+        try {
+            const msg = JSON.parse(raw);
+            this.emit('message');
+
+            switch (msg.type) {
+                case 'ping':
+                    // Client-initiated ping
+                    this.safeSend(ws, {
+                        type: 'pong',
+                        timestamp: Date.now()
+                    });
+                    break;
+
+                case 'subscribe':
+                    // Subscribe to events
+                    ws.subscriptions = msg.events || ['all'];
+                    this.safeSend(ws, {
+                        type: 'subscribed',
+                        events: ws.subscriptions
+                    });
+                    logger.info(`📡 Client ${ws.ip} subscribed to: ${ws.subscriptions.join(', ')}`);
+                    break;
+
+                case 'unsubscribe':
+                    // Unsubscribe from events
+                    ws.subscriptions = [];
+                    this.safeSend(ws, {
+                        type: 'unsubscribed'
+                    });
+                    logger.info(`📡 Client ${ws.ip} unsubscribed from all events`);
+                    break;
+
+                case 'get_state':
+                    // Send current session state
+                    this.sendSessionState(ws);
+                    break;
+
+                default:
+                    logger.warn(`⚠️ Unknown message type from ${ws.ip}: ${msg.type}`);
+                    this.safeSend(ws, {
+                        type: 'error',
+                        message: `Unknown message type: ${msg.type}`
+                    });
+                    break;
+            }
+        } catch (error) {
+            logger.error(`❌ Error handling message from ${ws.ip}:`, error);
+            this.safeSend(ws, {
+                type: 'error',
+                message: 'Invalid message format'
+            });
+        }
+    }
+
+    /**
+     * ✅ Safe send with backpressure check
+     */
+    safeSend(ws, data) {
+        if (ws.readyState !== ws.OPEN) {
+            return false;
+        }
+
+        // ✅ Check backpressure (512KB limit)
+        if (ws.bufferedAmount > 512 * 1024) {
+            logger.warn(`⚠️ Backpressure detected for ${ws.ip}: ${ws.bufferedAmount} bytes buffered`);
+            return false;
+        }
+
+        try {
+            ws.send(JSON.stringify(data));
+            return true;
+        } catch (error) {
+            logger.error(`❌ Error sending to ${ws.ip}:`, error);
+            return false;
+        }
+    }
+
+    /**
+     * ✅ Start heartbeat (ping/pong every 30s)
+     */
+    startHeartbeat() {
+        this.heartbeatInterval = setInterval(() => {
+            let alive = 0;
+            let dead = 0;
+
+            for (const ws of this.clients) {
+                // ✅ Terminate dead connections
+                if (!ws.isAlive) {
+                    logger.warn(`💀 Terminating dead connection: ${ws.ip}`);
+                    try {
+                        ws.terminate();
+                    } catch (error) {
+                        logger.error('Error terminating connection:', error);
+                    }
+                    this.clients.delete(ws);
+                    dead++;
+                    continue;
+                }
+
+                // ✅ Send ping
+                ws.isAlive = false;
+                try {
+                    ws.ping();
+                    alive++;
+                } catch (error) {
+                    logger.error(`Error sending ping to ${ws.ip}:`, error);
+                    this.clients.delete(ws);
+                    dead++;
+                }
+            }
+
+            if (alive > 0 || dead > 0) {
+                logger.debug(`💓 Heartbeat: ${alive} alive, ${dead} dead (cleaned)`);
+            }
+        }, 30000); // Every 30 seconds
+
+        logger.info('✅ Heartbeat started (30s interval)');
+    }
+
+    /**
+     * ✅ Broadcast to all connected clients
+     */
+    broadcast(type, payload) {
+        const data = JSON.stringify({ type, payload, timestamp: Date.now() });
+        let sent = 0;
+        let skipped = 0;
+
+        for (const ws of this.clients) {
+            // Check if client is subscribed to this event
+            if (ws.subscriptions.length > 0 && 
+                !ws.subscriptions.includes('all') && 
+                !ws.subscriptions.includes(type)) {
+                continue;
+            }
+
+            if (ws.readyState === ws.OPEN) {
+                // Check backpressure
+                if (ws.bufferedAmount < 512 * 1024) {
+                    try {
+                        ws.send(data);
+                        sent++;
+                    } catch (error) {
+                        logger.error('Error broadcasting:', error);
+                        skipped++;
+                    }
+                } else {
+                    skipped++;
+                }
+            }
+        }
+
+        if (sent > 0) {
+            logger.debug(`📡 Broadcast '${type}': ${sent} sent, ${skipped} skipped`);
+        }
+
+        this.emit('broadcast', type);
+        return { sent, skipped };
+    }
+
+    /**
+     * ✅ Get client count
+     */
+    getClientCount() {
+        return this.clients.size;
+    }
+
+    /**
+     * ✅ Get detailed stats
+     */
+    getStats() {
+        let authenticated = 0;
+        let alive = 0;
+        let totalBuffered = 0;
+
+        for (const ws of this.clients) {
+            if (ws.isAuthenticated) authenticated++;
+            if (ws.isAlive) alive++;
+            totalBuffered += ws.bufferedAmount;
+        }
+
+        return {
+            total: this.clients.size,
+            authenticated,
+            alive,
+            dead: this.clients.size - alive,
+            avgBuffered: this.clients.size > 0 ? Math.round(totalBuffered / this.clients.size) : 0
+        };
+    }
+
+    /**
+     * ✅ Shutdown gracefully
+     */
+    shutdown() {
+        logger.info('🛑 Shutting down WebSocket Server...');
+
+        // Clear heartbeat
+        if (this.heartbeatInterval) {
+            clearInterval(this.heartbeatInterval);
+        }
+
+        // Close all connections
+        for (const ws of this.clients) {
+            try {
+                ws.close(1000, 'Server shutting down');
+            } catch (error) {
+                logger.error('Error closing connection:', error);
+            }
+        }
+
+        this.clients.clear();
+
+        // Close server
+        if (this.wss) {
+            this.wss.close(() => {
+                logger.info('✅ WebSocket Server closed');
+            });
+        }
+    }
+}
+```
+
+---
+
+###### **0.13.2 Client-Side Auto-Reconnect (RFC 6455)** 🔄
+
+**Implementation:**
+
+```javascript
+// /dashboard/src/hooks/useWebSocket.js
+import { useEffect, useRef, useState, useCallback } from 'react';
+
+/**
+ * ✅ RFC 6455 Compliant WebSocket Hook with Auto-Reconnect
+ */
+export function useWebSocket() {
+    const wsRef = useRef(null);
+    const [connected, setConnected] = useState(false);
+    const [reconnecting, setReconnecting] = useState(false);
+    const attemptsRef = useRef(0);
+    const reconnectTimeoutRef = useRef(null);
+
+    /**
+     * ✅ Calculate reconnect delay (Exponential Backoff + Jitter)
+     */
+    const getReconnectDelay = useCallback(() => {
+        // Exponential backoff: 1s, 2s, 4s, 8s, 16s, 30s (max)
+        const base = Math.min(1000 * Math.pow(2, attemptsRef.current), 30000);
+        
+        // Add random jitter (0-1000ms) to avoid thundering herd
+        const jitter = Math.floor(Math.random() * 1000);
+        
+        return base + jitter;
+    }, []);
+
+    /**
+     * ✅ Connect to WebSocket
+     */
+    const connect = useCallback(() => {
+        try {
+            const baseUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8080';
+            const apiKey = process.env.NEXT_PUBLIC_API_KEY || '';
+            const url = `${baseUrl}/ws?apiKey=${apiKey}`;
+
+            console.log(`🔌 Connecting to WebSocket... (attempt ${attemptsRef.current + 1})`);
+
+            const ws = new WebSocket(url);
+            wsRef.current = ws;
+
+            // ✅ Connection opened
+            ws.onopen = () => {
+                console.log('✅ WebSocket connected');
+                setConnected(true);
+                setReconnecting(false);
+                attemptsRef.current = 0; // Reset attempts on successful connection
+
+                // Subscribe to all events
+                ws.send(JSON.stringify({
+                    type: 'subscribe',
+                    events: ['all']
+                }));
+            };
+
+            // ✅ Message received
+            ws.onmessage = (event) => {
+                try {
+                    const msg = JSON.parse(event.data);
+                    
+                    // Dispatch custom event for each message type
+                    window.dispatchEvent(
+                        new CustomEvent(`ws:${msg.type}`, { 
+                            detail: msg 
+                        })
+                    );
+
+                    // Log important messages
+                    if (msg.type !== 'pong') {
+                        console.log(`📨 WebSocket message:`, msg.type, msg);
+                    }
+                } catch (error) {
+                    console.error('❌ Error parsing WebSocket message:', error);
+                }
+            };
+
+            // ✅ Connection closed
+            ws.onclose = (event) => {
+                console.warn(`⚠️ WebSocket closed: code=${event.code}, reason=${event.reason}`);
+                setConnected(false);
+                
+                // Auto-reconnect (unless closed intentionally with code 1000)
+                if (event.code !== 1000) {
+                    reconnect();
+                }
+            };
+
+            // ✅ Connection error
+            ws.onerror = (error) => {
+                console.error('❌ WebSocket error:', error);
+                setConnected(false);
+                ws.close();
+            };
+        } catch (error) {
+            console.error('❌ Failed to create WebSocket:', error);
+            reconnect();
+        }
+    }, []);
+
+    /**
+     * ✅ Reconnect with exponential backoff
+     */
+    const reconnect = useCallback(() => {
+        if (reconnectTimeoutRef.current) {
+            clearTimeout(reconnectTimeoutRef.current);
+        }
+
+        attemptsRef.current++;
+        const delay = getReconnectDelay();
+        
+        console.log(`🔄 Reconnecting in ${delay}ms... (attempt ${attemptsRef.current})`);
+        setReconnecting(true);
+
+        reconnectTimeoutRef.current = setTimeout(() => {
+            connect();
+        }, delay);
+    }, [connect, getReconnectDelay]);
+
+    /**
+     * ✅ Send message
+     */
+    const send = useCallback((type, data) => {
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+            wsRef.current.send(JSON.stringify({ type, ...data }));
+            return true;
+        }
+        console.warn('⚠️ Cannot send: WebSocket not connected');
+        return false;
+    }, []);
+
+    /**
+     * ✅ Subscribe to message type
+     */
+    const subscribe = useCallback((type, handler) => {
+        const eventHandler = (event) => handler(event.detail);
+        window.addEventListener(`ws:${type}`, eventHandler);
+        
+        return () => {
+            window.removeEventListener(`ws:${type}`, eventHandler);
+        };
+    }, []);
+
+    /**
+     * ✅ Initialize connection
+     */
+    useEffect(() => {
+        connect();
+
+        return () => {
+            // Cleanup
+            if (reconnectTimeoutRef.current) {
+                clearTimeout(reconnectTimeoutRef.current);
+            }
+            if (wsRef.current) {
+                wsRef.current.close(1000, 'Component unmounted');
+            }
+        };
+    }, [connect]);
+
+    return {
+        connected,
+        reconnecting,
+        attempts: attemptsRef.current,
+        send,
+        subscribe,
+        ws: wsRef.current
+    };
+}
+```
+
+**Usage Example:**
+
+```javascript
+// /dashboard/src/components/Dashboard.jsx
+import { useWebSocket } from '@/hooks/useWebSocket';
+import { useEffect } from 'react';
+
+export function Dashboard() {
+    const { connected, reconnecting, attempts, subscribe } = useWebSocket();
+
+    useEffect(() => {
+        // Subscribe to session updates
+        const unsubscribe = subscribe('session_update', (data) => {
+            console.log('Session update:', data);
+            // Update UI
+        });
+
+        return unsubscribe;
+    }, [subscribe]);
+
+    return (
+        <div>
+            <div className="connection-status">
+                {connected && <span className="badge badge-success">🟢 Connected</span>}
+                {reconnecting && <span className="badge badge-warning">🟡 Reconnecting... (attempt {attempts})</span>}
+                {!connected && !reconnecting && <span className="badge badge-danger">🔴 Disconnected</span>}
+            </div>
+            {/* Rest of dashboard */}
+        </div>
+    );
+}
+```
+
+---
+
+###### **0.13.3 Testing Auto-Reconnect** 🧪
+
+**Test Procedure:**
+
+1. **Start Server:**
+   ```bash
+   npm run dev
+   ```
+
+2. **Open Dashboard:**
+   - Navigate to `http://localhost:3000`
+   - Check console: `✅ WebSocket connected`
+
+3. **Stop Server:**
+   ```bash
+   Ctrl + C
+   ```
+
+4. **Observe Reconnection:**
+   - Console shows: `🔄 Reconnecting in 1000ms... (attempt 1)`
+   - Then: `🔄 Reconnecting in 2000ms... (attempt 2)`
+   - Then: `🔄 Reconnecting in 4000ms... (attempt 3)`
+   - Max delay: 30 seconds
+
+5. **Restart Server:**
+   ```bash
+   npm run dev
+   ```
+
+6. **Verify Auto-Reconnect:**
+   - Console shows: `✅ WebSocket connected`
+   - Attempts reset to 0
+
+**Expected Behavior:**
+
+| Time | Client | Server |
+|------|--------|--------|
+| 0s | Connected ✅ | Client connected ✅ |
+| 10s | Server stopped 🛑 | - |
+| 11s | Reconnecting (1s delay) | - |
+| 13s | Reconnecting (2s delay) | - |
+| 17s | Reconnecting (4s delay) | - |
+| 25s | Reconnecting (8s delay) | - |
+| 30s | Server restarted ✅ | - |
+| 31s | Connected ✅ | Client connected ✅ |
+
+---
+
+###### **0.13.4 RFC 6455 Compliance Summary** ✅
+
+**Protocol Compliance:**
+
+1. **✅ WebSocket Handshake (RFC 6455 §4)**
+   - HTTP/1.1 Upgrade
+   - Sec-WebSocket-Key validation
+   - Sec-WebSocket-Accept response
+
+2. **✅ Frame Format (RFC 6455 §5)**
+   - Binary and text frames
+   - Fragmentation support
+   - Control frames (ping/pong/close)
+
+3. **✅ Compression (RFC 7692)**
+   - Per-message deflate
+   - Context takeover control
+   - Compression threshold
+
+4. **✅ Connection Management**
+   - Heartbeat (ping/pong)
+   - Dead connection detection
+   - Graceful shutdown
+   - Auto-reconnect with backoff
+
+5. **✅ Error Handling**
+   - Close codes (1000, 1008, etc.)
+   - Error events
+   - Timeout handling
+
+**Benefits:**
+
+- 🚀 **Maximum Performance** - No overhead, pure WebSocket
+- 🔄 **Reliable Reconnection** - Exponential backoff + jitter
+- 💓 **Health Monitoring** - Ping/pong every 30s
+- 🛡️ **Production Ready** - RFC 6455 compliant
+- 📊 **Observable** - Detailed logging and metrics
+
+---
+
+##### **0.14 WebSocket Monitoring Dashboard** 📊
+
+**🎯 الهدف:**
+- لوحة مراقبة احترافية مصغّرة للـ WebSocket
+- مراقبة في الوقت الحقيقي بدون مكتبات ثقيلة
+- دمج مع Dashboard الموجودة
+- عرض Metrics مباشرة من المتصفح
+
+**المميزات:**
+- ✅ عدد الاتصالات الحالية
+- ✅ زمن آخر Ping لكل عميل
+- ✅ استهلاك الذاكرة والـ uptime
+- ✅ عدد الرسائل المرسلة والمستلمة
+- ✅ آخر الأخطاء إن وجدت
+- ✅ تحديث تلقائي كل ثانيتين
+
+---
+
+###### **0.14.1 Backend - Data Collection** 📈
+
+**Implementation:**
+
+```javascript
+// /runtime/server/services/websocketBridge.js
+import os from 'os';
+import process from 'process';
+import { EventEmitter } from 'events';
+
+export class WebSocketBridge extends EventEmitter {
+    constructor(server, sessionMonitor) {
+        super();
+        this.server = server;
+        this.sessionMonitor = sessionMonitor;
+        this.clients = new Set();
+        this.heartbeatInterval = null;
+        
+        // ✅ Statistics tracking
+        this.stats = {
+            connections: 0,
+            disconnections: 0,
+            messages: 0,
+            broadcasts: 0,
+            errors: 0,
+            lastError: null,
+            lastBroadcast: null,
+            startTime: Date.now()
+        };
+    }
+
+    setupEvents() {
+        this.wss.on('connection', (ws, req) => {
+            // ✅ Initialize connection state
+            ws.isAlive = true;
+            ws.ip = req.socket.remoteAddress;
+            ws.connectedAt = Date.now();
+            ws.lastPing = Date.now();
+            ws.subscriptions = [];
+
+            // ✅ Increment connection counter
+            this.stats.connections++;
+
+            logger.info(`✅ Client connected: ${ws.ip} (total: ${this.clients.size + 1})`);
+
+            // ✅ Pong handler - mark as alive and update last ping
+            ws.on('pong', () => {
+                ws.isAlive = true;
+                ws.lastPing = Date.now();
+                logger.debug(`💓 Pong received from ${ws.ip}`);
+            });
+
+            // ✅ Add to clients set
+            this.clients.add(ws);
+            this.emit('connection');
+
+            // ✅ Send welcome message
+            this.safeSend(ws, {
+                type: 'welcome',
+                message: 'Connected successfully',
+                timestamp: Date.now(),
+                server: 'WaQtor WebSocket Server v1.0'
+            });
+
+            // ✅ Handle incoming messages
+            ws.on('message', (data) => {
+                this.stats.messages++;
+                this.handleMessage(ws, data);
+            });
+
+            // ✅ Handle close
+            ws.on('close', (code, reason) => {
+                this.clients.delete(ws);
+                this.stats.disconnections++;
+                const duration = Date.now() - ws.connectedAt;
+                logger.info(`❌ Client disconnected: ${ws.ip} (code: ${code}, duration: ${Math.round(duration/1000)}s, total: ${this.clients.size})`);
+                this.emit('disconnect');
+            });
+
+            // ✅ Handle errors
+            ws.on('error', (error) => {
+                this.logError(error, ws.ip);
+                this.emit('error', error);
+            });
+        });
+
+        this.wss.on('error', (error) => {
+            this.logError(error, 'server');
+        });
+    }
+
+    broadcast(type, payload) {
+        // ✅ Track broadcast
+        this.stats.broadcasts++;
+        this.stats.lastBroadcast = new Date().toISOString();
+
+        const data = JSON.stringify({ type, payload, timestamp: Date.now() });
+        let sent = 0;
+        let skipped = 0;
+
+        for (const ws of this.clients) {
+            // Check if client is subscribed to this event
+            if (ws.subscriptions.length > 0 && 
+                !ws.subscriptions.includes('all') && 
+                !ws.subscriptions.includes(type)) {
+                continue;
+            }
+
+            if (ws.readyState === ws.OPEN) {
+                // Check backpressure
+                if (ws.bufferedAmount < 512 * 1024) {
+                    try {
+                        ws.send(data);
+                        sent++;
+                    } catch (error) {
+                        this.logError(error, 'broadcast');
+                        skipped++;
+                    }
+                } else {
+                    skipped++;
+                }
+            }
+        }
+
+        if (sent > 0) {
+            logger.debug(`📡 Broadcast '${type}': ${sent} sent, ${skipped} skipped`);
+        }
+
+        this.emit('broadcast', type);
+        return { sent, skipped };
+    }
+
+    /**
+     * ✅ Log error with tracking
+     */
+    logError(err, source = 'unknown') {
+        this.stats.errors++;
+        this.stats.lastError = {
+            time: new Date().toISOString(),
+            message: err.message || String(err),
+            source,
+            stack: err.stack ? err.stack.split('\n').slice(0, 3).join('\n') : null
+        };
+        logger.error(`[WS ERROR from ${source}]:`, err);
+    }
+
+    /**
+     * ✅ Get comprehensive metrics
+     */
+    getMetrics() {
+        const now = Date.now();
+        const clients = [];
+        let totalBuffered = 0;
+        let aliveCount = 0;
+
+        // ✅ Collect per-client metrics
+        for (const ws of this.clients) {
+            const lastPingAge = ws.lastPing ? now - ws.lastPing : null;
+            const connectedDuration = now - ws.connectedAt;
+            
+            clients.push({
+                ip: ws.ip,
+                connected: Math.round(connectedDuration / 1000), // seconds
+                lastPing: lastPingAge ? Math.round(lastPingAge / 1000) : null, // seconds
+                isAlive: ws.isAlive,
+                buffered: Math.round(ws.bufferedAmount / 1024), // KB
+                subscriptions: ws.subscriptions
+            });
+
+            totalBuffered += ws.bufferedAmount;
+            if (ws.isAlive) aliveCount++;
+        }
+
+        // ✅ System metrics
+        const memUsage = process.memoryUsage();
+        const uptime = process.uptime();
+
+        return {
+            // Server info
+            server: {
+                uptime: Math.round(uptime),
+                uptimeFormatted: this.formatUptime(uptime * 1000),
+                startTime: new Date(now - uptime * 1000).toISOString(),
+                timestamp: new Date().toISOString()
+            },
+
+            // Connection stats
+            connections: {
+                current: this.clients.size,
+                total: this.stats.connections,
+                disconnections: this.stats.disconnections,
+                alive: aliveCount,
+                dead: this.clients.size - aliveCount
+            },
+
+            // Message stats
+            messages: {
+                received: this.stats.messages,
+                broadcasts: this.stats.broadcasts,
+                lastBroadcast: this.stats.lastBroadcast
+            },
+
+            // Error stats
+            errors: {
+                total: this.stats.errors,
+                last: this.stats.lastError
+            },
+
+            // System resources
+            system: {
+                memory: {
+                    rss: Math.round(memUsage.rss / 1024 / 1024), // MB
+                    heapUsed: Math.round(memUsage.heapUsed / 1024 / 1024), // MB
+                    heapTotal: Math.round(memUsage.heapTotal / 1024 / 1024), // MB
+                    external: Math.round(memUsage.external / 1024 / 1024) // MB
+                },
+                cpu: {
+                    loadAvg: os.loadavg().map(l => l.toFixed(2)),
+                    cores: os.cpus().length
+                }
+            },
+
+            // Buffer stats
+            buffer: {
+                total: Math.round(totalBuffered / 1024), // KB
+                average: this.clients.size > 0 ? Math.round(totalBuffered / this.clients.size / 1024) : 0 // KB
+            },
+
+            // Client details
+            clients: clients.sort((a, b) => b.connected - a.connected) // Sort by connection time
+        };
+    }
+
+    /**
+     * ✅ Format uptime
+     */
+    formatUptime(ms) {
+        const seconds = Math.floor(ms / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+        
+        if (days > 0) return `${days}d ${hours % 24}h ${minutes % 60}m`;
+        if (hours > 0) return `${hours}h ${minutes % 60}m ${seconds % 60}s`;
+        if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
+        return `${seconds}s`;
+    }
+}
+```
+
+---
+
+###### **0.14.2 Backend - Monitoring Endpoint** 🔌
+
+**Implementation:**
+
+```javascript
+// /runtime/server/index.js
+
+// ✅ WebSocket Monitoring Endpoint
+app.get('/api/ws-monitor', (req, res) => {
+    try {
+        const metrics = websocketBridge.getMetrics();
+        res.json(metrics);
+    } catch (error) {
+        logger.error('Error fetching WebSocket metrics:', error);
+        res.status(500).json({ 
+            error: 'Failed to fetch metrics',
+            message: error.message 
+        });
+    }
+});
+
+// ✅ Serve static files for monitoring dashboard
+app.use(express.static('runtime/server/public'));
+```
+
+---
+
+###### **0.14.3 Frontend - Monitoring Dashboard** 🎨
+
+**Create File: `/runtime/server/public/ws-monitor.html`**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Monitor - WaQtor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #38bdf8;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 1rem;
+        }
+
+        .status-online {
+            background: #10b981;
+            color: white;
+        }
+
+        .status-offline {
+            background: #ef4444;
+            color: white;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(56, 189, 248, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(56, 189, 248, 0.2);
+        }
+
+        .card-title {
+            color: #38bdf8;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #f8fafc;
+            line-height: 1;
+        }
+
+        .card-label {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+
+        .metric-key {
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
+        .metric-value {
+            color: #f8fafc;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .clients-table {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .clients-table th {
+            text-align: left;
+            padding: 0.75rem;
+            background: rgba(56, 189, 248, 0.1);
+            color: #38bdf8;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .clients-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            font-size: 0.875rem;
+        }
+
+        .clients-table tr:hover {
+            background: rgba(56, 189, 248, 0.05);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .badge-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .error-card {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .error-message {
+            color: #fca5a5;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #94a3b8;
+        }
+
+        .refresh-indicator {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(56, 189, 248, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            color: #38bdf8;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="refresh-indicator pulse">🔄 Auto-refresh: 2s</div>
+    
+    <div class="container">
+        <h1>
+            📊 WebSocket Monitor
+            <span class="status-badge status-online" id="status">Online</span>
+        </h1>
+        <p class="subtitle">Real-time monitoring dashboard for WaQtor WebSocket Server</p>
+
+        <div id="metrics" class="loading">
+            <p>Loading metrics...</p>
+        </div>
+    </div>
+
+    <script>
+        let lastUpdate = null;
+
+        async function fetchMetrics() {
+            try {
+                const res = await fetch('/api/ws-monitor');
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                
+                const data = await res.json();
+                lastUpdate = new Date();
+                render(data);
+                updateStatus(true);
+            } catch (error) {
+                console.error('Error fetching metrics:', error);
+                updateStatus(false);
+                document.getElementById('metrics').innerHTML = `
+                    <div class="card error-card">
+                        <div class="card-title">❌ Error</div>
+                        <div class="error-message">Failed to fetch metrics: ${error.message}</div>
+                    </div>
+                `;
+            }
+        }
+
+        function updateStatus(online) {
+            const badge = document.getElementById('status');
+            if (online) {
+                badge.textContent = 'Online';
+                badge.className = 'status-badge status-online';
+            } else {
+                badge.textContent = 'Offline';
+                badge.className = 'status-badge status-offline';
+            }
+        }
+
+        function render(data) {
+            const html = `
+                <!-- Overview Cards -->
+                <div class="grid">
+                    <div class="card">
+                        <div class="card-title">👥 Active Connections</div>
+                        <div class="card-value">${data.connections.current}</div>
+                        <div class="card-label">
+                            ${data.connections.alive} alive, ${data.connections.dead} dead
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">📨 Messages</div>
+                        <div class="card-value">${data.messages.received.toLocaleString()}</div>
+                        <div class="card-label">
+                            ${data.messages.broadcasts.toLocaleString()} broadcasts
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">⏱️ Uptime</div>
+                        <div class="card-value" style="font-size: 1.5rem">${data.server.uptimeFormatted}</div>
+                        <div class="card-label">
+                            Started: ${new Date(data.server.startTime).toLocaleString()}
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">💾 Memory</div>
+                        <div class="card-value">${data.system.memory.rss} MB</div>
+                        <div class="card-label">
+                            Heap: ${data.system.memory.heapUsed}/${data.system.memory.heapTotal} MB
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Stats -->
+                <div class="grid">
+                    <div class="card">
+                        <div class="card-title">📊 Connection Stats</div>
+                        <div class="metric-row">
+                            <span class="metric-key">Total Connections</span>
+                            <span class="metric-value">${data.connections.total}</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-key">Total Disconnections</span>
+                            <span class="metric-value">${data.connections.disconnections}</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-key">Current Active</span>
+                            <span class="metric-value">${data.connections.current}</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">🖥️ System Resources</div>
+                        <div class="metric-row">
+                            <span class="metric-key">CPU Load (1m)</span>
+                            <span class="metric-value">${data.system.cpu.loadAvg[0]}</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-key">CPU Cores</span>
+                            <span class="metric-value">${data.system.cpu.cores}</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-key">Buffer Total</span>
+                            <span class="metric-value">${data.buffer.total} KB</span>
+                        </div>
+                    </div>
+
+                    ${data.errors.last ? `
+                    <div class="card error-card">
+                        <div class="card-title">⚠️ Last Error</div>
+                        <div class="metric-row">
+                            <span class="metric-key">Time</span>
+                            <span class="metric-value">${new Date(data.errors.last.time).toLocaleString()}</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-key">Source</span>
+                            <span class="metric-value">${data.errors.last.source}</span>
+                        </div>
+                        <div class="error-message">${data.errors.last.message}</div>
+                    </div>
+                    ` : ''}
+                </div>
+
+                <!-- Connected Clients -->
+                ${data.clients.length > 0 ? `
+                <div class="card">
+                    <div class="card-title">👤 Connected Clients (${data.clients.length})</div>
+                    <table class="clients-table">
+                        <thead>
+                            <tr>
+                                <th>IP Address</th>
+                                <th>Connected</th>
+                                <th>Last Ping</th>
+                                <th>Status</th>
+                                <th>Buffer</th>
+                                <th>Subscriptions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.clients.map(client => `
+                                <tr>
+                                    <td>${client.ip}</td>
+                                    <td>${client.connected}s</td>
+                                    <td>${client.lastPing ? client.lastPing + 's ago' : 'N/A'}</td>
+                                    <td>
+                                        <span class="badge ${client.isAlive ? 'badge-success' : 'badge-danger'}">
+                                            ${client.isAlive ? '✓ Alive' : '✗ Dead'}
+                                        </span>
+                                    </td>
+                                    <td>${client.buffered} KB</td>
+                                    <td>${client.subscriptions.join(', ') || 'none'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                ` : ''}
+            `;
+
+            document.getElementById('metrics').innerHTML = html;
+        }
+
+        // Auto-refresh every 2 seconds
+        setInterval(fetchMetrics, 2000);
+        fetchMetrics();
+    </script>
+</body>
+</html>
+```
+
+---
+
+###### **0.14.4 Access & Usage** 🚀
+
+**Access URLs:**
+
+1. **JSON API:**
+   ```
+   http://localhost:8080/api/ws-monitor
+   ```
+
+2. **Dashboard:**
+   ```
+   http://localhost:8080/ws-monitor.html
+   ```
+
+**Response Example:**
+
+```json
+{
+  "server": {
+    "uptime": 3600,
+    "uptimeFormatted": "1h 0m 0s",
+    "startTime": "2025-10-31T04:35:00.000Z",
+    "timestamp": "2025-10-31T05:35:00.000Z"
+  },
+  "connections": {
+    "current": 5,
+    "total": 150,
+    "disconnections": 145,
+    "alive": 5,
+    "dead": 0
+  },
+  "messages": {
+    "received": 5234,
+    "broadcasts": 1523,
+    "lastBroadcast": "2025-10-31T05:34:58.123Z"
+  },
+  "errors": {
+    "total": 2,
+    "last": {
+      "time": "2025-10-31T05:30:00.000Z",
+      "message": "Connection timeout",
+      "source": "192.168.1.100"
+    }
+  },
+  "system": {
+    "memory": {
+      "rss": 128,
+      "heapUsed": 64,
+      "heapTotal": 96,
+      "external": 8
+    },
+    "cpu": {
+      "loadAvg": ["0.52", "0.48", "0.45"],
+      "cores": 8
+    }
+  },
+  "buffer": {
+    "total": 10,
+    "average": 2
+  },
+  "clients": [
+    {
+      "ip": "192.168.1.100",
+      "connected": 120,
+      "lastPing": 5,
+      "isAlive": true,
+      "buffered": 2,
+      "subscriptions": ["all"]
+    }
+  ]
+}
+```
+
+---
+
+###### **0.14.5 Future Enhancements** 🔮
+
+**Optional Extensions:**
+
+1. **Graphs & Charts:**
+   ```javascript
+   // Add Chart.js or Recharts
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   
+   // Create real-time line chart for connections
+   const ctx = document.getElementById('connectionsChart');
+   const chart = new Chart(ctx, {
+       type: 'line',
+       data: { /* ... */ }
+   });
+   ```
+
+2. **Alerts & Notifications:**
+   ```javascript
+   // Alert on high error rate
+   if (data.errors.total > threshold) {
+       showNotification('High error rate detected!');
+   }
+   ```
+
+3. **Log Snapshots:**
+   ```javascript
+   // Save metrics every 5 minutes
+   setInterval(() => {
+       const metrics = websocketBridge.getMetrics();
+       fs.appendFileSync(
+           'runtime/logs/ws-metrics.log',
+           JSON.stringify(metrics) + '\n'
+       );
+   }, 5 * 60 * 1000);
+   ```
+
+4. **Authentication:**
+   ```javascript
+   // Protect monitoring endpoint
+   app.get('/api/ws-monitor', authenticateApiKey, (req, res) => {
+       // ...
+   });
+   ```
+
+---
+
+###### **0.14.6 Benefits** ✨
+
+**الفوائد:**
+
+1. **✅ Real-Time Monitoring**
+   - تحديث تلقائي كل ثانيتين
+   - عرض مباشر للاتصالات الحية
+   - تتبع الأخطاء فوراً
+
+2. **✅ Zero Dependencies**
+   - بدون مكتبات خارجية ثقيلة
+   - HTML/CSS/JS خام فقط
+   - سريع وخفيف
+
+3. **✅ Production Ready**
+   - يعمل محلياً وعلى السيرفر
+   - لا يؤثر على الأداء
+   - بيانات من الذاكرة مباشرة
+
+4. **✅ Comprehensive Metrics**
+   - اتصالات (current, total, alive, dead)
+   - رسائل (received, broadcasts)
+   - نظام (memory, CPU, uptime)
+   - عملاء (IP, ping, buffer, subscriptions)
+   - أخطاء (total, last error details)
+
+5. **✅ Beautiful UI**
+   - تصميم احترافي مع gradients
+   - Responsive design
+   - Dark theme
+   - Real-time updates
+   - Status badges
+
+---
+
+#### **1. Database للـ Notifications** 🗄️
+
+**الحالة الحالية:**
+```javascript
+// /runtime/server/routes/notifications.js
+let notifications = [];  // ❌ In-memory (يُفقد عند إعادة التشغيل)
+```
+
+**المطلوب:**
+- ✅ إنشاء جدول `notifications` في SQLite
+- ✅ Migration من in-memory إلى database
+- ✅ CRUD operations عبر database
+- ✅ Indexing للأداء (userId, read, createdAt)
+- ✅ Auto-cleanup للإشعارات القديمة (>30 يوم)
+
+**الملفات المطلوبة:**
+```
+/runtime/server/
+├── database/
+│   ├── schema/
+│   │   └── notifications.sql          ← جديد
+│   └── models/
+│       └── Notification.js             ← جديد
+└── routes/
+    └── notifications.js                ← تحديث
+```
+
+**Schema المقترح:**
+```sql
+-- notifications.sql
+CREATE TABLE IF NOT EXISTS notifications (
+    id TEXT PRIMARY KEY,
+    userId TEXT NOT NULL,
+    type TEXT NOT NULL CHECK(type IN ('info', 'success', 'warning', 'error')),
+    title TEXT NOT NULL,
+    message TEXT NOT NULL,
+    icon TEXT,
+    link TEXT,
+    read INTEGER DEFAULT 0,
+    createdAt TEXT NOT NULL,
+    updatedAt TEXT,
+    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Indexes للأداء
+CREATE INDEX idx_notifications_userId ON notifications(userId);
+CREATE INDEX idx_notifications_read ON notifications(read);
+CREATE INDEX idx_notifications_createdAt ON notifications(createdAt);
+CREATE INDEX idx_notifications_userId_read ON notifications(userId, read);
+```
+
+**Model المقترح:**
+```javascript
+// Notification.js
+class NotificationModel {
+    constructor(db) {
+        this.db = db;
+    }
+
+    async create(notification) {
+        const query = `
+            INSERT INTO notifications (id, userId, type, title, message, icon, link, read, createdAt)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+        await this.db.run(query, [
+            notification.id,
+            notification.userId,
+            notification.type,
+            notification.title,
+            notification.message,
+            notification.icon || null,
+            notification.link || null,
+            notification.read ? 1 : 0,
+            notification.createdAt
+        ]);
+        return notification;
+    }
+
+    async findByUserId(userId, filter = 'all', limit = 50) {
+        let query = `SELECT * FROM notifications WHERE userId = ?`;
+        const params = [userId];
+
+        if (filter === 'unread') {
+            query += ` AND read = 0`;
+        }
+
+        query += ` ORDER BY createdAt DESC LIMIT ?`;
+        params.push(limit);
+
+        return await this.db.all(query, params);
+    }
+
+    async getUnreadCount(userId) {
+        const query = `SELECT COUNT(*) as count FROM notifications WHERE userId = ? AND read = 0`;
+        const result = await this.db.get(query, [userId]);
+        return result.count;
+    }
+
+    async markAsRead(id) {
+        const query = `UPDATE notifications SET read = 1, updatedAt = ? WHERE id = ?`;
+        await this.db.run(query, [new Date().toISOString(), id]);
+    }
+
+    async markAllAsRead(userId) {
+        const query = `UPDATE notifications SET read = 1, updatedAt = ? WHERE userId = ? AND read = 0`;
+        await this.db.run(query, [new Date().toISOString(), userId]);
+    }
+
+    async delete(id) {
+        const query = `DELETE FROM notifications WHERE id = ?`;
+        await this.db.run(query, [id]);
+    }
+
+    async cleanup(daysOld = 30) {
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - daysOld);
+        
+        const query = `DELETE FROM notifications WHERE createdAt < ?`;
+        const result = await this.db.run(query, [cutoffDate.toISOString()]);
+        return result.changes;
+    }
+}
+
+module.exports = NotificationModel;
+```
+
+**Migration Plan:**
+```javascript
+// 1. Create table
+// 2. Migrate existing in-memory data (if any)
+// 3. Update routes to use model
+// 4. Test CRUD operations
+// 5. Setup auto-cleanup cron job
+```
+
+---
+
+#### **2. Rate Limiting للـ WebSocket** 🛡️
+
+**المشكلة:**
+- حالياً لا يوجد حماية من spam messages
+- Client يمكنه إرسال unlimited messages
+
+**المطلوب:**
+- ✅ Rate limiting per client
+- ✅ Configurable limits (messages/second)
+- ✅ Auto-disconnect على التجاوز
+- ✅ Whitelist للـ trusted clients
+
+**الملفات المطلوبة:**
+```
+/runtime/server/
+├── middleware/
+│   └── websocketRateLimit.js          ← جديد
+└── services/
+    └── websocketBridge.js              ← تحديث
+```
+
+**Implementation المقترح:**
+```javascript
+// websocketRateLimit.js
+class WebSocketRateLimit {
+    constructor(options = {}) {
+        this.maxMessages = options.maxMessages || 10;  // 10 messages
+        this.windowMs = options.windowMs || 1000;      // per second
+        this.whitelist = new Set(options.whitelist || []);
+        this.clients = new Map();
+    }
+
+    check(clientId) {
+        // Skip whitelist
+        if (this.whitelist.has(clientId)) {
+            return { allowed: true };
+        }
+
+        const now = Date.now();
+        const clientData = this.clients.get(clientId) || {
+            messages: [],
+            violations: 0
+        };
+
+        // Remove old messages outside window
+        clientData.messages = clientData.messages.filter(
+            timestamp => now - timestamp < this.windowMs
+        );
+
+        // Check limit
+        if (clientData.messages.length >= this.maxMessages) {
+            clientData.violations++;
+            this.clients.set(clientId, clientData);
+            
+            return {
+                allowed: false,
+                violations: clientData.violations,
+                retryAfter: this.windowMs - (now - clientData.messages[0])
+            };
+        }
+
+        // Add message
+        clientData.messages.push(now);
+        this.clients.set(clientId, clientData);
+
+        return { allowed: true };
+    }
+
+    reset(clientId) {
+        this.clients.delete(clientId);
+    }
+
+    addToWhitelist(clientId) {
+        this.whitelist.add(clientId);
+    }
+
+    removeFromWhitelist(clientId) {
+        this.whitelist.delete(clientId);
+    }
+}
+
+module.exports = WebSocketRateLimit;
+```
+
+**Integration في WebSocketBridge:**
+```javascript
+// websocketBridge.js
+const WebSocketRateLimit = require('../middleware/websocketRateLimit');
+
+class WebSocketBridge {
+    constructor(server, sessionMonitor) {
+        // ... existing code
+        this.rateLimit = new WebSocketRateLimit({
+            maxMessages: 10,    // 10 messages
+            windowMs: 1000,     // per second
+            whitelist: []       // trusted clients
+        });
+    }
+
+    handleClientMessage(ws, message) {
+        // Rate limiting check
+        const clientId = ws.clientId || ws._socket.remoteAddress;
+        const rateLimitResult = this.rateLimit.check(clientId);
+
+        if (!rateLimitResult.allowed) {
+            logger.warn(`Rate limit exceeded for client ${clientId}`, {
+                violations: rateLimitResult.violations
+            });
+
+            // Send warning
+            this.send(ws, {
+                type: 'rate_limit_exceeded',
+                message: 'Too many messages. Please slow down.',
+                retryAfter: rateLimitResult.retryAfter
+            });
+
+            // Auto-disconnect after 3 violations
+            if (rateLimitResult.violations >= 3) {
+                logger.error(`Client ${clientId} disconnected due to rate limit violations`);
+                ws.close(1008, 'Rate limit exceeded');
+                this.rateLimit.reset(clientId);
+            }
+
+            return;
+        }
+
+        // ... existing message handling
+    }
+}
+```
+
+**Configuration:**
+```javascript
+// .env
+WEBSOCKET_RATE_LIMIT_MAX_MESSAGES=10
+WEBSOCKET_RATE_LIMIT_WINDOW_MS=1000
+WEBSOCKET_RATE_LIMIT_MAX_VIOLATIONS=3
+```
+
+---
+
+#### **3. Compression للرسائل الكبيرة** 📦
+
+**المشكلة:**
+- رسائل كبيرة (مثل campaign data) تستهلك bandwidth
+- لا يوجد compression حالياً
+
+**المطلوب:**
+- ✅ Auto-compression للرسائل > 1KB
+- ✅ Support لـ gzip/deflate
+- ✅ Client-side decompression
+- ✅ Fallback للرسائل الصغيرة
+
+**الملفات المطلوبة:**
+```
+/runtime/server/
+└── services/
+    └── websocketBridge.js              ← تحديث
+
+/dashboard/src/
+└── hooks/
+    └── useWebSocket.js                 ← تحديث
+```
+
+**Backend Implementation:**
+```javascript
+// websocketBridge.js
+const zlib = require('zlib');
+const { promisify } = require('util');
+const gzip = promisify(zlib.gzip);
+
+class WebSocketBridge {
+    constructor(server, sessionMonitor) {
+        // ... existing code
+        this.compressionThreshold = 1024; // 1KB
+        this.compressionEnabled = process.env.WEBSOCKET_COMPRESSION === 'true';
+    }
+
+    async send(ws, data) {
+        if (ws.readyState !== WebSocket.OPEN) return;
+
+        const message = JSON.stringify(data);
+        const messageSize = Buffer.byteLength(message);
+
+        // Compress if enabled and message is large
+        if (this.compressionEnabled && messageSize > this.compressionThreshold) {
+            try {
+                const compressed = await gzip(message);
+                
+                // Send compressed with metadata
+                ws.send(JSON.stringify({
+                    compressed: true,
+                    data: compressed.toString('base64'),
+                    originalSize: messageSize,
+                    compressedSize: compressed.length
+                }));
+
+                logger.debug(`Compressed message: ${messageSize}B → ${compressed.length}B (${Math.round((1 - compressed.length/messageSize) * 100)}% reduction)`);
+            } catch (error) {
+                logger.error('Compression failed, sending uncompressed:', error);
+                ws.send(message);
+            }
+        } else {
+            ws.send(message);
+        }
+    }
+
+    async broadcast(type, data) {
+        const message = {
+            type,
+            data,
+            timestamp: Date.now()
+        };
+
+        let sent = 0;
+        for (const client of this.clients) {
+            if (client.readyState === WebSocket.OPEN && client.isAuthenticated) {
+                if (!client.subscriptions || 
+                    client.subscriptions.includes('all') || 
+                    client.subscriptions.includes(type)) {
+                    await this.send(client, message);
+                    sent++;
+                }
+            }
+        }
+
+        if (sent > 0) {
+            logger.debug(`Broadcast sent to ${sent} clients: ${type}`);
+        }
+    }
+}
+```
+
+**Frontend Implementation:**
+```javascript
+// useWebSocket.js
+import pako from 'pako';  // npm install pako
+
+ws.onmessage = async (event) => {
+    try {
+        const rawData = JSON.parse(event.data);
+
+        // Check if compressed
+        if (rawData.compressed) {
+            // Decompress
+            const compressedData = Uint8Array.from(atob(rawData.data), c => c.charCodeAt(0));
+            const decompressed = pako.ungzip(compressedData, { to: 'string' });
+            const data = JSON.parse(decompressed);
+
+            console.log(`📦 Decompressed: ${rawData.compressedSize}B → ${rawData.originalSize}B`);
+            
+            // Handle decompressed data
+            handleMessage(data);
+        } else {
+            // Handle normal data
+            handleMessage(rawData);
+        }
+    } catch (err) {
+        console.error('❌ Error parsing WebSocket message:', err);
+    }
+};
+```
+
+**Configuration:**
+```javascript
+// .env
+WEBSOCKET_COMPRESSION=true
+WEBSOCKET_COMPRESSION_THRESHOLD=1024
+```
+
+**Dependencies:**
+```json
+// Backend: Built-in zlib
+// Frontend: 
+{
+  "dependencies": {
+    "pako": "^2.1.0"  // gzip/deflate for browser
+  }
+}
+```
+
+---
+
+### **📊 Performance Metrics:**
+
+**Before:**
+```
+- Notifications: In-memory (lost on restart)
+- WebSocket: No rate limiting
+- Messages: No compression
+- Average message size: 2-5KB
+- Bandwidth usage: High for large campaigns
+```
+
+**After:**
+```
+- Notifications: SQLite (persistent + indexed)
+- WebSocket: 10 msg/sec limit
+- Messages: Auto-compress >1KB
+- Average message size: 0.5-2KB (60% reduction)
+- Bandwidth usage: Reduced by ~40-60%
+```
+
+---
+
+### **🔄 Migration Plan:**
+
+**Phase 1: Database (Week 1)**
+1. Create schema
+2. Create model
+3. Update routes
+4. Test CRUD
+5. Setup cleanup cron
+
+**Phase 2: Rate Limiting (Week 1)**
+1. Create middleware
+2. Integrate in WebSocketBridge
+3. Test limits
+4. Monitor violations
+
+**Phase 3: Compression (Week 2)**
+1. Backend implementation
+2. Frontend implementation
+3. Test compression ratio
+4. Monitor performance
+
+**Phase 4: Testing & Deployment (Week 2)**
+1. Integration testing
+2. Load testing
+3. Documentation
+4. Production deployment
+
+---
+
+### **✅ Success Criteria:**
+
+- ✅ Notifications persist across restarts
+- ✅ Database queries < 50ms
+- ✅ Rate limiting blocks spam
+- ✅ Compression reduces bandwidth by >40%
+- ✅ No breaking changes to existing features
+- ✅ Full backward compatibility
+
+---
+
+### **📝 Notes:**
+
+**Database Choice:**
+- SQLite: ✅ مُوصى به (خفيف، سريع، لا يحتاج server)
+- PostgreSQL: للمشاريع الكبيرة جداً
+
+**Rate Limiting:**
+- Default: 10 msg/sec
+- Configurable per environment
+- Whitelist للـ admin clients
+
+**Compression:**
+- Auto-enabled for messages >1KB
+- Uses gzip (best compression ratio)
+- Fallback to uncompressed on error
+
+---
+
+**Status:** 📋 **PLANNED** - Ready for implementation!
 
 ---
 
