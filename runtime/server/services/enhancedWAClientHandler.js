@@ -317,6 +317,7 @@ class EnhancedWAClientHandler {
      */
     handleMessageAck(message, ack) {
         const ackStatus = {
+            '-1': 'failed',
             0: 'pending',
             1: 'sent',
             2: 'delivered',
@@ -324,7 +325,7 @@ class EnhancedWAClientHandler {
             4: 'played'
         };
 
-        const status = ackStatus[ack] || 'unknown';
+        const status = ackStatus[ack] || ackStatus[String(ack)] || 'unknown';
         const messageId = message.id._serialized;
         
         console.log('\n🟢 ========== MESSAGE ACK RECEIVED ==========');
@@ -354,22 +355,19 @@ class EnhancedWAClientHandler {
         }
 
         // Broadcast to WebSocket clients
-        const broadcastData = {
-            type: 'message_ack',
-            data: {
-                messageId: messageId,
-                status: status,
-                ackCode: ack,
-                timestamp: Date.now(),
-                to: message.to,
-                from: message.from
-            }
+        const ackData = {
+            messageId: messageId,
+            status: status,
+            ackCode: ack,
+            timestamp: Date.now(),
+            to: message.to,
+            from: message.from
         };
         
-        console.log('📡 Broadcasting to WebSocket:', broadcastData);
+        console.log('📡 Broadcasting to WebSocket:', { type: 'message_ack', data: ackData });
         
         if (this.websocketBridge) {
-            this.websocketBridge.broadcast(broadcastData);
+            this.websocketBridge.broadcast('message_ack', ackData);
             console.log('✅ Broadcast sent successfully');
         } else {
             console.log('❌ WebSocket bridge not available!');

@@ -124,39 +124,114 @@ export default function Messages() {
         
         // Listen for message acknowledgment events
         const handleMessageAck = (event) => {
-            const { messageId, status: ackStatus, to } = event.detail;
-            
-            console.log('\n🔴 ========== FRONTEND MESSAGE ACK ==========');
-            console.log('📨 [Messages] Message ACK received:', { 
-                messageId, 
-                ackStatus, 
-                to,
-                timestamp: new Date().toISOString()
-            });
-            console.log('📋 [Messages] Current recipients:', recipients.map(r => ({
-                phone: r.phone,
-                status: r.status
-            })));
-            
-            // Update recipient status based on phone number
-            setRecipients(prev => {
-                const updated = prev.map(r => {
-                    const recipientPhone = r.phone.includes('@c.us') ? r.phone : `${r.phone}@c.us`;
-                    if (recipientPhone === to) {
-                        console.log(`✅ [Messages] MATCH FOUND! Updating ${r.phone} status: ${r.status} → ${ackStatus}`);
-                        return { ...r, status: ackStatus, messageId };
-                    }
-                    return r;
+            try {
+                console.log('\n🔴 ========== FRONTEND MESSAGE ACK ==========');
+                console.log('⏰ Timestamp:', new Date().toISOString());
+                
+                // Validate event data
+                if (!event || !event.detail) {
+                    console.error('❌ [Messages] Invalid event data:', event);
+                    return;
+                }
+                
+                const { messageId, status: ackStatus, ackCode, to } = event.detail;
+                
+                // Validate required fields
+                if (!messageId || !ackStatus || ackCode === undefined || !to) {
+                    console.error('❌ [Messages] Missing required fields:', {
+                        hasMessageId: !!messageId,
+                        hasStatus: !!ackStatus,
+                        hasAckCode: ackCode !== undefined,
+                        hasTo: !!to,
+                        eventDetail: event.detail
+                    });
+                    return;
+                }
+                
+                console.log('📨 [Messages] Message ACK received:', { 
+                    messageId, 
+                    ackStatus, 
+                    ackCode,
+                    to,
+                    timestamp: new Date().toISOString()
                 });
                 
-                console.log('📋 [Messages] Updated recipients:', updated.map(r => ({
-                    phone: r.phone,
-                    status: r.status
-                })));
-                console.log('🔴 ========== FRONTEND MESSAGE ACK END ==========\n');
+                console.log('📊 [Messages] ACK Code Mapping:', {
+                    ackCode,
+                    meaning: {
+                        '-1': 'failed',
+                        0: 'pending',
+                        1: 'sent',
+                        2: 'delivered',
+                        3: 'read',
+                        4: 'played'
+                    }[ackCode] || {
+                        '-1': 'failed',
+                        0: 'pending',
+                        1: 'sent',
+                        2: 'delivered',
+                        3: 'read',
+                        4: 'played'
+                    }[String(ackCode)] || 'unknown'
+                });
                 
-                return updated;
-            });
+                console.log('📋 [Messages] Current recipients count:', recipients.length);
+                console.log('📋 [Messages] Current recipients:', recipients.map(r => ({
+                    phone: r.phone,
+                    status: r.status,
+                    ack: r.ack,
+                    messageId: r.messageId
+                })));
+                
+                // Update recipient status based on phone number
+                let matchFound = false;
+                setRecipients(prev => {
+                    const updated = prev.map(r => {
+                        const recipientPhone = r.phone.includes('@c.us') ? r.phone : `${r.phone}@c.us`;
+                        
+                        console.log(`🔍 [Messages] Comparing: "${recipientPhone}" === "${to}"`);
+                        
+                        if (recipientPhone === to) {
+                            matchFound = true;
+                            console.log(`✅ [Messages] MATCH FOUND! Updating ${r.phone}`);
+                            console.log(`   Old: status="${r.status}", ack=${r.ack}`);
+                            console.log(`   New: status="${ackStatus}", ack=${ackCode}`);
+                            return { ...r, status: ackStatus, ack: ackCode, messageId };
+                        }
+                        return r;
+                    });
+                    
+                    if (!matchFound) {
+                        console.warn('⚠️ [Messages] NO MATCH FOUND!');
+                        console.warn('   Looking for:', to);
+                        console.warn('   Available phones:', prev.map(r => {
+                            const rPhone = r.phone.includes('@c.us') ? r.phone : `${r.phone}@c.us`;
+                            return rPhone;
+                        }));
+                    }
+                    
+                    console.log('📋 [Messages] Updated recipients:', updated.map(r => ({
+                        phone: r.phone,
+                        status: r.status,
+                        ack: r.ack,
+                        messageId: r.messageId
+                    })));
+                    console.log('🔴 ========== FRONTEND MESSAGE ACK END ==========\n');
+                    
+                    return updated;
+                });
+                
+                if (matchFound) {
+                    console.log('✅ [Messages] State update triggered successfully');
+                } else {
+                    console.error('❌ [Messages] State update triggered but no match found');
+                }
+                
+            } catch (error) {
+                console.error('❌ [Messages] Error in handleMessageAck:', error);
+                console.error('❌ [Messages] Error stack:', error.stack);
+                console.error('❌ [Messages] Event data:', event);
+            }
         };
 
         const handleMessageSent = (event) => {

@@ -1,4 +1,4 @@
-# 📋 خطة التنفيذ الشاملة - WaQtor Dashboard
+# 📋 خطة التنفيذ الشاملة - WaQtor Dashboard (محدثة ومدمجة)
 
 ## 🎯 **نظرة عامة:**
 
@@ -10,178 +10,196 @@
 
 ## 📊 **ملخص الحالة السريع:**
 
-| المرحلة | الحالة | الأولوية | الصعوبة |
-|---------|--------|----------|---------|
-| **المرحلة 9: WebSocket Enhancements** | 🔄 **قيد التطوير** | 🔴 عالية جداً | ⚠️ صعبة |
-| **GDPR Compliance** | ❌ **مطلوب** | 🟠 عالية | ⚠️ متوسطة |
-| **المرحلة 10: Architecture Evolution** | 📋 **مخطط** | 🟡 متوسطة | ⚠️ صعبة جداً |
-| **المراحل 1-8** | ✅ **مكتملة** | ✅ منتهية | - |
+| المرحلة | الحالة | الأولوية | الصعوبة | الوقت المقدر |
+|---------|--------|----------|---------|--------------|
+| **المرحلة 11: Multiple Accounts** | 📋 **TODO** | 🔴 عالية جداً | ⚠️ متوسطة | 2-3 أسابيع |
+| **المرحلة 9: WebSocket** | ✅ **مكتملة** | 🔴 عالية جداً | ⚠️ صعبة | - |
+| **Phase B: WebSocket Namespaces** | 📋 **TODO** | 🟠 عالية | ⚠️ متوسطة | 2-3 أسابيع |
+| **GDPR Compliance** | ❌ **مطلوب** | 🟠 عالية | ⚠️ متوسطة | 2-3 أسابيع |
+| **المرحلة 12: Real Estate** | 📋 **TODO** | 🟠 عالية | ⚠️ متوسطة | 3-4 أسابيع |
+| **Phase D: SmartBot v2 Enhancements** | 📋 **TODO** | 🟡 متوسطة | ⚠️ متوسطة | 3-4 أسابيع |
+| **Phase E: SDK Development** | 📋 **TODO** | 🟡 متوسطة | ⚠️ صعبة | 3-4 أسابيع |
+| **المرحلة 13: E-Commerce** | ❌ **ملغي** | - | - | - |
+| **المرحلة 10: Architecture** | 📋 **مخطط** | 🟢 منخفضة | ⚠️ صعبة جداً | 3-4 أشهر |
+| **المراحل 1-8** | ✅ **مكتملة** | ✅ منتهية | - | - |
+
+
+## 🔴 **الأولوية 1: المرحلة 14 - Message ACK Fix (BUG)** 🐛
+
+**الحالة:** 🔴 **BUG - Critical**  
+**الأولوية:** 🔴 **عالية جداً - يجب إصلاحه فوراً**  
+**الصعوبة:** ⚠️ **سهلة**
+
+### **المشكلة:**
+- ❌ لا يوجد تحديث فعلي لحالة "تم القراءة" (ACK_READ = 3)
+- ⚠️ Events تصل للـ backend لكن لا تُعرض في Dashboard
+
+### **السبب:**
+- ✅ Backend يستقبل ويبث `message_ack` events بشكل صحيح
+- ❌ Dashboard لا يستمع للـ `waqtor:message_ack` event
+- ❌ لا يوجد UI component لعرض status icons
+
+### **الحل:**
+1. إضافة event listener في Messages/Campaign pages
+2. إضافة status icons (⏳ ✓ ✓✓ ▶️)
+3. Update message state عند استقبال ACK
+
+**📄 التفاصيل الكاملة:** [docs/PHASE_14_ACK_FIX.md](./docs/PHASE_14_ACK_FIX.md)
+
+**⏱️ الوقت المقدر:** 1-2 أيام
 
 ---
 
-## 🔥 **الأولوية 1: المرحلة 9 - WebSocket & Notification Enhancements** 📊
+## 🔴 **الأولوية 2: المرحلة 11 - Multiple Accounts Support** 👥
 
-**الحالة:** 🔄 **قيد التطوير النشط (ACTIVE)**  
+**الحالة:** 📋 **TODO**  
+**الأولوية:** 🔴 **عالية جداً**  
+**الصعوبة:** ⚠️ **متوسطة**
+
+### **الهدف:**
+دعم تشغيل **أكثر من حساب WhatsApp** في نفس الوقت بشكل آمن ومرن.
+
+### **الوضع الحالي:**
+- ✅ `/src` (whatsapp-web.js library): **يدعم Multiple Clients من البداية!**
+- ❌ `/runtime`: يستخدم Singleton Pattern - client واحد فقط
+
+### **💡 الحل الذكي:**
+**استخدام ما هو موجود في `/src` بدلاً من إعادة الاختراع!**
+
+```javascript
+// /src يدعم Multiple Clients بالفعل
+const { Client, LocalAuth } = require('../../index');
+
+// إنشاء عدة clients
+const client1 = new Client({
+  authStrategy: new LocalAuth({ clientId: 'account-1' })
+});
+
+const client2 = new Client({
+  authStrategy: new LocalAuth({ clientId: 'account-2' })
+});
+```
+
+### **التصميم المحسّن:**
+```
+WhatsAppClientManager (Singleton)
+  ├─► Client Map: clientId => Client Instance
+  ├─► Session Storage: clientId => LocalAuth
+  ├─► Event Handlers: centralized event management
+  └─► Security: API key per client, rate limiting
+```
+
+### **الميزات المحسّنة:**
+
+#### **1. المرونة** 🎯
+- [ ] Dynamic client creation/destruction
+- [ ] Hot-reload للـ clients بدون restart
+- [ ] Graceful shutdown لكل client
+- [ ] Independent session management
+
+#### **2. الأمان** 🔒
+- [ ] API key per client (optional)
+- [ ] Rate limiting per client
+- [ ] Session isolation (separate directories)
+- [ ] Access control (user → client mapping)
+
+#### **3. المراقبة** 📊
+- [ ] Health check per client
+- [ ] Status monitoring (ready/disconnected/qr)
+- [ ] Message statistics per client
+- [ ] Error tracking per client
+
+### **الملفات المطلوبة:**
+```
+/runtime/server/
+├── managers/
+│   └── WhatsAppClientManager.js    # NEW - Client pool manager
+├── routes/
+│   ├── session.js                  # NEW - Session management API
+│   └── [existing routes]           # تعديل لدعم clientId
+├── middleware/
+│   └── clientAuth.js               # NEW - Client-level auth
+└── waClient.js                     # تحويل من Singleton إلى Factory
+
+/dashboard/src/app/(main)/
+└── sessions/
+    ├── page.tsx                    # NEW - Sessions management UI
+    └── [clientId]/
+        └── page.tsx                # NEW - Single session details
+```
+
+### **API Endpoints الجديدة:**
+```javascript
+// Session Management
+POST   /api/sessions/create        # إنشاء client جديد
+GET    /api/sessions/list           # قائمة جميع الـ clients
+GET    /api/sessions/:clientId      # تفاصيل client محدد
+DELETE /api/sessions/:clientId      # حذف client
+POST   /api/sessions/:clientId/restart  # إعادة تشغيل
+
+// Modified Endpoints (تدعم clientId)
+POST   /api/messages/send-text?clientId=xxx
+POST   /api/campaigns/create?clientId=xxx
+GET    /api/status/client?clientId=xxx
+```
+
+### **خطة التنفيذ:**
+
+#### **Week 1: Core Manager** (5-7 أيام)
+- [ ] إنشاء `WhatsAppClientManager.js`
+- [ ] تحويل `waClient.js` من Singleton إلى Factory
+- [ ] Session isolation (separate directories)
+- [ ] Basic CRUD operations
+
+#### **Week 2: API Integration** (5-7 أيام)
+- [ ] تعديل جميع routes لدعم `clientId`
+- [ ] Session management endpoints
+- [ ] Client-level authentication
+- [ ] Error handling & validation
+
+#### **Week 3: Dashboard UI** (5-7 أيام)
+- [ ] Sessions management page
+- [ ] QR code display per session
+- [ ] Status monitoring
+- [ ] Session controls (start/stop/delete)
+
+**📄 التفاصيل الكاملة:** [docs/PHASE_11_MULTIPLE_ACCOUNTS.md](./docs/PHASE_11_MULTIPLE_ACCOUNTS.md)
+
+**⏱️ الوقت المقدر:** 2-3 أسابيع
+
+---
+
+## ✅ **المرحلة 9: WebSocket & Notification Enhancements** 📊
+
+**الحالة:** ✅ **مكتملة 100%**  
 **الأولوية:** 🔴 **عالية جداً - Production Critical**  
-**الصعوبة:** ⚠️ **صعبة - تتطلب خبرة في WebSocket و Security**
+**الصعوبة:** ⚠️ **صعبة**
 
-### **🎯 الأهداف:**
+### **الميزات المكتملة:**
 
-- 🗄️ نقل Notifications من In-Memory إلى Database
-- 🛡️ إضافة Rate Limiting للـ WebSocket
-- 📦 إضافة Compression للرسائل الكبيرة
-- 💓 Heartbeat قوي وإنهاء الاتصالات الميتة
-- 🛡️ Backpressure وحماية الذاكرة
-- 🔒 Security (HMAC, Origin Validation, IP Whitelisting)
-- 🔄 Auto-Reconnect (RFC 6455 Compliant)
-- 📊 Monitoring Dashboard
+#### ✅ **0.1-0.11: Core Features**
+- Heartbeat قوي (Ping/Pong كل 30 ثانية)
+- Backpressure وحماية الذاكرة
+- Monitoring & Statistics
+- Configuration (perMessageDeflate, maxPayload)
+- Testing (Heartbeat, Backpressure, Compression)
 
-### **📋 الأقسام الفرعية:**
+#### ✅ **0.12: Security**
+- HMAC Authentication + Timestamp + IP Binding
+- Origin Validation (CORS-like)
+- Rate Limiting (Token Bucket per IP)
+- Message Size & Type Limits
 
-#### **0.1 Heartbeat قوي وإنهاء الاتصالات الميتة** 💓
-- ✅ Ping/Pong mechanism كل 30 ثانية
-- ✅ إنهاء الاتصالات الميتة تلقائياً
-- ✅ تعقب `isAlive` لكل client
+#### ✅ **0.13: Auto-Reconnect**
+- Server-Side: Graceful shutdown, Close codes
+- Client-Side: useWebSocket hook, Exponential backoff
 
-#### **0.2 Backpressure وحماية الذاكرة** 🛡️
-- ✅ فحص `ws.bufferedAmount` قبل الإرسال
-- ✅ حد أقصى 512KB للـ buffer
-- ✅ تخطي الإرسال إذا كان الـ buffer ممتلئ
+#### ✅ **0.14: Monitoring Dashboard**
+- Backend: Data Collection, Monitoring Endpoint
+- Frontend: `/runtime/server/public/ws-monitor.html`
+- Real-time updates, Beautiful dark theme UI
 
-#### **0.3 Monitoring & Statistics** 📊
-- ✅ تعقب عدد الاتصالات النشطة
-- ✅ تعقب الرسائل المرسلة/المستقبلة
-- ✅ تعقب الأخطاء
-- ✅ Endpoint: `/api/ws-stats`
-
-#### **0.4 Configuration** ⚙️
-- ✅ `perMessageDeflate` للضغط التلقائي
-- ✅ `maxPayload: 1MB` للحماية من رسائل ضخمة
-- ✅ `clientTracking: true` لتعقب العملاء
-
-#### **0.5 Testing** 🧪
-- ✅ اختبار Heartbeat
-- ✅ اختبار Backpressure
-- ✅ اختبار Compression
-- ✅ Load testing (100+ connections)
-
-#### **0.6 Benefits** ✨
-- ✅ استقرار أعلى
-- ✅ استهلاك ذاكرة أقل
-- ✅ كشف الاتصالات الميتة فوراً
-- ✅ حماية من DoS attacks
-
-#### **0.7 Topics/Rooms خفيفة (بدل Namespaces)** 🎯
-- ✅ نظام Subscriptions بسيط
-- ✅ Broadcast مستهدف
-- ✅ بدون overhead إضافي
-
-#### **0.8 Reconnect محسّن مع Jitter** 🔄
-- ✅ Exponential backoff
-- ✅ Jitter لتجنب thundering herd
-- ✅ Max 5 attempts
-
-#### **0.9 Message Validation مع Zod** ✅
-- ✅ Schema validation للرسائل
-- ✅ Type safety
-- ✅ Error handling
-
-#### **0.10 Metrics Endpoint** 📈
-- ✅ `/api/ws-metrics` endpoint
-- ✅ JSON response مع statistics شاملة
-
-#### **0.12 الجانب الأمني - Native WebSocket Security** 🔒
-
-##### **0.12.1 HMAC Authentication + Timestamp + IP Binding**
-- ✅ HMAC SHA-256 للتحقق من الهوية
-- ✅ Timestamp validation (±5 دقائق)
-- ✅ IP binding للحماية من replay attacks
-
-##### **0.12.2 Origin Validation (CORS-like)**
-- ✅ فحص `Origin` header
-- ✅ Whitelist للـ origins المسموحة
-- ✅ رفض الاتصالات غير المصرح بها
-
-##### **0.12.3 Rate Limiting (Token Bucket per IP)**
-- ✅ 10 رسائل/ثانية لكل IP
-- ✅ Token bucket algorithm
-- ✅ Configurable limits
-
-##### **0.12.4 Message Size & Type Limits**
-- ✅ حد أقصى 1MB للرسالة
-- ✅ Type validation
-- ✅ رفض الرسائل غير المعروفة
-
-##### **0.12.5 Security Configuration**
-- ✅ Environment variables للإعدادات
-- ✅ IP whitelist
-- ✅ Origin whitelist
-
-##### **0.12.6 Security Monitoring**
-- ✅ تعقب الـ blocked connections
-- ✅ تعقب الـ rate limit violations
-- ✅ Security logs
-
-#### **0.13 Auto-Reconnect الرسمي (RFC 6455 Compliant)** 🔄
-
-##### **0.13.1 Server-Side Implementation**
-- ✅ Graceful shutdown
-- ✅ Close codes (1000, 1001, 1006)
-- ✅ Close reasons
-
-##### **0.13.2 Client-Side Auto-Reconnect**
-- ✅ `useWebSocket` React hook
-- ✅ Exponential backoff + jitter
-- ✅ Max 5 attempts
-- ✅ Event subscription
-
-##### **0.13.3 Testing Auto-Reconnect**
-- ✅ اختبار إعادة الاتصال التلقائي
-- ✅ اختبار الـ backoff timing
-- ✅ اختبار الـ max attempts
-
-#### **0.14 WebSocket Monitoring Dashboard** 📊
-
-##### **0.14.1 Backend - Data Collection**
-- ✅ Statistics tracking شامل
-- ✅ Per-client metrics
-- ✅ System metrics (memory, CPU, uptime)
-- ✅ Error tracking
-
-##### **0.14.2 Backend - Monitoring Endpoint**
-- ✅ `GET /api/ws-monitor` endpoint
-- ✅ JSON response
-- ✅ Error handling
-
-##### **0.14.3 Frontend - Monitoring Dashboard**
-- ✅ `/runtime/server/public/ws-monitor.html`
-- ✅ Beautiful dark theme UI
-- ✅ Real-time updates (2s interval)
-- ✅ Status badges
-- ✅ Overview cards (4 metrics)
-- ✅ Detailed stats cards
-- ✅ Connected clients table
-- ✅ Zero dependencies
-
-##### **0.14.4 Access & Usage**
-- ✅ JSON API: `http://localhost:8080/api/ws-monitor`
-- ✅ Dashboard: `http://localhost:8080/ws-monitor.html`
-
-##### **0.14.5 Future Enhancements**
-- 📋 Charts (Chart.js)
-- 📋 Alerts
-- 📋 Log Snapshots
-- 📋 Authentication
-
-##### **0.14.6 Benefits**
-- ✅ Real-Time Monitoring
-- ✅ Zero Dependencies
-- ✅ Production Ready
-- ✅ Comprehensive Metrics
-- ✅ Beautiful UI
-
-### **📁 الملفات الرئيسية:**
-
+### **الملفات:**
 ```
 /runtime/server/
 ├── services/websocketBridge.js       # المحرك الرئيسي
@@ -192,22 +210,68 @@
 └── useWebSocket.js                   # Client-side hook
 ```
 
-### **✅ الحالة الحالية:**
+---
 
-- ✅ **0.1-0.11:** مكتمل
-- ✅ **0.12 Security:** مكتمل
-- ✅ **0.13 Auto-Reconnect:** مكتمل
-- ✅ **0.14 Monitoring Dashboard:** مكتمل
+## 🟠 **الأولوية 3: Phase B - WebSocket Namespaces/Topics** 📡
 
-**النتيجة:** المرحلة 9 **مكتملة 100%** ✅
+**الحالة:** 📋 **TODO**  
+**الأولوية:** 🟠 **عالية**  
+**الصعوبة:** ⚠️ **متوسطة**
+
+### **الهدف:**
+تطبيق نظام Topics/Namespaces للـ WebSocket لتحسين الأداء وتقليل الـ overhead.
+
+### **الميزات المطلوبة:**
+
+#### **1. Topics System** 🎯
+- [ ] Subscribe/Unsubscribe mechanism
+- [ ] Topic-based publishing (`session`, `notifications`, `campaigns`, `smartbot`)
+- [ ] Auto-unsubscribe on disconnect
+- [ ] Topic statistics
+
+#### **2. Frontend Hooks** ⚛️
+- [ ] `useStatusWebSocket()` - للـ session events
+- [ ] `useCampaignsWebSocket()` - للـ campaign progress
+- [ ] `useSmartBotWebSocket()` - للـ smartbot replies
+- [ ] `useNotificationsWebSocket()` - للـ notifications
+
+#### **3. Backend Implementation** 🔧
+```javascript
+// Topics structure
+this.topics = new Map();
+// 'session' => Set<ws>
+// 'notifications' => Set<ws>
+// 'campaigns' => Set<ws>
+// 'smartbot' => Set<ws>
+```
+
+### **الملفات المطلوبة:**
+```
+/runtime/server/services/
+└── websocketBridge.js           # إضافة Topics system
+
+/dashboard/src/hooks/
+├── useStatusWebSocket.ts        # NEW
+├── useCampaignsWebSocket.ts     # NEW
+├── useSmartBotWebSocket.ts      # NEW
+└── useNotificationsWebSocket.ts # NEW
+```
+
+### **الفوائد:**
+- ✅ تقليل الـ bandwidth (كل client يستقبل ما يحتاجه فقط)
+- ✅ تحسين الأداء (targeted broadcasting)
+- ✅ تنظيم أفضل للكود
+- ✅ سهولة الصيانة
+
+**⏱️ الوقت المقدر:** 2-3 أسابيع
 
 ---
 
-## 🔒 **الأولوية 2: GDPR Compliance** 📋
+## 🟠 **الأولوية 4: GDPR Compliance** 🔒
 
 **الحالة:** ❌ **مطلوب**  
 **الأولوية:** 🟠 **عالية - Legal Requirement**  
-**الصعوبة:** ⚠️ **متوسطة - تتطلب فهم قانوني**
+**الصعوبة:** ⚠️ **متوسطة**
 
 ### **الوضع الحالي:**
 
@@ -220,53 +284,52 @@
 #### ❌ **مطلوب إضافته:**
 
 ##### **1. Privacy Policy صفحة كاملة** 📄
-- ❌ `/app/(full-page)/privacy/page.tsx`
-- ❌ شرح كامل لجمع البيانات
-- ❌ شرح استخدام البيانات
-- ❌ حقوق المستخدم
+- [ ] `/app/(full-page)/privacy/page.tsx`
+- [ ] شرح كامل لجمع البيانات
+- [ ] شرح استخدام البيانات
+- [ ] حقوق المستخدم
 
 ##### **2. Terms of Service صفحة** 📄
-- ❌ `/app/(full-page)/terms/page.tsx`
-- ❌ شروط الاستخدام
-- ❌ المسؤوليات
-- ❌ القيود
+- [ ] `/app/(full-page)/terms/page.tsx`
+- [ ] شروط الاستخدام
+- [ ] المسؤوليات
+- [ ] القيود
 
 ##### **3. Cookie Consent Banner** 🍪
-- ❌ Component: `CookieConsent.tsx`
-- ❌ Accept/Reject buttons
-- ❌ Preferences management
-- ❌ LocalStorage tracking
+- [ ] Component: `CookieConsent.tsx`
+- [ ] Accept/Reject buttons
+- [ ] Preferences management
+- [ ] LocalStorage tracking
 
 ##### **4. Data Export functionality** 📤
-- ❌ API: `GET /api/user/export`
-- ❌ Export all user data (JSON/CSV)
-- ❌ UI في Settings page
+- [ ] API: `GET /api/user/export`
+- [ ] Export all user data (JSON/CSV)
+- [ ] UI في Settings page
 
 ##### **5. Right to be Forgotten** 🗑️
-- ❌ API: `DELETE /api/user/delete-account`
-- ❌ حذف جميع البيانات
-- ❌ Confirmation dialog
-- ❌ UI في Settings page
+- [ ] API: `DELETE /api/user/delete-account`
+- [ ] حذف جميع البيانات
+- [ ] Confirmation dialog
+- [ ] UI في Settings page
 
 ##### **6. Data Retention Policies** ⏰
-- ❌ Auto-delete old data (configurable)
-- ❌ Notification history retention
-- ❌ Campaign history retention
-- ❌ Settings UI
+- [ ] Auto-delete old data (configurable)
+- [ ] Notification history retention
+- [ ] Campaign history retention
+- [ ] Settings UI
 
 ##### **7. User Consent Management** ✅
-- ❌ Consent tracking في Database
-- ❌ Consent history
-- ❌ Granular permissions
+- [ ] Consent tracking في Database
+- [ ] Consent history
+- [ ] Granular permissions
 
 ##### **8. Audit Logs** 📝
-- ❌ Log all data access
-- ❌ Log all data modifications
-- ❌ Log all data exports/deletes
-- ❌ Admin dashboard للـ logs
+- [ ] Log all data access
+- [ ] Log all data modifications
+- [ ] Log all data exports/deletes
+- [ ] Admin dashboard للـ logs
 
-### **📁 الملفات المطلوبة:**
-
+### **الملفات المطلوبة:**
 ```
 /app/(full-page)/
 ├── privacy/page.tsx                  # Privacy Policy
@@ -285,34 +348,217 @@
 └── services/dataRetention.js         # Auto-cleanup
 ```
 
-### **⏱️ الوقت المقدر:**
-
-- Privacy Policy + Terms: **2-3 أيام**
-- Cookie Consent: **1-2 أيام**
-- Data Export/Delete: **3-4 أيام**
-- Consent Management: **2-3 أيام**
-- Audit Logs: **3-4 أيام**
-
-**المجموع:** ~2-3 أسابيع
+**⏱️ الوقت المقدر:** 2-3 أسابيع
 
 ---
 
-## 🏗️ **الأولوية 3: Architecture Evolution** 📦
+## 🟠 **الأولوية 5: المرحلة 12 - Real Estate Engagement** 🏡
+
+**الحالة:** 📋 **TODO**  
+**الأولوية:** 🟠 **عالية**  
+**الصعوبة:** ⚠️ **متوسطة**
+
+### **الهدف:**
+نظام متكامل لـ **Real Estate Marketing & Lead Management**.
+
+### **الميزات المتاحة حالياً:**
+- ✅ Buttons & Lists (View Listings, Talk to Agent, Book Visit)
+- ✅ Location Sharing (Property locations)
+- ✅ Media Messages (Images, Videos, Brochures)
+- ✅ Scheduled Messages (Drip Campaigns)
+- ✅ Interactive Bot (Auto-responses)
+
+### **الميزات المطلوبة:**
+- [ ] Property Catalog System
+- [ ] Lead Capture & Qualification
+- [ ] Agent Assignment System
+- [ ] UI في Dashboard
+
+### **TODO لاحقاً:**
+- [ ] CRM Integration (Salesforce, HubSpot)
+- [ ] Webhook for Lead Capture
+- [ ] Analytics & Reports
+- [ ] Multi-Agent Queue System
+
+**📄 التفاصيل الكاملة:** [docs/PHASE_12_REAL_ESTATE.md](./docs/PHASE_12_REAL_ESTATE.md)
+
+**⏱️ الوقت المقدر:** 3-4 أسابيع
+
+---
+
+## 🟡 **الأولوية 6: Phase D - SmartBot v2 Enhancements** 🤖
+
+**الحالة:** 📋 **TODO**  
+**الأولوية:** 🟡 **متوسطة**  
+**الصعوبة:** ⚠️ **متوسطة**
+
+### **الهدف:**
+تحسين واجهة SmartBot وإضافة ميزات تفاعلية.
+
+### **الميزات المطلوبة:**
+
+#### **1. Test Bench** 🧪
+- [ ] صفحة اختبار القواعد
+- [ ] عرض Top-3 matches مع confidence scores
+- [ ] Real-time testing
+- [ ] History of tests
+
+#### **2. Auto-Improve Suggestions** 💡
+- [ ] صفحة `/smartbot/suggestions`
+- [ ] عرض الرسائل التي لم تُطابق أي قاعدة
+- [ ] اقتراح قواعد جديدة
+- [ ] One-click approval
+
+#### **3. Enhanced Rule Management** ⚙️
+- [ ] "Generate Embedding" button لكل قاعدة
+- [ ] Bulk operations (enable/disable/delete)
+- [ ] Import/Export rules (JSON)
+- [ ] Rule categories/tags
+
+#### **4. Analytics** 📊
+- [ ] Most triggered rules
+- [ ] Average confidence scores
+- [ ] Response time metrics
+- [ ] Match rate statistics
+
+### **الملفات المطلوبة:**
+```
+/dashboard/src/app/(main)/smartbot/
+├── page.tsx                     # Enhanced UI
+├── test-bench/
+│   └── page.tsx                 # NEW - Test interface
+├── suggestions/
+│   └── page.tsx                 # NEW - Auto-improve
+└── analytics/
+    └── page.tsx                 # NEW - Statistics
+
+/runtime/server/routes/
+└── smartbot.js                  # إضافة endpoints جديدة
+```
+
+**⏱️ الوقت المقدر:** 3-4 أسابيع
+
+---
+
+## 🟡 **الأولوية 7: Phase E - SDK Development** 📦
+
+**الحالة:** 📋 **TODO**  
+**الأولوية:** 🟡 **متوسطة**  
+**الصعوبة:** ⚠️ **صعبة**
+
+### **الهدف:**
+تطوير SDKs رسمية لـ Node.js و Python لتسهيل التكامل مع WaQtor.
+
+### **المكونات:**
+
+#### **1. Node.js SDK (@waqtor/sdk)** 📦
+- [ ] WaqtorClient class
+- [ ] Resources (messages, campaigns, status, smartbot)
+- [ ] WebSocket client wrapper
+- [ ] TypeScript definitions
+- [ ] Unit tests
+- [ ] npm publish
+
+#### **2. Python SDK (waqtor)** 🐍
+- [ ] WaqtorClient class
+- [ ] Resources implementation
+- [ ] Type hints
+- [ ] Unit tests
+- [ ] PyPI publish
+
+#### **3. Documentation** 📚
+- [ ] Getting Started guide
+- [ ] API Reference
+- [ ] Code examples
+- [ ] Migration guide
+
+#### **4. Example Projects** 💡
+- [ ] basic-bot (Node.js)
+- [ ] campaign-scheduler (Node.js)
+- [ ] auto-responder (Python)
+- [ ] webhook-receiver (Node.js + Python)
+
+### **الملفات المطلوبة:**
+```
+packages/
+├── sdk-node/
+│   ├── src/
+│   │   ├── client.ts
+│   │   ├── resources/
+│   │   │   ├── messages.ts
+│   │   │   ├── campaigns.ts
+│   │   │   ├── status.ts
+│   │   │   └── smartbot.ts
+│   │   └── index.ts
+│   ├── examples/
+│   ├── tests/
+│   └── README.md
+│
+└── sdk-py/
+    ├── waqtor/
+    │   ├── __init__.py
+    │   ├── client.py
+    │   └── resources/
+    ├── examples/
+    ├── tests/
+    └── README.md
+```
+
+### **Usage Example (Node.js):**
+```typescript
+import { WaqtorClient } from '@waqtor/sdk';
+
+const client = new WaqtorClient({
+  apiUrl: 'http://localhost:8080',
+  apiKey: 'your_api_key'
+});
+
+// Send message
+await client.messages.send({
+  to: '966501234567@c.us',
+  text: 'Hello from SDK!'
+});
+
+// Listen to events
+client.on('message.received', (data) => {
+  console.log('New message:', data);
+});
+```
+
+**⏱️ الوقت المقدر:** 3-4 أسابيع
+
+---
+
+## ❌ **المرحلة 13: E-Commerce Features (ملغي)** 💼
+
+**الحالة:** ❌ **ملغي - غير مطلوب حالياً**
+
+**السبب:**
+- غير مطلوب في الوقت الحالي
+- التركيز على الميزات الأساسية أولاً
+- يمكن إضافته لاحقاً عند الحاجة
+
+**الكائنات المتاحة في `/src` (للمستقبل):**
+- ✅ `Product.js` - معلومات المنتج
+- ✅ `Order.js` - الطلبات
+- ✅ `Payment.js` - المدفوعات
+
+---
+
+## 🟢 **الأولوية 8: المرحلة 10 - Architecture Evolution** 🏗️
 
 **الحالة:** 📋 **مخطط (Planned)**  
-**الأولوية:** 🟡 **متوسطة - Long-term**  
+**الأولوية:** 🟢 **منخفضة - Long-term**  
 **الصعوبة:** ⚠️ **صعبة جداً - Requires major refactoring**
 
-### **🎯 الأهداف:**
-
+### **الهدف:**
 - ✅ تحديث المحرك بدون كسر الواجهة (Backward Compatibility)
 - ✅ دعم Multi-Instance مستقبلاً
 - ✅ نشر SDK رسمي (Node.js + Python)
 - ✅ فصل المسؤوليات (Separation of Concerns)
 - ✅ قابلية الاختبار والصيانة
 
-### **📦 الهيكل المقترح (Mono-Repo):**
-
+### **الهيكل المقترح (Mono-Repo):**
 ```
 waqtor/
 ├─ packages/
@@ -324,161 +570,104 @@ waqtor/
    └─ dashboard/            # Next.js 14
 ```
 
-### **🗺️ خطة التنفيذ (Incremental Roadmap):**
-
-#### **Phase A: التهيئة المعمارية (4-6 أسابيع)**
-
-**Week 1-2: Core Package Setup**
-- [ ] إنشاء `packages/core` directory
-- [ ] تعريف Event interfaces
-- [ ] تعريف Command interfaces
-- [ ] إنشاء EventBus class
-- [ ] Unit tests
-
-**Week 3-4: Migration**
-- [ ] نقل WhatsAppClient إلى core
-- [ ] نقل SessionManager إلى core
-- [ ] تحديث imports
-- [ ] Integration tests
-
-**Week 5-6: Dependency Injection**
-- [ ] إنشاء `bootstrap.ts`
-- [ ] تطبيق DI pattern
-- [ ] Refactor server routes
-- [ ] Documentation
-
-#### **Phase B: Server Package (3-4 أسابيع)**
-
-**Week 7-9: Server Extraction**
-- [ ] إنشاء `packages/server`
-- [ ] نقل API routes
-- [ ] نقل WebSocket logic
-- [ ] نقل Middleware
-
-**Week 10: Testing & Documentation**
-- [ ] Integration tests
-- [ ] API documentation
-- [ ] Migration guide
-
-#### **Phase C: SDK Development (4-6 أسابيع)**
-
-**Week 11-13: Node.js SDK**
-- [ ] إنشاء `packages/sdk-node`
-- [ ] WaqtorClient class
-- [ ] TypeScript definitions
-- [ ] Examples
-
-**Week 14-16: Python SDK**
-- [ ] إنشاء `packages/sdk-py`
-- [ ] WaqtorClient class
-- [ ] Type hints
-- [ ] Examples
-
-**Week 17: Documentation & Publishing**
-- [ ] README files
-- [ ] API docs
-- [ ] npm publish
-- [ ] PyPI publish
-
-### **⏱️ الوقت المقدر الإجمالي:**
-
-**3-4 أشهر** (عمل بدوام كامل)
-
-### **⚠️ المخاطر:**
-
-- 🔴 Breaking changes محتملة
-- 🔴 Migration complexity
-- 🟠 Testing overhead
-- 🟡 Documentation burden
+**⏱️ الوقت المقدر:** 3-4 أشهر
 
 ---
 
 ## ✅ **المراحل المكتملة (1-8):**
 
-### **المرحلة 1: تحديثات Topbar** ✅
-- تحسين Avatar System
-- Profile dropdown
-- **الملفات:** `/components/layout/AppTopbar.tsx`
-
-### **المرحلة 2: صفحة Profile** ✅
-- عرض وتعديل معلومات المستخدم
-- **الملفات:** `/app/(main)/profile/page.tsx`
-
-### **المرحلة 3: صفحة About** ✅
-- معلومات التطبيق
-- **الملفات:** `/app/(main)/about/page.tsx`
-
-### **المرحلة 4: نظام BlockUI** ✅
-- تطبيق BlockUI على صفحات محمية
-- **الملفات:** `/app/(main)/{campaigns,messages,smartbot}/page.tsx`
-
-### **المرحلة 5: Tag "New"** ✅
-- إضافة Tag للصفحات الجديدة
-- **الملفات:** `/components/layout/AppMenu.tsx`
-
-### **المرحلة 6: ScrollTop** ✅
-- زر ScrollTop في Layout
-- **الملفات:** `/app/(main)/layout.tsx`
-
-### **المرحلة 7: تحسين UI Components** ✅
-- صفحات Badge, Tag, Chip, Avatar
-- **الملفات:** `/app/(main)/uikit/{badge,tag,chip,avatar}/page.tsx`
+### **المرحلة 1-5** ✅
+- تحديثات Topbar
+- صفحة Profile
+- صفحة About
+- نظام BlockUI
+- Tag "New"
 
 ### **المرحلة 6: Notification System** 🔔 ✅
+- Backend API (GET, POST, PATCH, DELETE, count)
+- WebSocket real-time notifications
+- Frontend Components
+- Mark as read, Delete, Filter, Pagination
 
-**الميزات المكتملة:**
-- ✅ Backend API (GET, POST, PATCH, DELETE, count)
-- ✅ WebSocket real-time notifications
-- ✅ Frontend Components (Bell, Dropdown, Item, Page)
-- ✅ Mark as read (single/all), Delete, Filter, Pagination
-- ✅ Auto-refresh (30s polling) + WebSocket fallback
-- ✅ NotificationContext + Global state management
-
-**الملفات:**
-- `/components/Notifications/` - NotificationBell, Dropdown, Item, Center
-- `/app/(main)/notifications/page.tsx`
-- `/api/notifications/` - route.ts, [id]/route.ts, count/route.ts
-- `/contexts/NotificationContext.tsx`
-- `/runtime/server/routes/notifications.js`
+### **المرحلة 7: ScrollTop** ✅
+- زر ScrollTop في Layout
 
 ### **المرحلة 8: Webhook Dispatcher** 🪝 ✅
+- HMAC SHA-256 Signature System
+- Webhook Manager
+- Event Integration (8 events)
+- API Routes (CRUD, test, logs, statistics)
+- Settings Page UI
 
-**الميزات المكتملة:**
-- ✅ HMAC SHA-256 Signature System (timing-safe)
-- ✅ Webhook Manager (register, dispatch, retry, logs, stats)
-- ✅ Event Integration (8 events)
-- ✅ API Routes (CRUD, test, logs, statistics)
-- ✅ Settings Page UI
-- ✅ Retry mechanism with exponential backoff
+---
 
-**الملفات:**
-- `/runtime/server/webhooks/` - WebhookManager.js, signature.js, eventIntegration.js
-- `/runtime/server/routes/webhooks.js`
-- `/app/(main)/settings/webhooks/page.tsx`
+## 📊 **ملخص الأولويات المحدث:**
 
-### **المرحلة 9 (القديمة): SmartBot AI Engine v2** ✅
+| الأولوية | المرحلة | الحالة | الوقت المقدر | الصعوبة |
+|----------|---------|--------|--------------|---------|
+| 🔴 **1** | Message ACK Fix | 🔴 BUG | 1-2 أيام | ⚠️ سهلة |
+| 🔴 **2** | Multiple Accounts | 📋 TODO | 2-3 أسابيع | ⚠️ متوسطة |
+| ✅ **-** | WebSocket Enhancements | ✅ مكتمل | - | ⚠️ صعبة |
+| 🟠 **3** | WebSocket Namespaces | 📋 TODO | 2-3 أسابيع | ⚠️ متوسطة |
+| 🟠 **4** | GDPR Compliance | ❌ مطلوب | 2-3 أسابيع | ⚠️ متوسطة |
+| 🟠 **5** | Real Estate Engagement | 📋 TODO | 3-4 أسابيع | ⚠️ متوسطة |
+| 🟡 **6** | SmartBot v2 Enhancements | 📋 TODO | 3-4 أسابيع | ⚠️ متوسطة |
+| 🟡 **7** | SDK Development | 📋 TODO | 3-4 أسابيع | ⚠️ صعبة |
+| ❌ **-** | E-Commerce Features | ❌ ملغي | - | - |
+| 🟢 **9** | Architecture Evolution | 📋 مخطط | 3-4 أشهر | ⚠️ صعبة جداً |
 
-**الميزات المكتملة:**
-- ✅ Semantic Matching (Embeddings: MiniLM/MPNet)
-- ✅ Confidence scoring
-- ✅ Template expansion
-- ✅ Learning loop
-- ✅ Database Schema
+---
 
-**الملفات:**
-- `/runtime/server/ai/` - SemanticMatcher.js, EmbeddingService.js
-- `/runtime/server/database/smartbot.db`
+## 📝 **الخطوات التالية:**
 
-### **المرحلة 10 (القديمة): Architecture Evolution** ✅
+### **🔴 الآن (Immediate - يجب البدء فوراً):**
+1. 🐛 إصلاح Message ACK Bug (1-2 أيام)
+2. 👥 تطبيق Multiple Accounts Support (2-3 أسابيع)
 
-**الميزات المكتملة:**
-- ✅ Modular Microkernel Architecture
-- ✅ Backward Compatibility
-- ✅ Plugin System
-- ✅ Event-driven Architecture
+### **🟠 قريباً (Short-term - الشهر القادم):**
+1. 📡 تطبيق WebSocket Namespaces/Topics
+2. 🔒 إكمال GDPR Compliance
+3. 🏡 تفعيل Real Estate Engagement
 
-**الملفات:**
-- `/runtime/server/core/` - EventBus.js, PluginManager.js
+### **🟡 لاحقاً (Medium-term - الشهرين القادمين):**
+1. 🤖 تحسينات SmartBot v2
+2. 📦 تطوير SDKs (Node.js + Python)
+
+### **🟢 مستقبلاً (Long-term - 3-6 أشهر):**
+1. 🏗️ Architecture Evolution
+2. 📦 Mono-Repo structure
+3. 🔌 Plugin System
+
+---
+
+## 🎯 **Success Criteria:**
+
+### **Message ACK Fix:**
+- ✅ Status icons تظهر بشكل صحيح
+- ✅ Real-time updates عند تغيير الحالة
+- ✅ No console errors
+
+### **Multiple Accounts:**
+- ✅ دعم 5+ حسابات متزامنة
+- ✅ Session management UI
+- ✅ No performance degradation
+
+### **WebSocket Namespaces:**
+- ✅ 50% reduction في bandwidth
+- ✅ Targeted broadcasting يعمل
+- ✅ All hooks functional
+
+### **GDPR:**
+- ✅ Privacy Policy معتمدة قانونياً
+- ✅ Cookie Consent يظهر لجميع المستخدمين
+- ✅ Data Export يعمل بدون أخطاء
+- ✅ Account Deletion يحذف جميع البيانات
+
+### **SDK:**
+- ✅ 100% API coverage
+- ✅ Published to npm/PyPI
+- ✅ 5+ example projects
+- ✅ Full documentation
 
 ---
 
@@ -488,59 +677,9 @@ waqtor/
 - **الحالة:** ✅ **مدعوم بالكامل**
 - **التفاصيل:** WaQtor مبني على whatsapp-web.js v1.34.1
 - **الميزة:** جميع الرسائل مشفرة من طرف لطرف تلقائياً عبر WhatsApp
-- **المصدر:** Landing page - "Your messages are secured with WhatsApp's end-to-end encryption protocol"
 
 ---
 
-## 📊 **ملخص الأولويات:**
-
-| الأولوية | المرحلة | الحالة | الوقت المقدر | الصعوبة |
-|----------|---------|--------|--------------|---------|
-| 🔴 **1** | WebSocket Enhancements | ✅ مكتمل | - | ⚠️ صعبة |
-| 🟠 **2** | GDPR Compliance | ❌ مطلوب | 2-3 أسابيع | ⚠️ متوسطة |
-| 🟡 **3** | Architecture Evolution | 📋 مخطط | 3-4 أشهر | ⚠️ صعبة جداً |
-
----
-
-## 📝 **الخطوات التالية:**
-
-### **الآن (Immediate):**
-1. ✅ ~~إكمال المرحلة 9 (WebSocket)~~ - **مكتمل**
-2. 🔄 البدء في GDPR Compliance
-
-### **قريباً (Short-term):**
-1. إكمال Privacy Policy + Terms
-2. إضافة Cookie Consent
-3. تطبيق Data Export/Delete
-
-### **مستقبلاً (Long-term):**
-1. تخطيط Architecture Evolution
-2. إنشاء Mono-Repo structure
-3. تطوير SDKs
-
----
-
-## 🎯 **Success Criteria:**
-
-### **المرحلة 9 (WebSocket):**
-- ✅ Zero downtime في Production
-- ✅ < 100ms latency للرسائل
-- ✅ 99.9% uptime
-- ✅ Support 1000+ concurrent connections
-
-### **GDPR:**
-- ✅ Privacy Policy معتمدة قانونياً
-- ✅ Cookie Consent يظهر لجميع المستخدمين
-- ✅ Data Export يعمل بدون أخطاء
-- ✅ Account Deletion يحذف جميع البيانات
-
-### **Architecture:**
-- ✅ 100% backward compatible
-- ✅ No performance regression
-- ✅ Core < 500KB
-- ✅ SDK < 100KB
-
----
-
-**آخر تحديث:** 2025-10-31  
-**الإصدار:** WaQtor v2.3.0
+**آخر تحديث:** 2025-11-01  
+**الإصدار:** WaQtor v2.3.0  
+**ملاحظة:** هذا الملف يدمج جميع المهام من IMPLEMENTATION_PLAN.md و IMPLEMENTATION_PLAN_OLD_BACKUP.md

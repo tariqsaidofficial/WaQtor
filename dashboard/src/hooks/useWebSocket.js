@@ -79,6 +79,9 @@ export function useWebSocket() {
                         window.waqtorWebSocket = ws;
                     }
 
+                    // Debug log
+                    console.log('📨 WebSocket message type:', data.type);
+                    
                     switch (data.type) {
                     case 'pong':
                         console.log('🏓 Pong received');
@@ -244,7 +247,8 @@ export function useWebSocket() {
                         break;
 
                     default:
-                        console.log('📦 Unknown message type:', data.type);
+                        console.log('📦 Unknown message type:', data);
+                        break;
                     }
                 } catch (err) {
                     console.error('❌ Error parsing WebSocket message:', err);

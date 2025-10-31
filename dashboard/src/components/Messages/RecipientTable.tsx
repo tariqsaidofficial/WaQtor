@@ -26,6 +26,7 @@ interface Recipient {
     custom2?: string;
     custom3?: string;
     status: 'pending' | 'sent' | 'delivered' | 'read' | 'failed';
+    ack?: number; // ACK code: 0=pending, 1=sent, 2=delivered, 3=read, 4=played, -1=error
     messageId?: string;
 }
 
@@ -116,7 +117,8 @@ export default function RecipientTable({
             const newRecipient: Recipient = {
                 id: Date.now().toString(),
                 ...formData,
-                status: 'pending'
+                status: 'pending',
+                ack: 0
             };
             onRecipientsChange([...recipients, newRecipient]);
             toast.current?.show({
@@ -167,7 +169,8 @@ export default function RecipientTable({
                         name: item.name || '',
                         custom1: item.custom1 || '',
                         custom2: item.custom2 || '',
-                        status: 'pending' as const
+                        status: 'pending' as const,
+                        ack: 0
                     }));
                 } else if (file.name.endsWith('.csv')) {
                     // Parse CSV
@@ -182,7 +185,8 @@ export default function RecipientTable({
                                 name: columns[1] || '',
                                 custom1: columns[2] || '',
                                 custom2: columns[3] || '',
-                                status: 'pending'
+                                status: 'pending',
+                                ack: 0
                             });
                         }
                     }
@@ -267,27 +271,31 @@ export default function RecipientTable({
     };
 
     const statusBodyTemplate = (rowData: Recipient) => {
-        const severityMap: Record<string, 'success' | 'info' | 'warning' | 'danger'> = {
-            pending: 'warning',
-            sent: 'info',
-            delivered: 'success',
-            read: 'success',
-            failed: 'danger'
+        // Map each status to appropriate badge color and icon
+        const getStatusBadge = (status: string) => {
+            switch(status) {
+                case 'pending':
+                    return { severity: 'warning' as const, icon: 'pi-clock' };
+                case 'sent':
+                    return { severity: 'info' as const, icon: 'pi-send' };
+                case 'delivered':
+                    return { severity: 'success' as const, icon: 'pi-check' };
+                case 'read':
+                    return { severity: 'success' as const, icon: 'pi-check-circle' };
+                case 'failed':
+                    return { severity: 'danger' as const, icon: 'pi-times-circle' };
+                default:
+                    return { severity: 'warning' as const, icon: 'pi-question' };
+            }
         };
 
-        const iconMap: Record<string, string> = {
-            pending: 'pi-clock',
-            sent: 'pi-send',
-            delivered: 'pi-check',
-            read: 'pi-check-circle',
-            failed: 'pi-times-circle'
-        };
+        const badge = getStatusBadge(rowData.status);
 
         return (
             <Tag 
                 value={rowData.status.toUpperCase()} 
-                severity={severityMap[rowData.status]}
-                icon={`pi ${iconMap[rowData.status]}`}
+                severity={badge.severity}
+                icon={`pi ${badge.icon}`}
             />
         );
     };
