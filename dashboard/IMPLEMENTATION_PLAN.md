@@ -54,73 +54,164 @@
 
 ## 🔴 **الأولوية 2: المرحلة 11 - Multiple Accounts Support** 👥
 
-**الحالة:** 📋 **TODO**  
+**الحالة:** 🔄 **قيد التنفيذ - 50%**  
 **الأولوية:** 🔴 **عالية جداً**  
 **الصعوبة:** ⚠️ **متوسطة**
 
 ### **الهدف:**
-دعم تشغيل **أكثر من حساب WhatsApp** في نفس الوقت بشكل آمن ومرن.
+دعم تشغيل **أكثر من حساب WhatsApp** + **أكثر من مستخدم** في نفس الوقت بشكل آمن ومرن.
+
+### **Architecture:**
+```
+User 1 (Sales Team)
+  ├── WhatsApp Account A (Main)
+  ├── WhatsApp Account B (Support)
+  └── WhatsApp Account C (Marketing)
+
+User 2 (Marketing Team)
+  ├── WhatsApp Account D (Campaigns)
+  └── WhatsApp Account E (Influencers)
+```
+
+---
+
+### **Phase 1: Backend - Multiple Sessions** ✅ **مكتمل**
+
+#### **ما تم إنجازه:**
+- ✅ **WhatsAppClientManager** - إدارة multiple WhatsApp clients
+- ✅ **Sessions API** - `/api/sessions` endpoints
+- ✅ **Create/List/Destroy/Restart** sessions
+- ✅ **QR Code** لكل session منفصل
+- ✅ **Backward compatible** مع الكود القديم
+
+#### **API Endpoints:**
+```javascript
+GET    /api/sessions              // List all sessions
+POST   /api/sessions              // Create new session
+GET    /api/sessions/:clientId    // Get session info
+DELETE /api/sessions/:clientId    // Destroy session
+POST   /api/sessions/:clientId/restart  // Restart session
+GET    /api/sessions/:clientId/qr       // Get QR code
+```
+
+#### **الملفات المُنشأة:**
+- ✅ `runtime/server/managers/WhatsAppClientManager.js`
+- ✅ `runtime/server/routes/sessions.js`
+
+#### **الاختبار:**
+```bash
+✅ Created session "account1"
+✅ Session has QR code
+✅ List shows sessions correctly
+```
+
+---
+
+### **Phase 2: Database + Authentication** 📋 **TODO**
+
+#### **Database Choice: PostgreSQL** ✅
+**السبب:**
+- ✅ Multi-user support (concurrent writes)
+- ✅ ACID compliance
+- ✅ Row-level security
+- ✅ Scalable (millions of records)
+- ✅ Advanced features (JSON, full-text search)
+
+#### **Schema Design:**
+```sql
+-- Users (مستخدمي النظام)
+users (id, email, password_hash, name, role, created_at)
+
+-- WhatsApp Sessions (حسابات WhatsApp)
+whatsapp_sessions (id, user_id, client_id, name, phone, is_active, qr_code)
+
+-- Messages (الرسائل)
+messages (id, session_id, user_id, to_phone, body, status, ack_code)
+
+-- Campaigns (الحملات)
+campaigns (id, session_id, user_id, name, status, recipients_count)
+
+-- Recipients (جهات الاتصال)
+recipients (id, user_id, phone, name, custom_fields)
+```
+
+#### **المهام:**
+- [ ] Setup PostgreSQL database
+- [ ] Create database schema
+- [ ] Implement User Authentication (JWT)
+- [ ] Add Row-Level Security (RLS)
+- [ ] Link sessions to users
+- [ ] Update all routes to check user ownership
+
+---
+
+### **Phase 3: Dashboard UI** 📋 **TODO**
+
+#### **Session Management Page:**
+```
+/dashboard/sessions
+  ├── List all user's sessions
+  ├── Create new session button
+  ├── QR code modal for each session
+  ├── Switch between sessions
+  └── Delete/Restart session
+```
+
+#### **Features:**
+- [ ] Sessions list with status indicators
+- [ ] QR code display for authentication
+- [ ] Session switcher in navbar
+- [ ] Real-time session status updates
+- [ ] Session settings (name, auto-reply, etc.)
+
+---
+
+### **Phase 4: Multi-User Support** 📋 **TODO**
+
+#### **Authentication:**
+- [ ] Login/Register pages
+- [ ] JWT token management
+- [ ] Protected routes
+- [ ] User profile page
+- [ ] Password reset
+
+#### **Authorization:**
+- [ ] Role-based access (admin, user, viewer)
+- [ ] Session ownership validation
+- [ ] Data isolation per user
+- [ ] Team collaboration (optional)
+
+---
 
 ### **الوضع الحالي:**
 - ✅ `/src` (whatsapp-web.js library): **يدعم Multiple Clients من البداية!**
-- ❌ `/runtime`: يستخدم Singleton Pattern - client واحد فقط
+- ✅ `/runtime`: **WhatsAppClientManager** جاهز
+- ❌ Database: لسه SQLite (يحتاج PostgreSQL)
+- ❌ Authentication: غير موجود
+- ❌ Dashboard UI: غير موجود
 
-### **💡 الحل الذكي:**
-**استخدام ما هو موجود في `/src` بدلاً من إعادة الاختراع!**
+---
 
-```javascript
-// /src يدعم Multiple Clients بالفعل
-const { Client, LocalAuth } = require('../../index');
+### **الخطوات التالية:**
 
-// إنشاء عدة clients
-const client1 = new Client({
-  authStrategy: new LocalAuth({ clientId: 'account-1' })
-});
+#### **الأولوية 1: PostgreSQL + Authentication**
+1. Setup PostgreSQL database
+2. Create schema (users, sessions, messages)
+3. Implement JWT authentication
+4. Link sessions to users
 
-const client2 = new Client({
-  authStrategy: new LocalAuth({ clientId: 'account-2' })
-});
+#### **الأولوية 2: Dashboard UI**
+1. Sessions management page
+2. QR code display
+3. Session switcher
+4. Login/Register pages
+
+---
+
+### **الملفات المُنشأة:**
 ```
-
-### **التصميم المحسّن:**
-```
-WhatsAppClientManager (Singleton)
-  ├─► Client Map: clientId => Client Instance
-  ├─► Session Storage: clientId => LocalAuth
-  ├─► Event Handlers: centralized event management
-  └─► Security: API key per client, rate limiting
-```
-
-### **الميزات المحسّنة:**
-
-#### **1. المرونة** 🎯
-- [ ] Dynamic client creation/destruction
-- [ ] Hot-reload للـ clients بدون restart
-- [ ] Graceful shutdown لكل client
-- [ ] Independent session management
-
-#### **2. الأمان** 🔒
-- [ ] API key per client (optional)
-- [ ] Rate limiting per client
-- [ ] Session isolation (separate directories)
-- [ ] Access control (user → client mapping)
-
-#### **3. المراقبة** 📊
-- [ ] Health check per client
-- [ ] Status monitoring (ready/disconnected/qr)
-- [ ] Message statistics per client
-- [ ] Error tracking per client
-
-### **الملفات المطلوبة:**
-```
-/runtime/server/
-├── managers/
-│   └── WhatsAppClientManager.js    # NEW - Client pool manager
-├── routes/
-│   ├── session.js                  # NEW - Session management API
-│   └── [existing routes]           # تعديل لدعم clientId
-├── middleware/
-│   └── clientAuth.js               # NEW - Client-level auth
+✅ /runtime/server/managers/WhatsAppClientManager.js
+✅ /runtime/server/routes/sessions.js
 └── waClient.js                     # تحويل من Singleton إلى Factory
 
 /dashboard/src/app/(main)/
