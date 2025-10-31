@@ -67,6 +67,11 @@
     "puppeteer": "^24.27.0",
     "qrcode-terminal": "^0.12.0",
     "sqlite3": "^5.1.7",
+    "pg": "^8.13.1",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.5",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
     "winston": "^3.18.3",
     "ws": "^8.18.3"
   },

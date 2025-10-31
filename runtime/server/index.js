@@ -35,7 +35,11 @@ const SmartBotService = require('./services/smartbotService');
 const errorMonitor = require('./services/errorMonitor');
 const EventIntegration = require('./webhooks/eventIntegration');
 
+// Database
+const db = require('./models');
+
 // Routes
+const authRoutes = require('./routes/auth');
 const messageRoutes = require('./routes/message');
 const campaignRoutes = require('./routes/campaign');
 const statusRoutes = require('./routes/status');
@@ -145,6 +149,9 @@ app.get('/api', (req, res) => {
     });
 });
 
+// Public routes (no auth required)
+app.use('/api/auth', authRoutes);
+
 // API Routes (with authentication)
 app.use('/api/messages', apiKeyAuth, messageRoutes);
 app.use('/api/campaigns', apiKeyAuth, campaignRoutes);
@@ -208,15 +215,17 @@ async function startServer() {
     try {
         logger.info('Starting Waqtor Server...');
 
+        // Initialize Database
+        logger.info('Initializing database...');
+        await db.initialize();
+        
         // Initialize WhatsApp Client (legacy - single client)
         logger.info('Initializing WhatsApp client...');
         await waClient.initialize();
         
         // Initialize Client Manager (for multiple accounts support)
         logger.info('Initializing Client Manager for multiple accounts...');
-        const clientManager = require('./managers/WhatsAppClientManager');
-        // Create default client in manager (same as legacy waClient)
-        // This will be used for backward compatibility
+        require('./managers/WhatsAppClientManager');
         logger.info('✅ Client Manager ready for multiple accounts');
 
         // Initialize Session Monitor
