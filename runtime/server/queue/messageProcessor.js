@@ -6,6 +6,7 @@
 const { messageQueue } = require('./messageQueue');
 const waClient = require('../waClient');
 const logger = require('../utils/logger');
+const { replaceVariables } = require('../utils/variableReplacer');
 
 // Configuration
 const MESSAGE_DELAY = parseInt(process.env.MESSAGE_DELAY || '2000'); // 2 seconds between messages
@@ -45,8 +46,25 @@ async function processBulkMessage(job) {
 
             logger.debug(`Sending message to ${recipient.phone}...`);
 
+            // Replace variables in message
+            const finalMessage = replaceVariables(recipient.message, {
+                phone: recipient.phone,
+                name: recipient.name,
+                email: recipient.email,
+                company: recipient.company,
+                position: recipient.position,
+                order_id: recipient.order_id,
+                amount: recipient.amount,
+                product: recipient.product,
+                link: recipient.link,
+                custom1: recipient.custom1,
+                custom2: recipient.custom2,
+                custom3: recipient.custom3,
+                signature: recipient.signature
+            });
+
             // Send message
-            const sentMessage = await client.sendMessage(chatId, recipient.message);
+            const sentMessage = await client.sendMessage(chatId, finalMessage);
             
             results.push({
                 phone: recipient.phone,
@@ -97,7 +115,7 @@ async function processBulkMessage(job) {
  * @returns {Promise<Object>}
  */
 async function processSingleMessage(job) {
-    const { phone, message } = job.data;
+    const { phone, message, ...recipientData } = job.data;
 
     logger.info(`Processing single message job ${job.id} for ${phone}`);
 
@@ -111,8 +129,14 @@ async function processSingleMessage(job) {
         // Format phone number
         const chatId = phone.includes('@c.us') ? phone : `${phone}@c.us`;
 
+        // Replace variables in message
+        const finalMessage = replaceVariables(message, {
+            phone: phone,
+            ...recipientData
+        });
+
         // Send message
-        const sentMessage = await client.sendMessage(chatId, message);
+        const sentMessage = await client.sendMessage(chatId, finalMessage);
 
         const result = {
             phone,

@@ -17,9 +17,10 @@ import { api } from '../../../api/client';
 import APIKeyCard from '../../../components/Settings/APIKeyCard';
 import SessionControls from '../../../components/Settings/SessionControls';
 import AppearanceSettings from '../../../components/Settings/AppearanceSettings';
+import MessageSettings from '../../../components/Settings/MessageSettings';
 import './settings.css';
 
-type SettingType = 'api' | 'session' | 'appearance' | 'localization' | 'system' | 'logging' | null;
+type SettingType = 'api' | 'session' | 'appearance' | 'messages' | 'localization' | 'system' | 'logging' | null;
 
 interface FeatureCard {
     id: SettingType;
@@ -72,6 +73,12 @@ export default function SettingsPage() {
             description: 'Customize theme and display settings'
         },
         {
+            id: 'messages',
+            icon: 'pi-comment',
+            title: 'Message Settings',
+            description: 'Configure default message variables and signature'
+        },
+        {
             id: 'localization',
             icon: 'pi-globe',
             title: 'Localization',
@@ -109,6 +116,12 @@ export default function SettingsPage() {
                 return (
                     <div className="settings-dialog-body">
                         <AppearanceSettings onSuccess={showSuccess} onError={showError} />
+                    </div>
+                );
+            case 'messages':
+                return (
+                    <div className="settings-dialog-body">
+                        <MessageSettings onSuccess={showSuccess} onError={showError} />
                     </div>
                 );
             case 'localization':

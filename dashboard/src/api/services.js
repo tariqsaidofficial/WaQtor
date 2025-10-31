@@ -34,6 +34,9 @@ export const messageService = {
         console.log('📤 [API] Message template:', messageTemplate);
         console.log('📤 [API] Attachments:', attachments);
         
+        // Get signature from localStorage
+        const savedSignature = localStorage.getItem('message_signature') || 'WaQtor Team';
+        
         // Replace variables in message for each recipient
         const processedRecipients = recipients.map(recipient => {
             let personalizedMessage = messageTemplate;
@@ -51,7 +54,9 @@ export const messageService = {
             
             return {
                 phone: recipient.phone,
-                message: personalizedMessage
+                message: personalizedMessage,
+                signature: savedSignature, // Add signature from localStorage
+                ...recipient.variables // Include all other variables
             };
         });
         

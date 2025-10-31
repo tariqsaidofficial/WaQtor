@@ -265,5 +265,93 @@
     "originalMessage": null,
     "hasProfanity": false,
     "timestamp": "2025-10-29T21:45:09.926Z"
+  },
+  {
+    "id": "1761914438365",
+    "ruleId": "1761770080105",
+    "ruleName": "Welcome Message",
+    "keyword": "السلام عليكم",
+    "recipient": "201228108384@c.us",
+    "message": "أهلاً بحضرتك، إزاي نقدر نساعدك؟ ✨",
+    "originalMessage": null,
+    "hasProfanity": false,
+    "timestamp": "2025-10-31T12:40:38.365Z"
+  },
+  {
+    "id": "1761914476866",
+    "ruleId": "1761770080105",
+    "ruleName": "Welcome Message",
+    "keyword": "hi",
+    "recipient": "201228108384@c.us",
+    "message": "Welcome, how can we ***ist you today? 💫",
+    "originalMessage": null,
+    "hasProfanity": true,
+    "timestamp": "2025-10-31T12:41:16.866Z"
+  },
+  {
+    "id": "1761914607342",
+    "ruleId": "1761770080105",
+    "ruleName": "Welcome Message",
+    "keyword": "السلام عليكم",
+    "recipient": "201228108384@c.us",
+    "message": "نورت، في خدمتك!",
+    "originalMessage": null,
+    "hasProfanity": false,
+    "timestamp": "2025-10-31T12:43:27.342Z"
+  },
+  {
+    "id": "1761914855360",
+    "ruleId": "1761770080105",
+    "ruleName": "Welcome Message",
+    "keyword": "السلام عليكم",
+    "recipient": "971508548552@c.us",
+    "message": "نورت، في خدمتك 🌟",
+    "originalMessage": null,
+    "hasProfanity": false,
+    "timestamp": "2025-10-31T12:47:35.360Z"
+  },
+  {
+    "id": "1761915771910",
+    "ruleId": "1761770080105",
+    "ruleName": "Welcome Message",
+    "keyword": "hi",
+    "recipient": "971585529080@c.us",
+    "message": "Good day, how may we support you? 🙂",
+    "originalMessage": null,
+    "hasProfanity": false,
+    "timestamp": "2025-10-31T13:02:51.910Z"
+  },
+  {
+    "id": "1761915844965",
+    "ruleId": "1761770080105",
+    "ruleName": "Welcome Message",
+    "keyword": "hi",
+    "recipient": "971585529080@c.us",
+    "message": "Greetings, what do you need ***istance with?",
+    "originalMessage": null,
+    "hasProfanity": true,
+    "timestamp": "2025-10-31T13:04:04.965Z"
+  },
+  {
+    "id": "1761919230869",
+    "ruleId": "1761770080105",
+    "ruleName": "Welcome Message",
+    "keyword": "السلام عليكم",
+    "recipient": "201229609292@c.us",
+    "message": "حياك اللهً بك، عايزين نخدمك في إيه؟ 👍",
+    "originalMessage": null,
+    "hasProfanity": false,
+    "timestamp": "2025-10-31T14:00:30.869Z"
+  },
+  {
+    "id": "1761920487003",
+    "ruleId": "1761770080105",
+    "ruleName": "Welcome Message",
+    "keyword": "السلام عليكم",
+    "recipient": "201229609292@c.us",
+    "message": "نورت، في خدمتك ✨",
+    "originalMessage": null,
+    "hasProfanity": false,
+    "timestamp": "2025-10-31T14:21:27.003Z"
   }
 ]

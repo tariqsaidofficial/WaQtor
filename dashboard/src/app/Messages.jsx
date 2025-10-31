@@ -22,6 +22,17 @@ export default function Messages() {
     const [previewMessage, setPreviewMessage] = useState('');
     const [previewAttachments, setPreviewAttachments] = useState([]);
     const [selectedTemplate, setSelectedTemplate] = useState(null);
+    const [signatureUpdated, setSignatureUpdated] = useState(0); // Force re-render on signature update
+    
+    // Listen for signature updates from Settings
+    useEffect(() => {
+        const handleSignatureUpdate = () => {
+            setSignatureUpdated(prev => prev + 1); // Force re-render
+        };
+        
+        window.addEventListener('signature-updated', handleSignatureUpdate);
+        return () => window.removeEventListener('signature-updated', handleSignatureUpdate);
+    }, []);
 
     // Convert WhatsApp formatting to HTML for preview
     const formatWhatsAppText = (text) => {
@@ -34,7 +45,7 @@ export default function Messages() {
         const now = new Date();
         
         // Get signature from localStorage or use default
-        const signature = typeof window !== 'undefined' ? localStorage.getItem('companyName') || 'WaQtor' : 'WaQtor';
+        const signature = typeof window !== 'undefined' ? localStorage.getItem('message_signature') || 'WaQtor Team' : 'WaQtor Team';
         
         // Replace variables with real data from first recipient or example values
         const variableExamples = {

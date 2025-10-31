@@ -8,6 +8,7 @@ const router = express.Router();
 const waClient = require('../waClient');
 const logger = require('../utils/logger');
 const { validateMessage } = require('../utils/validator');
+const { replaceVariables } = require('../utils/variableReplacer');
 const { MessageMedia } = require('../../../index');
 const multer = require('multer');
 const path = require('path');
@@ -205,14 +206,20 @@ setInterval(() => {
  */
 router.post('/send-text', validateMessage, async (req, res) => {
     try {
-        const { phone, message } = req.body;
+        const { phone, message, ...recipientData } = req.body;
         const client = waClient.getClient();
 
         // Format phone number (add @c.us if not present)
         const chatId = phone.includes('@c.us') ? phone : `${phone}@c.us`;
 
+        // Replace variables in message
+        const finalMessage = replaceVariables(message, {
+            phone: phone,
+            ...recipientData
+        });
+
         // Send message
-        const sentMessage = await client.sendMessage(chatId, message);
+        const sentMessage = await client.sendMessage(chatId, finalMessage);
 
         logger.info(`Message sent to ${phone}`);
 
@@ -313,7 +320,24 @@ router.post('/send-bulk', async (req, res) => {
                         ? recipient.phone 
                         : `${recipient.phone}@c.us`;
 
-                    const sentMessage = await client.sendMessage(chatId, recipient.message);
+                    // Replace variables in message
+                    const finalMessage = replaceVariables(recipient.message, {
+                        phone: recipient.phone,
+                        name: recipient.name,
+                        email: recipient.email,
+                        company: recipient.company,
+                        position: recipient.position,
+                        order_id: recipient.order_id,
+                        amount: recipient.amount,
+                        product: recipient.product,
+                        link: recipient.link,
+                        custom1: recipient.custom1,
+                        custom2: recipient.custom2,
+                        custom3: recipient.custom3,
+                        signature: recipient.signature
+                    });
+
+                    const sentMessage = await client.sendMessage(chatId, finalMessage);
                     
                     results.push({
                         phone: recipient.phone,
@@ -459,6 +483,23 @@ router.post('/send-bulk-with-media', upload.array('attachments', 5), async (req,
                     ? recipient.phone 
                     : `${recipient.phone}@c.us`;
 
+                // Replace variables in message
+                const finalMessage = replaceVariables(recipient.message, {
+                    phone: recipient.phone,
+                    name: recipient.name,
+                    email: recipient.email,
+                    company: recipient.company,
+                    position: recipient.position,
+                    order_id: recipient.order_id,
+                    amount: recipient.amount,
+                    product: recipient.product,
+                    link: recipient.link,
+                    custom1: recipient.custom1,
+                    custom2: recipient.custom2,
+                    custom3: recipient.custom3,
+                    signature: recipient.signature
+                });
+
                 let sentMessage;
                 
                 // If there are attachments, send them WITH the message as caption
@@ -466,7 +507,7 @@ router.post('/send-bulk-with-media', upload.array('attachments', 5), async (req,
                     // Send first attachment with the message as caption
                     const firstMedia = mediaObjects[0];
                     sentMessage = await client.sendMessage(chatId, firstMedia.media, {
-                        caption: recipient.message,
+                        caption: finalMessage,
                         sendMediaAsDocument: firstMedia.sendAsDocument
                     });
                     
@@ -483,7 +524,7 @@ router.post('/send-bulk-with-media', upload.array('attachments', 5), async (req,
                     }
                 } else {
                     // No attachments, send text only
-                    sentMessage = await client.sendMessage(chatId, recipient.message);
+                    sentMessage = await client.sendMessage(chatId, finalMessage);
                 }
                 
                 // Track message for status updates
