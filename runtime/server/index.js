@@ -41,6 +41,7 @@ const campaignRoutes = require('./routes/campaign');
 const statusRoutes = require('./routes/status');
 const testRoutes = require('./routes/test');
 const sessionRoutes = require('./routes/session');
+const sessionsRoutes = require('./routes/sessions'); // Multiple sessions management
 const errorRoutes = require('./routes/errors');
 const queueRoutes = require('./routes/queue');
 const smartbotRoutes = require('./routes/smartbot');
@@ -150,6 +151,7 @@ app.use('/api/campaigns', apiKeyAuth, campaignRoutes);
 app.use('/api/status', apiKeyAuth, statusRoutes);
 app.use('/api/test', apiKeyAuth, testRoutes);
 app.use('/api/session', apiKeyAuth, sessionRoutes.router);
+app.use('/api/sessions', apiKeyAuth, sessionsRoutes); // Multiple sessions management
 app.use('/api/errors', apiKeyAuth, errorRoutes);
 app.use('/api/queue', apiKeyAuth, queueRoutes);
 app.use('/api/interactive', apiKeyAuth, interactiveRoutes);
@@ -206,9 +208,16 @@ async function startServer() {
     try {
         logger.info('Starting Waqtor Server...');
 
-        // Initialize WhatsApp Client
+        // Initialize WhatsApp Client (legacy - single client)
         logger.info('Initializing WhatsApp client...');
         await waClient.initialize();
+        
+        // Initialize Client Manager (for multiple accounts support)
+        logger.info('Initializing Client Manager for multiple accounts...');
+        const clientManager = require('./managers/WhatsAppClientManager');
+        // Create default client in manager (same as legacy waClient)
+        // This will be used for backward compatibility
+        logger.info('✅ Client Manager ready for multiple accounts');
 
         // Initialize Session Monitor
         logger.info('Initializing session monitor...');

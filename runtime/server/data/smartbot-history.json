@@ -364,5 +364,16 @@
     "originalMessage": null,
     "hasProfanity": false,
     "timestamp": "2025-10-31T22:21:32.066Z"
+  },
+  {
+    "id": "1761949461775",
+    "ruleId": "1761770080105",
+    "ruleName": "Welcome Message",
+    "keyword": "السلام عليكم",
+    "recipient": "120363287322375770@g.us",
+    "message": "نورت، في خدمتك 😊",
+    "originalMessage": null,
+    "hasProfanity": false,
+    "timestamp": "2025-10-31T22:24:21.775Z"
   }
 ]
