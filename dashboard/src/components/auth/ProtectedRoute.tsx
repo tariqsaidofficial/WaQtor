@@ -26,32 +26,38 @@ export default function ProtectedRoute({
 
     useEffect(() => {
         const checkAuth = async () => {
-            // Check if user is authenticated
-            if (!isAuthenticated()) {
+            try {
+                // Check if user is authenticated
+                if (!isAuthenticated()) {
+                    router.push('/auth/login');
+                    return;
+                }
+
+                // Verify token with backend
+                const isValid = await verifyToken();
+                if (!isValid) {
+                    router.push('/auth/login');
+                    return;
+                }
+
+                // Check role-based access
+                if (requireAdmin && !hasRole('admin')) {
+                    router.push('/auth/access'); // Access denied page
+                    return;
+                }
+
+                if (requireRole && !hasRole(requireRole)) {
+                    router.push('/auth/access'); // Access denied page
+                    return;
+                }
+
+                setIsAuthorized(true);
+            } catch (error) {
+                console.error('Auth check error:', error);
                 router.push('/auth/login');
-                return;
+            } finally {
+                setIsLoading(false);
             }
-
-            // Verify token with backend
-            const isValid = await verifyToken();
-            if (!isValid) {
-                router.push('/auth/login');
-                return;
-            }
-
-            // Check role-based access
-            if (requireAdmin && !hasRole('admin')) {
-                router.push('/auth/access'); // Access denied page
-                return;
-            }
-
-            if (requireRole && !hasRole(requireRole)) {
-                router.push('/auth/access'); // Access denied page
-                return;
-            }
-
-            setIsAuthorized(true);
-            setIsLoading(false);
         };
 
         checkAuth();
