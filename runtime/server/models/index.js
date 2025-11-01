@@ -15,6 +15,11 @@ const RecipientModel = require('./Recipient');
 const CampaignRecipientModel = require('./CampaignRecipient');
 const GroupModel = require('./Group');
 const RecipientGroupModel = require('./RecipientGroup');
+const FeatureSubscriptionModel = require('./FeatureSubscription');
+const AccessCodeModel = require('./AccessCode');
+const FeatureAccessLogModel = require('./FeatureAccessLog');
+const ApiKeyModel = require('./ApiKey');
+const RefreshTokenModel = require('./RefreshToken');
 
 // Initialize models
 const User = UserModel(sequelize);
@@ -25,6 +30,11 @@ const Recipient = RecipientModel(sequelize);
 const CampaignRecipient = CampaignRecipientModel(sequelize);
 const Group = GroupModel(sequelize);
 const RecipientGroup = RecipientGroupModel(sequelize);
+const FeatureSubscription = FeatureSubscriptionModel(sequelize);
+const AccessCode = AccessCodeModel(sequelize);
+const FeatureAccessLog = FeatureAccessLogModel(sequelize);
+const ApiKey = ApiKeyModel(sequelize);
+const RefreshToken = RefreshTokenModel(sequelize);
 
 // Define relationships
 // User has many WhatsApp Sessions
@@ -150,6 +160,59 @@ Group.belongsToMany(Recipient, {
     as: 'recipients'
 });
 
+// User has many Feature Subscriptions
+User.hasMany(FeatureSubscription, {
+    foreignKey: 'userId',
+    as: 'subscriptions',
+    onDelete: 'CASCADE'
+});
+FeatureSubscription.belongsTo(User, {
+    foreignKey: 'userId',
+    as: 'user'
+});
+
+// User has many Feature Access Logs
+User.hasMany(FeatureAccessLog, {
+    foreignKey: 'userId',
+    as: 'accessLogs'
+});
+FeatureAccessLog.belongsTo(User, {
+    foreignKey: 'userId',
+    as: 'user'
+});
+
+// User (admin) creates Access Codes
+User.hasMany(AccessCode, {
+    foreignKey: 'createdBy',
+    as: 'createdAccessCodes'
+});
+AccessCode.belongsTo(User, {
+    foreignKey: 'createdBy',
+    as: 'creator'
+});
+
+// User has many API Keys
+User.hasMany(ApiKey, {
+    foreignKey: 'userId',
+    as: 'apiKeys',
+    onDelete: 'CASCADE'
+});
+ApiKey.belongsTo(User, {
+    foreignKey: 'userId',
+    as: 'user'
+});
+
+// User has many Refresh Tokens
+User.hasMany(RefreshToken, {
+    foreignKey: 'userId',
+    as: 'refreshTokens',
+    onDelete: 'CASCADE'
+});
+RefreshToken.belongsTo(User, {
+    foreignKey: 'userId',
+    as: 'user'
+});
+
 // Export models and sequelize instance
 const db = {
     sequelize,
@@ -161,7 +224,12 @@ const db = {
     Recipient,
     CampaignRecipient,
     Group,
-    RecipientGroup
+    RecipientGroup,
+    FeatureSubscription,
+    AccessCode,
+    FeatureAccessLog,
+    ApiKey,
+    RefreshToken
 };
 
 // Initialize database
@@ -174,7 +242,8 @@ async function initializeDatabase() {
         logger.info('✅ Database connection established');
         
         // Sync models (create tables if they don't exist)
-        await sequelize.sync({ alter: true });
+        // Use force: false to avoid altering existing tables
+        await sequelize.sync({ force: false });
         logger.info('✅ Database models synchronized');
         
         return true;

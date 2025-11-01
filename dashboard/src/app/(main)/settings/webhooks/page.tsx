@@ -14,6 +14,7 @@ import { Tag } from 'primereact/tag';
 import { Toast } from 'primereact/toast';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { useRef } from 'react';
+import ProtectedPage from '../../../../components/BlockUI/ProtectedPage';
 
 interface Webhook {
     id: string;
@@ -37,7 +38,7 @@ const WEBHOOK_EVENTS = [
     { label: 'Session QR', value: 'session_qr' },
 ];
 
-export default function WebhooksPage() {
+function WebhooksContent() {
     const [webhooks, setWebhooks] = useState<Webhook[]>([]);
     const [loading, setLoading] = useState(false);
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -453,5 +454,13 @@ export default function WebhooksPage() {
                 </Dialog>
             </div>
         </div>
+    );
+}
+
+export default function WebhooksPage() {
+    return (
+        <ProtectedPage featureName="Webhooks">
+            <WebhooksContent />
+        </ProtectedPage>
     );
 }

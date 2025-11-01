@@ -9,7 +9,7 @@ import { Message } from 'primereact/message';
 interface OtpDialogProps {
     visible: boolean;
     onHide: () => void;
-    onVerify: (code: string) => boolean;
+    onVerify: (code: string) => Promise<boolean>;
     featureName: string;
 }
 
@@ -18,12 +18,12 @@ export default function OtpDialog({ visible, onHide, onVerify, featureName }: Ot
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const handleVerify = () => {
+    const handleVerify = async () => {
         setLoading(true);
         setError('');
 
-        setTimeout(() => {
-            const isValid = onVerify(otp);
+        try {
+            const isValid = await onVerify(otp);
             
             if (isValid) {
                 setOtp('');
@@ -31,9 +31,11 @@ export default function OtpDialog({ visible, onHide, onVerify, featureName }: Ot
             } else {
                 setError('Invalid access code. Please try again.');
             }
-            
+        } catch (err: any) {
+            setError(err.message || 'Failed to verify access code');
+        } finally {
             setLoading(false);
-        }, 500);
+        }
     };
 
     const handleHide = () => {
@@ -43,7 +45,7 @@ export default function OtpDialog({ visible, onHide, onVerify, featureName }: Ot
     };
 
     const handleKeyPress = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' && otp.length === 4) {
+        if (e.key === 'Enter' && otp.length === 6) {
             handleVerify();
         }
     };
@@ -62,7 +64,7 @@ export default function OtpDialog({ visible, onHide, onVerify, featureName }: Ot
                 icon="pi pi-check" 
                 onClick={handleVerify}
                 loading={loading}
-                disabled={!otp || otp.length !== 4}
+                disabled={!otp || otp.length !== 6}
             />
         </div>
     );
@@ -79,7 +81,7 @@ export default function OtpDialog({ visible, onHide, onVerify, featureName }: Ot
         >
             <div className="flex flex-column gap-3">
                 <p className="text-600 mb-2">
-                    Enter your 4-digit access code to unlock this feature.
+                    Enter your 6-digit access code to unlock this feature.
                 </p>
 
                 {error && (
@@ -89,15 +91,15 @@ export default function OtpDialog({ visible, onHide, onVerify, featureName }: Ot
                 <div className="flex justify-content-center">
                     <InputText
                         value={otp}
-                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                         onKeyPress={handleKeyPress}
-                        placeholder="••••"
-                        maxLength={4}
+                        placeholder="••••••"
+                        maxLength={6}
                         className="text-center"
                         style={{ 
-                            fontSize: '2rem', 
-                            letterSpacing: '1rem',
-                            width: '200px',
+                            fontSize: '1.8rem', 
+                            letterSpacing: '0.8rem',
+                            width: '280px',
                             fontWeight: 'bold'
                         }}
                         type="password"
@@ -106,7 +108,7 @@ export default function OtpDialog({ visible, onHide, onVerify, featureName }: Ot
 
                 <div className="text-center">
                     <small className="text-500">
-                        Don't have an access code? <a href="https://waqtor.dxbmark.com/pricing" target="_blank" rel="noopener noreferrer" className="text-primary">Get one here</a>
+                        Don't have an access code? <a href="https://waqtor.dxbmark.com/#pricing" target="_blank" rel="noopener noreferrer" className="text-primary">Get one here</a>
                     </small>
                 </div>
             </div>

@@ -1,13 +1,15 @@
 /**
  * JWT Authentication Middleware
  * Verify JWT tokens and attach user to request
+ * Supports refresh tokens stored in PostgreSQL
  */
 
 const jwt = require('jsonwebtoken');
-const { User } = require('../models');
+const { User, RefreshToken } = require('../models');
 const logger = require('../utils/logger');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production';
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your-super-secret-refresh-key-change-in-production';
 
 /**
  * Generate JWT token
@@ -152,10 +154,77 @@ function requireRole(...roles) {
     };
 }
 
+/**
+ * Generate refresh token and store in database
+ * @param {object} user - User object
+ * @param {string} ipAddress - Client IP address
+ * @param {string} userAgent - Client user agent
+ * @returns {string} Refresh token
+ */
+async function generateRefreshToken(user, ipAddress, userAgent) {
+    try {
+        const token = await RefreshToken.createToken(user.id, ipAddress, userAgent);
+        return token;
+    } catch (error) {
+        logger.error('Error generating refresh token:', error);
+        throw error;
+    }
+}
+
+/**
+ * Refresh access token using refresh token
+ * @param {string} refreshToken - Refresh token
+ * @returns {object} New access token and refresh token
+ */
+async function refreshAccessToken(refreshToken) {
+    try {
+        const verification = await RefreshToken.verifyAndRotate(refreshToken);
+        
+        if (!verification.valid) {
+            return { success: false, error: verification.reason };
+        }
+
+        // Get user
+        const user = await User.findByPk(verification.userId);
+        
+        if (!user || !user.is_active) {
+            return { success: false, error: 'User not found or inactive' };
+        }
+
+        // Generate new access token
+        const accessToken = generateToken(user);
+
+        return {
+            success: true,
+            accessToken,
+            refreshToken: verification.newToken
+        };
+    } catch (error) {
+        logger.error('Error refreshing token:', error);
+        return { success: false, error: 'Failed to refresh token' };
+    }
+}
+
+/**
+ * Revoke all refresh tokens for a user (logout from all devices)
+ * @param {string} userId - User ID
+ */
+async function revokeAllTokens(userId) {
+    try {
+        await RefreshToken.revokeAllForUser(userId);
+    } catch (error) {
+        logger.error('Error revoking tokens:', error);
+        throw error;
+    }
+}
+
 module.exports = {
     jwtAuth,
     optionalJwtAuth,
     requireRole,
     generateToken,
-    verifyToken
+    verifyToken,
+    generateRefreshToken,
+    refreshAccessToken,
+    revokeAllTokens
 };

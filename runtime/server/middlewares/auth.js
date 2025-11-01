@@ -1,9 +1,9 @@
 /**
  * Authentication Middleware
- * API Key authentication
+ * API Key authentication with PostgreSQL
  */
 
-const db = require('../db/db');
+const { ApiKey } = require('../models');
 const logger = require('../utils/logger');
 
 /**
@@ -21,26 +21,27 @@ async function apiKeyAuth(req, res, next) {
             });
         }
 
-        // First, check against environment variable (simple auth for development/testing)
+        // First, check against environment variable (for development/testing)
         const envApiKey = process.env.API_KEY;
         if (envApiKey && apiKey === envApiKey) {
-            req.apiKey = { key: apiKey, name: 'default', is_active: true };
+            req.apiKey = { key: apiKey, name: 'default', isActive: true };
             return next();
         }
 
-        // If not matched with env, check database
-        const validKey = await db.verifyApiKey(apiKey);
+        // Verify API key from PostgreSQL
+        const verification = await ApiKey.verifyKey(apiKey);
 
-        if (!validKey) {
-            logger.warn(`Invalid API key attempt: ${apiKey.substring(0, 10)}...`);
+        if (!verification.valid) {
+            logger.warn(`Invalid API key attempt: ${apiKey.substring(0, 10)}... - ${verification.reason}`);
             return res.status(403).json({
                 success: false,
-                error: 'Invalid API key'
+                error: verification.reason
             });
         }
 
         // Attach key info to request
-        req.apiKey = validKey;
+        req.apiKey = verification.apiKey;
+        req.userId = verification.apiKey.userId;
         next();
     } catch (error) {
         logger.error('Auth middleware error:', error);

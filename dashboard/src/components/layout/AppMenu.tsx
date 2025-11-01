@@ -51,7 +51,8 @@ const AppMenu = () => {
                 { 
                     label: 'SmartBot', 
                     icon: 'pi pi-fw pi-bolt', 
-                    to: '/smartbot' 
+                    to: '/smartbot',
+                    badge: 'NEW'
                 },
                 { 
                     label: 'Interactive', 
@@ -64,22 +65,6 @@ const AppMenu = () => {
                     icon: 'pi pi-fw pi-chart-bar', 
                     to: '/reports',
                     badge: 'NEW'
-                },
-                { 
-                    label: 'Settings', 
-                    icon: 'pi pi-fw pi-cog', 
-                    items: [
-                        {
-                            label: 'General',
-                            icon: 'pi pi-fw pi-cog',
-                            to: '/settings'
-                        },
-                        {
-                            label: 'Webhooks',
-                            icon: 'pi pi-fw pi-link',
-                            to: '/settings/webhooks'
-                        }
-                    ]
                 },
                 { 
                     label: 'Profile', 
@@ -107,18 +92,29 @@ const AppMenu = () => {
                     label: 'System Statistics', 
                     icon: 'pi pi-fw pi-chart-pie', 
                     to: '/admin/statistics',
-                    badge: 'SOON' as const
+                    badge: 'NEW' as const
                 },
                 { 
                     label: 'Activity Logs', 
                     icon: 'pi pi-fw pi-list', 
-                    to: '/admin/logs',
-                    badge: 'SOON' as const
+                    to: '/admin/system-logs',
+                    badge: 'NEW' as const
                 },
                 { 
                     label: 'Admin Settings', 
                     icon: 'pi pi-fw pi-shield', 
-                    to: '/admin/settings'
+                    items: [
+                        {
+                            label: 'General Settings',
+                            icon: 'pi pi-fw pi-cog',
+                            to: '/admin/settings'
+                        },
+                        {
+                            label: 'Webhooks',
+                            icon: 'pi pi-fw pi-link',
+                            to: '/settings/webhooks'
+                        }
+                    ]
                 },
             ],
         }] : []),

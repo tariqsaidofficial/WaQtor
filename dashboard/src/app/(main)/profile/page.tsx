@@ -347,7 +347,7 @@ export default function ProfilePage() {
                                     icon="pi pi-arrow-up" 
                                     size="small" 
                                     className="w-full"
-                                    onClick={() => window.open('https://waqtor.dxbmark.com/pricing', '_blank')}
+                                    onClick={() => window.open('https://waqtor.dxbmark.com/#pricing', '_blank')}
                                 />
                             </div>
 

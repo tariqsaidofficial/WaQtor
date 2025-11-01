@@ -925,6 +925,33 @@ pnpm add waqtor
 
 ### Common Issues & Solutions
 
+#### 🛡️ Browser Already Running Error (FIXED!)
+
+**Symptoms**: `"The browser is already running for [path]"` error on startup
+
+**✅ PERMANENT FIX IMPLEMENTED**: This issue is now automatically handled!
+
+```bash
+# The server now automatically:
+# ✅ Detects orphaned browser processes
+# ✅ Kills stuck Chrome processes
+# ✅ Removes lock files
+# ✅ Cleans up on shutdown
+
+# Just start normally:
+npm start
+
+# If you still see the error, run:
+npm run cleanup
+
+# Or start with cleanup:
+npm run start:clean
+```
+
+**📖 Full Documentation**: See [BROWSER_LOCK_FIX.md](./BROWSER_LOCK_FIX.md) for details
+
+---
+
 #### 1. QR Code Not Appearing
 
 **Symptoms**: Server starts but no QR code in logs

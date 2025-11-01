@@ -7,45 +7,60 @@ const { Client, LocalAuth } = require('../../index');
 const qrcode = require('qrcode-terminal');
 const logger = require('./utils/logger');
 const path = require('path');
+const BrowserProcessManager = require('./utils/browserProcessManager');
 
 class WhatsAppClient {
     constructor() {
         this.client = null;
         this.isReady = false;
         this.sessionPath = path.join(__dirname, 'session');
+        this.browserManager = new BrowserProcessManager(this.sessionPath);
+        this.isInitializing = false;
     }
 
     /**
-     * Clean up lock files before initialization
+     * Clean up lock files and orphaned processes before initialization
      */
-    cleanupLockFiles() {
+    async cleanupBeforeInit() {
         try {
-            const fs = require('fs');
-            const lockPaths = [
-                path.join(this.sessionPath, 'SingletonLock'),
-                path.join(this.sessionPath, 'SingletonCookie'),
-                path.join(this.sessionPath, 'SingletonSocket')
-            ];
+            logger.info('Performing pre-initialization cleanup...');
             
-            lockPaths.forEach(lockPath => {
-                if (fs.existsSync(lockPath)) {
-                    fs.unlinkSync(lockPath);
-                    logger.info(`Removed lock file: ${lockPath}`);
-                }
-            });
+            // Use the comprehensive browser process manager
+            const success = await this.browserManager.fullCleanup();
+            
+            if (!success) {
+                logger.warn('Full cleanup had issues, attempting emergency cleanup...');
+                await this.browserManager.emergencyCleanup();
+            }
+            
+            return true;
         } catch (error) {
-            logger.warn('Error cleaning lock files:', error.message);
+            logger.error('Error during pre-initialization cleanup:', error.message);
+            return false;
         }
     }
 
     /**
-     * Initialize WhatsApp Client
+     * Initialize WhatsApp Client with robust error handling
      */
     async initialize() {
+        // Prevent multiple simultaneous initializations
+        if (this.isInitializing) {
+            logger.warn('Initialization already in progress, waiting...');
+            // Wait for current initialization to complete
+            while (this.isInitializing) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            return this.client;
+        }
+
+        this.isInitializing = true;
+
         try {
-            // Clean up any existing lock files
-            this.cleanupLockFiles();
+            // Step 1: Comprehensive cleanup before initialization
+            await this.cleanupBeforeInit();
             
+            // Step 2: Create client instance
             this.client = new Client({
                 authStrategy: new LocalAuth({
                     dataPath: this.sessionPath
@@ -69,13 +84,30 @@ class WhatsAppClient {
                 }
             });
 
+            // Step 3: Setup event handlers
             this.setupEventHandlers();
+            
+            // Step 4: Initialize with timeout
+            logger.info('Initializing WhatsApp client...');
             await this.client.initialize();
             
+            logger.info('✅ WhatsApp client initialized successfully');
             return this.client;
         } catch (error) {
             logger.error('Failed to initialize WhatsApp client:', error);
+            
+            // If initialization fails due to browser lock, try emergency cleanup
+            if (error.message && error.message.includes('browser is already running')) {
+                logger.error('Browser lock detected! Attempting emergency cleanup...');
+                await this.browserManager.emergencyCleanup();
+                
+                // Optionally, you could retry initialization here
+                logger.info('Emergency cleanup completed. Please restart the server.');
+            }
+            
             throw error;
+        } finally {
+            this.isInitializing = false;
         }
     }
 
@@ -139,13 +171,27 @@ class WhatsAppClient {
     }
 
     /**
-     * Destroy Client
+     * Destroy Client with comprehensive cleanup
      */
     async destroy() {
-        if (this.client) {
-            await this.client.destroy();
-            this.isReady = false;
-            logger.info('WhatsApp client destroyed');
+        try {
+            if (this.client) {
+                logger.info('Destroying WhatsApp client...');
+                await this.client.destroy();
+                this.isReady = false;
+                logger.info('WhatsApp client destroyed');
+            }
+            
+            // Perform cleanup after destroy
+            logger.info('Performing post-destroy cleanup...');
+            await this.browserManager.fullCleanup();
+            
+        } catch (error) {
+            logger.error('Error during client destruction:', error);
+            
+            // Force cleanup even if destroy fails
+            logger.warn('Forcing emergency cleanup...');
+            await this.browserManager.emergencyCleanup();
         }
     }
 }

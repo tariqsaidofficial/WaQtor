@@ -6,7 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const { User } = require('../models');
-const { generateToken, jwtAuth } = require('../middlewares/jwtAuth');
+const { generateToken, generateRefreshToken, refreshAccessToken, revokeAllTokens, jwtAuth } = require('../middlewares/jwtAuth');
 const logger = require('../utils/logger');
 
 /**
@@ -52,8 +52,9 @@ router.post('/register', async (req, res) => {
             role: 'user'
         });
 
-        // Generate token
+        // Generate tokens
         const token = generateToken(user);
+        const refreshToken = await generateRefreshToken(user, req.ip, req.get('user-agent'));
 
         logger.info(`✅ New user registered: ${email}`);
 
@@ -62,7 +63,8 @@ router.post('/register', async (req, res) => {
             message: 'User registered successfully',
             data: {
                 user: user.toJSON(),
-                token
+                token,
+                refreshToken
             }
         });
     } catch (error) {
@@ -119,8 +121,9 @@ router.post('/login', async (req, res) => {
         // Update last login
         await user.update({ last_login_at: new Date() });
 
-        // Generate token
+        // Generate tokens
         const token = generateToken(user);
+        const refreshToken = await generateRefreshToken(user, req.ip, req.get('user-agent'));
 
         logger.info(`✅ User logged in: ${email}`);
 
@@ -129,7 +132,8 @@ router.post('/login', async (req, res) => {
             message: 'Login successful',
             data: {
                 user: user.toJSON(),
-                token
+                token,
+                refreshToken
             }
         });
     } catch (error) {
@@ -313,10 +317,15 @@ router.get('/profile', jwtAuth, async (req, res) => {
 
 /**
  * POST /api/auth/logout
- * Logout user (client-side should delete token)
+ * Logout user and revoke refresh token
  */
 router.post('/logout', jwtAuth, async (req, res) => {
     try {
+        const { refreshToken } = req.body;
+        
+        // Revoke all tokens for this user
+        await revokeAllTokens(req.user.id);
+        
         logger.info(`User logged out: ${req.user.email}`);
         
         res.json({
@@ -328,6 +337,69 @@ router.post('/logout', jwtAuth, async (req, res) => {
         res.status(500).json({
             success: false,
             error: 'Logout failed'
+        });
+    }
+});
+
+/**
+ * POST /api/auth/refresh
+ * Refresh access token using refresh token
+ */
+router.post('/refresh', async (req, res) => {
+    try {
+        const { refreshToken } = req.body;
+
+        if (!refreshToken) {
+            return res.status(400).json({
+                success: false,
+                error: 'Refresh token is required'
+            });
+        }
+
+        const result = await refreshAccessToken(refreshToken);
+
+        if (!result.success) {
+            return res.status(401).json({
+                success: false,
+                error: result.error
+            });
+        }
+
+        res.json({
+            success: true,
+            data: {
+                token: result.accessToken,
+                refreshToken: result.refreshToken
+            }
+        });
+    } catch (error) {
+        logger.error('Refresh token error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to refresh token'
+        });
+    }
+});
+
+/**
+ * POST /api/auth/logout-all
+ * Logout from all devices
+ */
+router.post('/logout-all', jwtAuth, async (req, res) => {
+    try {
+        await revokeAllTokens(req.user.id);
+        
+        logger.info(`User logged out from all devices: ${req.user.email}`);
+        
+        res.json({
+            success: true,
+            message: 'Logged out from all devices'
+        });
+    } catch (error) {
+        logger.error('Logout all error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to logout from all devices'
         });
     }
 });

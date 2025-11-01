@@ -7,6 +7,8 @@
   "scripts": {
     "start": "node runtime/server/index.js",
     "dev": "NODE_ENV=development nodemon runtime/server/index.js",
+    "cleanup": "node runtime/server/scripts/cleanup-browser.js",
+    "start:clean": "npm run cleanup && npm start",
     "test": "mocha tests --recursive --timeout 5000",
     "test-single": "mocha",
     "lint": "eslint .",

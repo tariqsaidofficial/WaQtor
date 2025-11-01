@@ -1,5 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const { jwtAuth } = require('../middlewares/jwtAuth');
+
+// Apply JWT authentication to all routes
+router.use(jwtAuth);
 
 // WebSocket bridge will be injected
 let websocketBridge = null;

@@ -20,7 +20,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' 'inline-speculation-rules'; object-src 'none'; base-uri 'self'; font-src 'self' data:;"
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' 'inline-speculation-rules'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' ws://localhost:8080 http://localhost:8080 https:; object-src 'none'; base-uri 'self';"
           },
           {
             key: 'Cache-Control',

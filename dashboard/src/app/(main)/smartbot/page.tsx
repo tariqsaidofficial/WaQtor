@@ -14,6 +14,7 @@ import { smartbotService } from '../../../api/services';
 import RuleList from '../../../components/smartbot/RuleList';
 import EditorDialog from '../../../components/smartbot/EditorDialog';
 import ReplyHistory from '../../../components/smartbot/ReplyHistory';
+import ProtectedPage from '../../../components/BlockUI/ProtectedPage';
 
 export interface AutoReplyRule {
     id: string;
@@ -40,7 +41,7 @@ export interface ReplyLog {
     timestamp: Date;
 }
 
-export default function SmartBotPage() {
+function SmartBotContent() {
     const toast = useRef<any>(null);
     const [rules, setRules] = useState<AutoReplyRule[]>([]);
     const [replyHistory, setReplyHistory] = useState<ReplyLog[]>([]);
@@ -264,5 +265,13 @@ export default function SmartBotPage() {
                 onSave={handleSaveRule}
             />
         </div>
+    );
+}
+
+export default function SmartBotPage() {
+    return (
+        <ProtectedPage featureName="SmartBot">
+            <SmartBotContent />
+        </ProtectedPage>
     );
 }

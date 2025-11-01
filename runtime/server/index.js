@@ -13,7 +13,7 @@ const http = require('http');
 
 const waClient = require('./waClient');
 const logger = require('./utils/logger');
-const { rateLimiter } = require('./middlewares/limiter');
+// const { rateLimiter } = require('./middlewares/limiter');
 const { apiKeyAuth } = require('./middlewares/auth');
 const { 
     errorHandler, 
@@ -56,6 +56,7 @@ const reportsRoutes = require('./routes/reports');
 const interactiveRoutes = require('./routes/interactive');
 const notificationRoutes = require('./routes/notifications');
 const webhookRoutes = require('./routes/webhooks');
+const subscriptionsRoutes = require('./routes/subscriptions');
 
 // Load environment variables from root .env file
 dotenv.config({ path: path.join(__dirname, '../../.env') });
@@ -78,8 +79,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('combined', { stream: logger.stream }));
 
-// Rate limiting
-app.use('/api/', rateLimiter);
+// Rate limiting - DISABLED for development
+// app.use('/api/', rateLimiter);
 
 // Setup Bull Board for Queue Monitoring
 const { messageQueue } = require('./queue/messageQueue');
@@ -160,19 +161,22 @@ app.use('/api/sessions', sessionsRoutes); // Multiple sessions management (JWT a
 app.use('/api/recipients', recipientsRoutes); // Recipients management (JWT auth inside)
 app.use('/api/groups', groupsRoutes); // Groups management (JWT auth inside)
 app.use('/api/admin', adminRoutes); // Admin dashboard (JWT auth + admin role inside)
+app.use('/api/subscriptions', subscriptionsRoutes); // Feature subscriptions (JWT auth inside)
+app.use('/api/notifications', notificationRoutes); // Notifications (JWT auth inside)
+
+// Public routes (no auth required) - Session endpoints for QR code
+app.use('/api/session', sessionRoutes.router);
 
 // API Routes (with API key authentication - legacy)
 app.use('/api/messages', apiKeyAuth, messageRoutes);
 app.use('/api/campaigns', apiKeyAuth, campaignRoutes);
 app.use('/api/status', apiKeyAuth, statusRoutes);
 app.use('/api/test', apiKeyAuth, testRoutes);
-app.use('/api/session', apiKeyAuth, sessionRoutes.router);
 app.use('/api/errors', apiKeyAuth, errorRoutes);
 app.use('/api/queue', apiKeyAuth, queueRoutes);
 app.use('/api/interactive', apiKeyAuth, interactiveRoutes);
 app.use('/api/smartbot', apiKeyAuth, smartbotRoutes.router);
 app.use('/api/reports', apiKeyAuth, reportsRoutes);
-app.use('/api/notifications', apiKeyAuth, notificationRoutes);
 app.use('/api/webhooks', apiKeyAuth, webhookRoutes);
 
 // Quick send message endpoint (for compatibility)
@@ -226,6 +230,21 @@ async function startServer() {
         // Initialize Database
         logger.info('Initializing database...');
         await db.initialize();
+        
+        // Pre-initialization cleanup to prevent browser lock issues
+        logger.info('Performing pre-startup browser cleanup...');
+        const BrowserProcessManager = require('./utils/browserProcessManager');
+        const path = require('path');
+        const sessionPath = path.join(__dirname, 'session');
+        const browserManager = new BrowserProcessManager(sessionPath);
+        
+        // Check and cleanup any orphaned browser processes
+        const isRunning = await browserManager.isBrowserRunning();
+        if (isRunning) {
+            logger.warn('⚠️ Detected orphaned browser processes from previous session');
+            await browserManager.fullCleanup();
+            logger.info('✅ Orphaned processes cleaned up');
+        }
         
         // Initialize WhatsApp Client (legacy - single client)
         logger.info('Initializing WhatsApp client...');
@@ -320,69 +339,83 @@ async function startServer() {
 process.on('SIGINT', async () => {
     logger.info('Shutting down gracefully...');
     
-    // Stop error monitoring
-    if (errorMonitor) {
-        errorMonitor.stop();
+    try {
+        // Stop error monitoring
+        if (errorMonitor) {
+            errorMonitor.stop();
+        }
+        
+        // Close WebSocket connections
+        if (websocketBridge) {
+            websocketBridge.shutdown();
+        }
+        
+        // Stop enhanced handler
+        if (enhancedWAClientHandler) {
+            enhancedWAClientHandler.destroy();
+        }
+        
+        // Stop SmartBot service
+        if (smartbotService) {
+            smartbotService.destroy();
+        }
+        
+        // Stop session monitor
+        if (sessionMonitor) {
+            await sessionMonitor.destroy();
+        }
+        
+        // Destroy WhatsApp client (includes browser cleanup)
+        logger.info('Destroying WhatsApp client and cleaning up browser processes...');
+        await waClient.destroy();
+        
+        logger.info('✅ Graceful shutdown completed');
+    } catch (error) {
+        logger.error('Error during shutdown:', error);
+    } finally {
+        process.exit(0);
     }
-    
-    // Close WebSocket connections
-    if (websocketBridge) {
-        websocketBridge.shutdown();
-    }
-    
-    // Stop enhanced handler
-    if (enhancedWAClientHandler) {
-        enhancedWAClientHandler.destroy();
-    }
-    
-    // Stop SmartBot service
-    if (smartbotService) {
-        smartbotService.destroy();
-    }
-    
-    // Stop session monitor
-    if (sessionMonitor) {
-        await sessionMonitor.destroy();
-    }
-    
-    // Destroy WhatsApp client
-    await waClient.destroy();
-    
-    process.exit(0);
 });
 
 process.on('SIGTERM', async () => {
     logger.info('Shutting down gracefully...');
     
-    // Stop error monitoring
-    if (errorMonitor) {
-        errorMonitor.stop();
+    try {
+        // Stop error monitoring
+        if (errorMonitor) {
+            errorMonitor.stop();
+        }
+        
+        // Close WebSocket connections
+        if (websocketBridge) {
+            websocketBridge.shutdown();
+        }
+        
+        // Stop enhanced handler
+        if (enhancedWAClientHandler) {
+            enhancedWAClientHandler.destroy();
+        }
+        
+        // Stop SmartBot service
+        if (smartbotService) {
+            smartbotService.destroy();
+        }
+        
+        // Stop session monitor
+        if (sessionMonitor) {
+            await sessionMonitor.destroy();
+        }
+        
+        // Destroy WhatsApp client (includes browser cleanup)
+        logger.info('Destroying WhatsApp client and cleaning up browser processes...');
+        await waClient.destroy();
+        
+        logger.info('✅ Graceful shutdown completed');
+    } catch (error) {
+        logger.error('Error during shutdown:', error);
+    } finally {
+        process.exit(0);
     }
-    
-    // Close WebSocket connections
-    if (websocketBridge) {
-        websocketBridge.shutdown();
-    }
-    
-    // Stop enhanced handler
-    if (enhancedWAClientHandler) {
-        enhancedWAClientHandler.destroy();
-    }
-    
-    // Stop SmartBot service
-    if (smartbotService) {
-        smartbotService.destroy();
-    }
-    
-    // Stop session monitor
-    if (sessionMonitor) {
-        await sessionMonitor.destroy();
-    }
-    
-    // Destroy WhatsApp client
-    await waClient.destroy();
-    
-    process.exit(0);
 });
 
 // Start the server
