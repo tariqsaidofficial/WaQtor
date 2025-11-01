@@ -42,6 +42,8 @@ const db = require('./models');
 const authRoutes = require('./routes/auth');
 const messageRoutes = require('./routes/message');
 const campaignRoutes = require('./routes/campaign');
+const recipientsRoutes = require('./routes/recipients');
+const groupsRoutes = require('./routes/groups');
 const statusRoutes = require('./routes/status');
 const testRoutes = require('./routes/test');
 const sessionRoutes = require('./routes/session');
@@ -154,6 +156,8 @@ app.use('/api/auth', authRoutes);
 
 // JWT-protected routes (user authentication)
 app.use('/api/sessions', sessionsRoutes); // Multiple sessions management (JWT auth inside)
+app.use('/api/recipients', recipientsRoutes); // Recipients management (JWT auth inside)
+app.use('/api/groups', groupsRoutes); // Groups management (JWT auth inside)
 
 // API Routes (with API key authentication - legacy)
 app.use('/api/messages', apiKeyAuth, messageRoutes);

@@ -155,7 +155,45 @@ campaign_recipients (id, campaign_id, recipient_id, message_id, status, ack_code
 
 ---
 
-### **Phase 3: Dashboard UI** 📋 **TODO**
+### **Phase 3: API Routes Completion** 📋 **IN PROGRESS**
+
+#### **Recipient Management Routes:**
+```javascript
+// File: runtime/server/routes/recipients.js
+GET    /api/recipients          // List all recipients (with pagination)
+POST   /api/recipients          // Create new recipient
+GET    /api/recipients/:id      // Get recipient details
+PUT    /api/recipients/:id      // Update recipient
+DELETE /api/recipients/:id      // Delete recipient
+POST   /api/recipients/import   // Import from CSV/JSON
+GET    /api/recipients/export   // Export to CSV
+POST   /api/recipients/bulk     // Bulk operations
+```
+
+#### **Groups Management Routes:**
+```javascript
+// File: runtime/server/routes/groups.js
+GET    /api/groups              // List all groups
+POST   /api/groups              // Create new group
+GET    /api/groups/:id          // Get group details
+PUT    /api/groups/:id          // Update group
+DELETE /api/groups/:id          // Delete group
+POST   /api/groups/:id/recipients          // Add recipients to group
+DELETE /api/groups/:id/recipients/:recipientId  // Remove from group
+GET    /api/groups/:id/recipients          // List group recipients
+```
+
+#### **المهام:**
+- [ ] Create recipient management routes
+- [ ] Create groups management routes
+- [ ] Add CSV import/export functionality
+- [ ] Add bulk operations
+- [ ] Add search and filtering
+- [ ] Add pagination support
+
+---
+
+### **Phase 4: Dashboard UI** 📋 **TODO**
 
 #### **Session Management Page:**
 ```
