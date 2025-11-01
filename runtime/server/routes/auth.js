@@ -258,6 +258,60 @@ router.put('/password', jwtAuth, async (req, res) => {
 });
 
 /**
+ * GET /api/auth/verify
+ * Verify JWT token
+ */
+router.get('/verify', jwtAuth, async (req, res) => {
+    try {
+        res.json({
+            success: true,
+            user: {
+                id: req.user.id,
+                email: req.user.email,
+                name: req.user.name,
+                role: req.user.role
+            }
+        });
+    } catch (error) {
+        logger.error('Token verification error:', error);
+        res.status(401).json({
+            success: false,
+            error: 'Invalid token'
+        });
+    }
+});
+
+/**
+ * GET /api/auth/profile
+ * Get user profile
+ */
+router.get('/profile', jwtAuth, async (req, res) => {
+    try {
+        const user = await User.findByPk(req.user.id, {
+            attributes: ['id', 'email', 'name', 'role', 'isActive', 'createdAt', 'lastLoginAt']
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            user: user.toJSON()
+        });
+    } catch (error) {
+        logger.error('Get profile error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to get profile'
+        });
+    }
+});
+
+/**
  * POST /api/auth/logout
  * Logout user (client-side should delete token)
  */
