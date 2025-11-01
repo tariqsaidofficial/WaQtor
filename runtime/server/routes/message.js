@@ -10,12 +10,66 @@ const logger = require('../utils/logger');
 const { validateMessage } = require('../utils/validator');
 const { replaceVariables } = require('../utils/variableReplacer');
 const { MessageMedia } = require('../../../index');
+const { Message, WhatsAppSession } = require('../models');
+const { jwtAuth } = require('../middlewares/jwtAuth');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+// Apply JWT authentication to all routes
+router.use(jwtAuth);
+
 // Enhanced handler reference (will be set by server)
 let enhancedHandler = null;
+
+/**
+ * Helper: Save message to database
+ */
+async function saveMessageToDatabase(userId, sessionId, messageData) {
+    try {
+        const message = await Message.create({
+            session_id: sessionId,
+            user_id: userId,
+            message_id: messageData.id,
+            to_phone: messageData.to,
+            from_phone: messageData.from || null,
+            body: messageData.body,
+            status: messageData.status || 'sent',
+            ack_code: messageData.ack || 1,
+            direction: 'outgoing',
+            has_media: messageData.hasMedia || false,
+            media_url: messageData.mediaUrl || null,
+            metadata: messageData.metadata || {}
+        });
+        
+        logger.info(`💾 Message saved to database: ${message.id}`);
+        return message;
+    } catch (error) {
+        logger.error('Error saving message to database:', error);
+        // Don't fail the request if DB save fails
+        return null;
+    }
+}
+
+/**
+ * Helper: Get user's default session
+ */
+async function getUserDefaultSession(userId) {
+    try {
+        const session = await WhatsAppSession.findOne({
+            where: { 
+                user_id: userId,
+                is_active: true,
+                is_ready: true
+            },
+            order: [['created_at', 'DESC']]
+        });
+        return session;
+    } catch (error) {
+        logger.error('Error getting user session:', error);
+        return null;
+    }
+}
 
 // Export function to set enhanced handler
 router.setEnhancedHandler = (handler) => {
@@ -209,6 +263,15 @@ router.post('/send-text', validateMessage, async (req, res) => {
         const { phone, message, ...recipientData } = req.body;
         const client = waClient.getClient();
 
+        // Get user's session
+        const session = await getUserDefaultSession(req.userId);
+        if (!session) {
+            return res.status(400).json({
+                success: false,
+                error: 'No active WhatsApp session found. Please create a session first.'
+            });
+        }
+
         // Format phone number (add @c.us if not present)
         const chatId = phone.includes('@c.us') ? phone : `${phone}@c.us`;
 
@@ -220,6 +283,16 @@ router.post('/send-text', validateMessage, async (req, res) => {
 
         // Send message
         const sentMessage = await client.sendMessage(chatId, finalMessage);
+
+        // Save to database
+        await saveMessageToDatabase(req.userId, session.id, {
+            id: sentMessage.id._serialized,
+            to: phone,
+            body: finalMessage,
+            status: 'sent',
+            ack: 1,
+            hasMedia: false
+        });
 
         logger.info(`Message sent to ${phone}`);
 
