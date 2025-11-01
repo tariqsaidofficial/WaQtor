@@ -206,16 +206,131 @@ span.pi::before {
    PAGINATOR FIXES
    ============================================ */
 
-/* Paginator uses default theme styles */
+/* Fix double background on paginator buttons */
+.p-paginator .p-paginator-page.p-highlight {
+    background: var(--primary-color) !important;
+    color: var(--primary-color-text) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.p-paginator .p-paginator-page.p-highlight:hover {
+    background: var(--primary-color) !important;
+    opacity: 0.9;
+}
+
+/* Fix focus state */
+.p-paginator .p-paginator-page:focus {
+    outline: 0 none;
+    outline-offset: 0;
+    box-shadow: 0 0 0 0.2rem var(--primary-color-text);
+}
 
 /* ============================================
    DATATABLE SELECTED ROW FIX
    ============================================ */
 
-/* DataTable uses default theme styles */
+/* Fix double background on selected rows */
+.p-datatable .p-datatable-tbody > tr.p-highlight {
+    background: var(--primary-color) !important;
+    color: var(--primary-color-text) !important;
+}
+
+.p-datatable .p-datatable-tbody > tr.p-highlight:hover {
+    background: var(--primary-color) !important;
+    opacity: 0.9;
+}
+
+/* Fix focus state */
+.p-datatable .p-datatable-tbody > tr:focus {
+    outline: 0 none;
+    outline-offset: 0;
+    box-shadow: inset 0 0 0 0.15rem var(--primary-color);
+}
 
 /* ============================================
    FORMATTING TOOLBAR ICON FIX
    ============================================ */
 
 /* Toolbar buttons use default theme styles */
+
+/* ============================================
+   DROPDOWN HIGHLIGHT FIX
+   ============================================ */
+
+/* Fix double green background on dropdown items */
+.p-dropdown-item.p-highlight {
+    background: var(--primary-color) !important;
+    color: var(--primary-color-text) !important;
+}
+
+.p-dropdown-item.p-highlight:hover {
+    background: var(--primary-color) !important;
+    opacity: 0.9;
+}
+
+/* Fix focus state */
+.p-dropdown-item:focus {
+    outline: 0 none;
+    outline-offset: 0;
+    box-shadow: inset 0 0 0 0.15rem var(--primary-color);
+}
+
+/* ============================================
+   PASSWORD FIELD FIX
+   ============================================ */
+
+/* Make password input full width */
+.p-password {
+    width: 100%;
+}
+
+.p-password input {
+    width: 100%;
+}
+
+/* ============================================
+   GLOBAL HIGHLIGHT FIX
+   ============================================ */
+
+/* Fix all p-highlight elements to use single background */
+.p-highlight {
+    background: var(--primary-color) !important;
+    color: var(--primary-color-text) !important;
+}
+
+/* Menu items */
+.p-menuitem.p-highlight,
+.p-menuitem-link.p-highlight {
+    background: var(--primary-color) !important;
+    color: var(--primary-color-text) !important;
+}
+
+/* List items */
+.p-listbox-item.p-highlight,
+.p-multiselect-item.p-highlight {
+    background: var(--primary-color) !important;
+    color: var(--primary-color-text) !important;
+}
+
+/* Tabs */
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+    background: var(--primary-color) !important;
+    color: var(--primary-color-text) !important;
+    border-color: var(--primary-color) !important;
+}
+
+/* Buttons */
+.p-button.p-highlight {
+    background: var(--primary-color) !important;
+    color: var(--primary-color-text) !important;
+    border-color: var(--primary-color) !important;
+}
+
+/* Hover states - slightly transparent */
+.p-highlight:hover,
+.p-menuitem.p-highlight:hover,
+.p-listbox-item.p-highlight:hover,
+.p-multiselect-item.p-highlight:hover {
+    background: var(--primary-color) !important;
+    opacity: 0.9;
+}

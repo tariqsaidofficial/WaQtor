@@ -8,12 +8,13 @@ import axios from 'axios';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 export interface User {
-    id: number;
+    id: string;
     name: string;
     email: string;
     role: 'admin' | 'user' | 'viewer';
-    isActive: boolean;
-    createdAt: string;
+    is_active: boolean;
+    created_at: string;
+    last_login_at?: string;
 }
 
 export interface AuthResponse {
@@ -41,12 +42,16 @@ export interface SignupData {
 export const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
     try {
         console.log('🔐 [auth.ts] Login called with:', { email: credentials.email, API_URL });
+        
+        // Clear all localStorage before login
+        console.log('🗑️ [auth.ts] Clearing all localStorage...');
+        localStorage.clear();
+        
         const response = await axios.post(`${API_URL}/api/auth/login`, credentials);
         console.log('📥 [auth.ts] Response:', response.data);
         
         // Backend returns { success, data: { user, token } }
         if (response.data.success && response.data.data?.token) {
-            console.log('✅ [auth.ts] Token received, storing...');
             const { user, token } = response.data.data;
             
             // Store token and user data

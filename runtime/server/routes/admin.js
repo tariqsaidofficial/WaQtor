@@ -165,6 +165,65 @@ router.get('/users', async (req, res) => {
 });
 
 /**
+ * POST /api/admin/users
+ * Create new user (admin only)
+ */
+router.post('/users', async (req, res) => {
+    try {
+        const { name, email, password, role, is_active } = req.body;
+
+        // Validation
+        if (!name || !email || !password) {
+            return res.status(400).json({
+                success: false,
+                error: 'Name, email, and password are required'
+            });
+        }
+
+        // Check if user already exists
+        const existingUser = await User.findOne({ where: { email } });
+        if (existingUser) {
+            return res.status(400).json({
+                success: false,
+                error: 'User with this email already exists'
+            });
+        }
+
+        // Create user - use User.hashPassword method
+        const password_hash = await User.hashPassword(password);
+
+        const newUser = await User.create({
+            name,
+            email,
+            password_hash,
+            role: role || 'user',
+            is_active: is_active !== undefined ? is_active : true
+        });
+
+        logger.info(`✅ User ${newUser.email} created by admin ${req.user.email}`);
+
+        res.status(201).json({
+            success: true,
+            message: 'User created successfully',
+            data: {
+                id: newUser.id,
+                email: newUser.email,
+                name: newUser.name,
+                role: newUser.role,
+                is_active: newUser.is_active
+            }
+        });
+    } catch (error) {
+        logger.error('Error creating user:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to create user',
+            message: error.message
+        });
+    }
+});
+
+/**
  * PUT /api/admin/users/:id
  * Update user (admin only)
  */
@@ -205,6 +264,53 @@ router.put('/users/:id', async (req, res) => {
         res.status(500).json({
             success: false,
             error: 'Failed to update user',
+            message: error.message
+        });
+    }
+});
+
+/**
+ * POST /api/admin/users/:id/reset-password
+ * Reset user password (admin only)
+ */
+router.post('/users/:id/reset-password', async (req, res) => {
+    try {
+        const { password } = req.body;
+
+        // Validation
+        if (!password || password.length < 6) {
+            return res.status(400).json({
+                success: false,
+                error: 'Password must be at least 6 characters'
+            });
+        }
+
+        const user = await User.findByPk(req.params.id);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+
+        // Hash new password
+        const password_hash = await User.hashPassword(password);
+
+        // Update password
+        await user.update({ password_hash });
+
+        logger.info(`✅ Password reset for user ${user.email} by admin ${req.user.email}`);
+
+        res.json({
+            success: true,
+            message: 'Password reset successfully'
+        });
+    } catch (error) {
+        logger.error('Error resetting password:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to reset password',
             message: error.message
         });
     }
