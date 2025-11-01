@@ -140,14 +140,18 @@ campaign_recipients (id, campaign_id, recipient_id, message_id, status, ack_code
 
 #### **المهام:**
 - [x] Setup PostgreSQL database
-- [x] Create database schema (6 tables)
+- [x] Create database schema (8 tables)
 - [x] Implement User Authentication (JWT)
 - [x] Link sessions to users
 - [x] Update sessions routes with user ownership
 - [x] Comprehensive testing (11/11 tests passed)
+- [x] Update message routes to use database
+- [x] Update campaign routes to use database
+- [x] Create Groups/Labels models
+- [x] Folder structure cleanup
 - [ ] Add Row-Level Security (RLS) - optional
-- [ ] Update message routes to use database
-- [ ] Update campaign routes to use database
+- [ ] Create recipient management routes
+- [ ] Create groups management routes
 
 ---
 
