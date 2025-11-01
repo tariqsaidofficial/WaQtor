@@ -101,7 +101,12 @@ const AppMenuitem = (props: AppMenuItemProps) => {
                     {item!.badge && (
                         <Badge 
                             value={item!.badge} 
-                            severity={item!.badge === 'NEW' ? 'success' : 'info'}
+                            severity={
+                                item!.badge === 'NEW' ? 'success' : 
+                                item!.badge === 'ADMIN' ? 'danger' : 
+                                item!.badge === 'SOON' ? 'warning' : 
+                                    'info'
+                            }
                             style={{ marginLeft: '0.5rem' }}
                         />
                     )}

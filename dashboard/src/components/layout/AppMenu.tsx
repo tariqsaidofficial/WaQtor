@@ -1,11 +1,27 @@
 /* eslint-disable @next/next/no-img-element */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import AppMenuitem from './AppMenuitem';
 import { MenuProvider } from './context/menucontext';
 import { AppMenuItem } from '@/types';
 
 const AppMenu = () => {
+    const [userRole, setUserRole] = useState<string>('user');
+
+    useEffect(() => {
+        // Get user role from localStorage
+        const user = localStorage.getItem('user');
+        if (user) {
+            try {
+                const userData = JSON.parse(user);
+                setUserRole(userData.role || 'user');
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+            }
+        }
+    }, []);
+
+    const isAdmin = userRole === 'admin';
 
     const model: AppMenuItem[] = [
         {
@@ -77,6 +93,35 @@ const AppMenu = () => {
                 },
             ],
         },
+        // Admin Section - Only visible to admins
+        ...(isAdmin ? [{
+            label: 'ADMIN',
+            items: [
+                { 
+                    label: 'User Management', 
+                    icon: 'pi pi-fw pi-users', 
+                    to: '/admin/users',
+                    badge: 'ADMIN' as const
+                },
+                { 
+                    label: 'System Statistics', 
+                    icon: 'pi pi-fw pi-chart-pie', 
+                    to: '/admin/statistics',
+                    badge: 'SOON' as const
+                },
+                { 
+                    label: 'Activity Logs', 
+                    icon: 'pi pi-fw pi-list', 
+                    to: '/admin/logs',
+                    badge: 'SOON' as const
+                },
+                { 
+                    label: 'Admin Settings', 
+                    icon: 'pi pi-fw pi-shield', 
+                    to: '/admin/settings'
+                },
+            ],
+        }] : []),
         {
             label: 'Development',
             items: [
