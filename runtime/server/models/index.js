@@ -10,11 +10,17 @@ const logger = require('../utils/logger');
 const UserModel = require('./User');
 const WhatsAppSessionModel = require('./WhatsAppSession');
 const MessageModel = require('./Message');
+const CampaignModel = require('./Campaign');
+const RecipientModel = require('./Recipient');
+const CampaignRecipientModel = require('./CampaignRecipient');
 
 // Initialize models
 const User = UserModel(sequelize);
 const WhatsAppSession = WhatsAppSessionModel(sequelize);
 const Message = MessageModel(sequelize);
+const Campaign = CampaignModel(sequelize);
+const Recipient = RecipientModel(sequelize);
+const CampaignRecipient = CampaignRecipientModel(sequelize);
 
 // Define relationships
 // User has many WhatsApp Sessions
@@ -49,13 +55,82 @@ Message.belongsTo(User, {
     as: 'user'
 });
 
+// User has many Campaigns
+User.hasMany(Campaign, {
+    foreignKey: 'user_id',
+    as: 'campaigns',
+    onDelete: 'CASCADE'
+});
+Campaign.belongsTo(User, {
+    foreignKey: 'user_id',
+    as: 'user'
+});
+
+// WhatsApp Session has many Campaigns
+WhatsAppSession.hasMany(Campaign, {
+    foreignKey: 'session_id',
+    as: 'campaigns',
+    onDelete: 'CASCADE'
+});
+Campaign.belongsTo(WhatsAppSession, {
+    foreignKey: 'session_id',
+    as: 'session'
+});
+
+// User has many Recipients
+User.hasMany(Recipient, {
+    foreignKey: 'user_id',
+    as: 'recipients',
+    onDelete: 'CASCADE'
+});
+Recipient.belongsTo(User, {
+    foreignKey: 'user_id',
+    as: 'user'
+});
+
+// Campaign and Recipient many-to-many through CampaignRecipient
+Campaign.belongsToMany(Recipient, {
+    through: CampaignRecipient,
+    foreignKey: 'campaign_id',
+    otherKey: 'recipient_id',
+    as: 'recipients'
+});
+Recipient.belongsToMany(Campaign, {
+    through: CampaignRecipient,
+    foreignKey: 'recipient_id',
+    otherKey: 'campaign_id',
+    as: 'campaigns'
+});
+
+// Direct associations for CampaignRecipient
+Campaign.hasMany(CampaignRecipient, {
+    foreignKey: 'campaign_id',
+    as: 'campaignRecipients'
+});
+CampaignRecipient.belongsTo(Campaign, {
+    foreignKey: 'campaign_id',
+    as: 'campaign'
+});
+
+Recipient.hasMany(CampaignRecipient, {
+    foreignKey: 'recipient_id',
+    as: 'campaignRecipients'
+});
+CampaignRecipient.belongsTo(Recipient, {
+    foreignKey: 'recipient_id',
+    as: 'recipient'
+});
+
 // Export models and sequelize instance
 const db = {
     sequelize,
     Sequelize,
     User,
     WhatsAppSession,
-    Message
+    Message,
+    Campaign,
+    Recipient,
+    CampaignRecipient
 };
 
 // Initialize database
