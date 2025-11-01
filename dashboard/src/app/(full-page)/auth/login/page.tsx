@@ -1,21 +1,60 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 import { useRouter } from 'next/navigation';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Checkbox } from 'primereact/checkbox';
 import { Button } from 'primereact/button';
 import { Password } from 'primereact/password';
 import { LayoutContext } from '../../../../components/layout/context/layoutcontext';
 import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
+import { Message } from 'primereact/message';
 import Link from 'next/link';
+import { login, isAuthenticated } from '@/lib/auth';
 
 const LoginPage = () => {
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [checked, setChecked] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
     const { layoutConfig } = useContext(LayoutContext);
 
     const router = useRouter();
+
+    // Redirect if already authenticated
+    useEffect(() => {
+        if (isAuthenticated()) {
+            router.push('/');
+        }
+    }, [router]);
+
+    const handleLogin = async () => {
+        setError('');
+        setLoading(true);
+
+        try {
+            const result = await login({ email, password });
+
+            if (result.success) {
+                // Redirect to dashboard
+                router.push('/');
+            } else {
+                setError(result.error || 'Login failed. Please try again.');
+            }
+        } catch (err) {
+            setError('An unexpected error occurred. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && email && password && !loading) {
+            handleLogin();
+        }
+    };
+
     const containerClassName = classNames(
         'surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden',
         { 'p-input-filled': layoutConfig.inputStyle === 'filled' }
@@ -44,15 +83,27 @@ const LoginPage = () => {
                         </div>
 
                         <div>
+                            {error && (
+                                <Message 
+                                    severity="error" 
+                                    text={error} 
+                                    className="w-full mb-4"
+                                />
+                            )}
+
                             <label htmlFor='email1' className='block text-900 text-xl font-medium mb-2'>
                                 Email
                             </label>
                             <InputText
                                 id='email1'
-                                type='text'
+                                type='email'
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                onKeyPress={handleKeyPress}
                                 placeholder='Email address'
                                 className='w-full md:w-30rem mb-5'
                                 style={{ padding: '1rem' }}
+                                disabled={loading}
                             />
 
                             <label htmlFor='password1' className='block text-900 font-medium text-xl mb-2'>
@@ -62,10 +113,13 @@ const LoginPage = () => {
                                 inputId='password1'
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
+                                onKeyPress={handleKeyPress}
                                 placeholder='Password'
                                 toggleMask
+                                feedback={false}
                                 className='w-full mb-5'
                                 inputClassName='w-full p-3 md:w-30rem'
+                                disabled={loading}
                             ></Password>
 
                             <div className='flex align-items-center justify-content-between mb-5 gap-5'>
@@ -75,6 +129,7 @@ const LoginPage = () => {
                                         checked={checked}
                                         onChange={(e) => setChecked(e.checked ?? false)}
                                         className='mr-2'
+                                        disabled={loading}
                                     ></Checkbox>
                                     <label htmlFor='rememberme1'>Remember me</label>
                                 </div>
@@ -87,9 +142,12 @@ const LoginPage = () => {
                                 </Link>
                             </div>
                             <Button
-                                label='Sign In'
+                                label={loading ? 'Signing In...' : 'Sign In'}
+                                icon={loading ? 'pi pi-spin pi-spinner' : 'pi pi-sign-in'}
                                 className='w-full p-3 text-xl mb-3'
-                                onClick={() => router.push('/')}
+                                onClick={handleLogin}
+                                disabled={loading || !email || !password}
+                                loading={loading}
                             />
 
                             <div className='text-center'>

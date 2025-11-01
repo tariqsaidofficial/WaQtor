@@ -1,14 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 import { useRouter } from 'next/navigation';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Checkbox } from 'primereact/checkbox';
 import { Button } from 'primereact/button';
 import { Password } from 'primereact/password';
 import { LayoutContext } from '../../../../components/layout/context/layoutcontext';
 import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
+import { Message } from 'primereact/message';
 import Link from 'next/link';
+import { signup, isAuthenticated } from '../../../../lib/auth';
 
 const SignupPage = () => {
     const [name, setName] = useState('');
@@ -16,17 +18,53 @@ const SignupPage = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [agreed, setAgreed] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
     const { layoutConfig } = useContext(LayoutContext);
 
     const router = useRouter();
+
+    // Redirect if already authenticated
+    useEffect(() => {
+        if (isAuthenticated()) {
+            router.push('/');
+        }
+    }, [router]);
     const containerClassName = classNames(
         'surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden',
         { 'p-input-filled': layoutConfig.inputStyle === 'filled' }
     );
 
-    const handleSignup = () => {
-        // Here you would typically handle signup logic
-        router.push('/auth/login');
+    const handleSignup = async () => {
+        setError('');
+
+        // Validation
+        if (password !== confirmPassword) {
+            setError('Passwords do not match');
+            return;
+        }
+
+        if (password.length < 6) {
+            setError('Password must be at least 6 characters long');
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const result = await signup({ name, email, password });
+
+            if (result.success) {
+                // Redirect to dashboard
+                router.push('/');
+            } else {
+                setError(result.error || 'Signup failed. Please try again.');
+            }
+        } catch (err) {
+            setError('An unexpected error occurred. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -52,6 +90,14 @@ const SignupPage = () => {
                         </div>
 
                         <div>
+                            {error && (
+                                <Message 
+                                    severity="error" 
+                                    text={error} 
+                                    className="w-full mb-4"
+                                />
+                            )}
+
                             <label htmlFor='name' className='block text-900 text-xl font-medium mb-2'>
                                 Full Name
                             </label>
@@ -124,10 +170,12 @@ const SignupPage = () => {
                             </div>
 
                             <Button
-                                label='Sign Up'
+                                label={loading ? 'Creating Account...' : 'Sign Up'}
+                                icon={loading ? 'pi pi-spin pi-spinner' : 'pi pi-user-plus'}
                                 className='w-full p-3 text-xl mb-3'
                                 onClick={handleSignup}
-                                disabled={!name || !email || !password || !confirmPassword || !agreed || password !== confirmPassword}
+                                disabled={loading || !name || !email || !password || !confirmPassword || !agreed}
+                                loading={loading}
                             />
 
                             <div className='text-center'>

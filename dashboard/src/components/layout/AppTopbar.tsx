@@ -11,6 +11,7 @@ import { Menu } from 'primereact/menu';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import { useRouter } from 'next/navigation';
 import NotificationBell from '../Notifications/NotificationBell';
+import { logout, getCurrentUser } from '../../lib/auth';
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     const { layoutConfig, layoutState, onMenuToggle, showProfileSidebar } = useContext(LayoutContext);
@@ -33,18 +34,22 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
         // Mark as client-side
         setIsClient(true);
         
+        // Load user data from auth
+        const currentUser = getCurrentUser();
+        if (currentUser) {
+            setUserName(currentUser.name || currentUser.email);
+        }
+        
         // Load branding settings from localStorage
         const savedLogoUrl = localStorage.getItem('app_logo') || '/layout/images/logo-dark.svg';
         const savedLogoText = localStorage.getItem('app_logo_text') || 'WaQtor';
         const savedShowLogoText = localStorage.getItem('app_show_logo_text');
-        const savedUserName = localStorage.getItem('user_name') || 'User';
         const savedUserAvatar = localStorage.getItem('user_avatar') || '';
         const savedNotificationCount = localStorage.getItem('notification_count') || '0';
         
         setLogoUrl(savedLogoUrl);
         setLogoText(savedLogoText);
         setShowLogoText(savedShowLogoText !== 'false');
-        setUserName(savedUserName);
         setUserAvatar(savedUserAvatar);
         setNotificationCount(parseInt(savedNotificationCount, 10));
 
@@ -116,7 +121,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
             template: () => (
                 <div 
                     onClick={() => {
-                        localStorage.clear();
+                        logout();
                         router.push('/auth/login');
                     }}
                     style={{

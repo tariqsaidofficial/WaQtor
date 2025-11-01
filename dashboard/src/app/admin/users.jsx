@@ -1,3 +1,4 @@
+'use client';
 import { useState, useEffect } from 'react';
 import {
   Users,
@@ -10,10 +11,11 @@ import {
   RefreshCw
 } from 'lucide-react';
 import axios from 'axios';
+import ProtectedRoute from '../../components/auth/ProtectedRoute';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
-export default function UserManagementPage() {
+function UserManagementPageContent() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -378,5 +380,13 @@ export default function UserManagementPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function UserManagementPage() {
+  return (
+    <ProtectedRoute requireAdmin={true}>
+      <UserManagementPageContent />
+    </ProtectedRoute>
   );
 }
