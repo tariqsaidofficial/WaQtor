@@ -40,19 +40,36 @@ export interface SignupData {
  */
 export const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
     try {
+        console.log('🔐 [auth.ts] Login called with:', { email: credentials.email, API_URL });
         const response = await axios.post(`${API_URL}/api/auth/login`, credentials);
+        console.log('📥 [auth.ts] Response:', response.data);
         
-        if (response.data.success && response.data.token) {
+        // Backend returns { success, data: { user, token } }
+        if (response.data.success && response.data.data?.token) {
+            console.log('✅ [auth.ts] Token received, storing...');
+            const { user, token } = response.data.data;
+            
             // Store token and user data
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(user));
             
             // Set default axios header
-            axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            
+            return {
+                success: true,
+                token,
+                user
+            };
         }
         
-        return response.data;
+        return {
+            success: false,
+            error: response.data.error || 'Login failed'
+        };
     } catch (error: any) {
+        console.error('❌ [auth.ts] Login error:', error);
+        console.error('❌ [auth.ts] Error response:', error.response?.data);
         return {
             success: false,
             error: error.response?.data?.error || 'Login failed. Please try again.',
@@ -65,19 +82,36 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
  */
 export const signup = async (data: SignupData): Promise<AuthResponse> => {
     try {
+        console.log('📝 [auth.ts] Signup called with:', { email: data.email, name: data.name });
         const response = await axios.post(`${API_URL}/api/auth/register`, data);
+        console.log('📥 [auth.ts] Signup response:', response.data);
         
-        if (response.data.success && response.data.token) {
+        // Backend returns { success, data: { user, token } }
+        if (response.data.success && response.data.data?.token) {
+            console.log('✅ [auth.ts] Registration successful, storing token...');
+            const { user, token } = response.data.data;
+            
             // Store token and user data
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(user));
             
             // Set default axios header
-            axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            
+            return {
+                success: true,
+                token,
+                user
+            };
         }
         
-        return response.data;
+        return {
+            success: false,
+            error: response.data.error || 'Signup failed'
+        };
     } catch (error: any) {
+        console.error('❌ [auth.ts] Signup error:', error);
+        console.error('❌ [auth.ts] Error response:', error.response?.data);
         return {
             success: false,
             error: error.response?.data?.error || 'Signup failed. Please try again.',

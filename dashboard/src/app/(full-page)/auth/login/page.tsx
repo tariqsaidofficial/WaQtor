@@ -30,19 +30,25 @@ const LoginPage = () => {
     }, [router]);
 
     const handleLogin = async () => {
+        console.log('🔐 Login attempt:', { email, password: '***' });
         setError('');
         setLoading(true);
 
         try {
+            console.log('📤 Calling login API...');
             const result = await login({ email, password });
+            console.log('📥 Login result:', result);
 
             if (result.success) {
+                console.log('✅ Login successful, redirecting...');
                 // Redirect to dashboard
                 router.push('/');
             } else {
+                console.error('❌ Login failed:', result.error);
                 setError(result.error || 'Login failed. Please try again.');
             }
         } catch (err) {
+            console.error('❌ Login exception:', err);
             setError('An unexpected error occurred. Please try again.');
         } finally {
             setLoading(false);
