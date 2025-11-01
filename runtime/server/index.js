@@ -44,6 +44,7 @@ const messageRoutes = require('./routes/message');
 const campaignRoutes = require('./routes/campaign');
 const recipientsRoutes = require('./routes/recipients');
 const groupsRoutes = require('./routes/groups');
+const adminRoutes = require('./routes/admin');
 const statusRoutes = require('./routes/status');
 const testRoutes = require('./routes/test');
 const sessionRoutes = require('./routes/session');
@@ -158,6 +159,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/sessions', sessionsRoutes); // Multiple sessions management (JWT auth inside)
 app.use('/api/recipients', recipientsRoutes); // Recipients management (JWT auth inside)
 app.use('/api/groups', groupsRoutes); // Groups management (JWT auth inside)
+app.use('/api/admin', adminRoutes); // Admin dashboard (JWT auth + admin role inside)
 
 // API Routes (with API key authentication - legacy)
 app.use('/api/messages', apiKeyAuth, messageRoutes);
