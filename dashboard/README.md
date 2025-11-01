@@ -1,10 +1,51 @@
-# 🎯 WaQtor Dashboard v2.2.0
+# 🎯 WaQtor Dashboard v2.3.0
 
-Modern, real-time dashboard for WaQtor WhatsApp automation platform with advanced settings and full branding customization.
+Modern, real-time dashboard for WaQtor WhatsApp automation platform with multi-user support, admin dashboard, and complete backend integration.
+
+## 🆕 What's New in v2.3.0
+
+### 🎉 **Complete Backend Integration**
+- ✅ **PostgreSQL Database** - Full migration complete
+- ✅ **Multi-User System** - Complete user isolation
+- ✅ **JWT Authentication** - Secure token-based auth
+- ✅ **46 API Endpoints** - RESTful API complete
+- ✅ **Admin Dashboard** - User management UI
+- ✅ **Multiple WhatsApp Accounts** - Per user support
+
+### 🎨 **Admin Dashboard UI**
+- 👥 **User Management** - Full CRUD interface at `/admin/users`
+- 🔍 **Search & Filter** - Find users quickly
+- 🎭 **Role Management** - Admin, User, Viewer roles
+- 📊 **System Statistics** - Real-time metrics (coming soon)
+- 🔒 **Admin Protection** - Role-based access control
 
 ## 📋 Overview
 
-The WaQtor Dashboard provides a beautiful, responsive interface for managing WhatsApp campaigns, SmartBot automation, monitoring session status, and complete appearance customization through an intuitive UI.
+The WaQtor Dashboard is a Next.js 14 (App Router) application that provides a beautiful, responsive interface for managing WhatsApp campaigns, SmartBot automation, monitoring session status, user management, and complete appearance customization through an intuitive UI.
+
+## 🏗️ **Project Structure**
+
+**⚠️ IMPORTANT:** This project uses **Next.js App Router** (not Pages Router)
+
+```
+dashboard/src/
+├── app/                    # ✅ Pages go here (App Router)
+│   ├── Dashboard.jsx      # Main dashboard
+│   ├── Messages.jsx       # Messages page
+│   ├── Campaigns.jsx      # Campaigns page
+│   ├── Settings.jsx       # Settings page
+│   └── admin/            # Admin pages
+│       └── users.jsx     # User management
+│
+├── components/           # Reusable components
+│   ├── QRStatusCard.jsx
+│   ├── SessionStatsCard.jsx
+│   └── ...
+│
+└── lib/                  # Utilities
+```
+
+**See [PROJECT_STRUCTURE.md](../PROJECT_STRUCTURE.md) for complete documentation.**
 
 ## ✨ Features
 
