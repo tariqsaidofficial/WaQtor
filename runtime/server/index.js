@@ -152,13 +152,15 @@ app.get('/api', (req, res) => {
 // Public routes (no auth required)
 app.use('/api/auth', authRoutes);
 
-// API Routes (with authentication)
+// JWT-protected routes (user authentication)
+app.use('/api/sessions', sessionsRoutes); // Multiple sessions management (JWT auth inside)
+
+// API Routes (with API key authentication - legacy)
 app.use('/api/messages', apiKeyAuth, messageRoutes);
 app.use('/api/campaigns', apiKeyAuth, campaignRoutes);
 app.use('/api/status', apiKeyAuth, statusRoutes);
 app.use('/api/test', apiKeyAuth, testRoutes);
 app.use('/api/session', apiKeyAuth, sessionRoutes.router);
-app.use('/api/sessions', apiKeyAuth, sessionsRoutes); // Multiple sessions management
 app.use('/api/errors', apiKeyAuth, errorRoutes);
 app.use('/api/queue', apiKeyAuth, queueRoutes);
 app.use('/api/interactive', apiKeyAuth, interactiveRoutes);
