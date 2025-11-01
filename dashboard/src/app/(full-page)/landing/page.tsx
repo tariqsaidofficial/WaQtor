@@ -28,7 +28,7 @@ const LandingPage = () => {
                             src={`/layout/images/${
                                 layoutConfig.colorScheme === 'light' ? 'logo-dark' : 'logo-white'
                             }.svg`}
-                            alt='Sakai Logo'
+                            alt='WaQtor Logo'
                             height='50'
                             className='mr-0 lg:mr-2'
                         />

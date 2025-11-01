@@ -72,12 +72,18 @@ export default function Campaigns() {
             const data = await campaignService.list();
             setCampaigns(data.campaigns || []);
         } catch (error) {
-            toast.current?.show({
-                severity: 'error',
-                summary: 'Error',
-                detail: 'Failed to load campaigns',
-                life: 3000
-            });
+            console.error('Error loading campaigns:', error);
+            // Only show error if it's not a rate limit or auth issue
+            if (error.response?.status !== 429 && error.response?.status !== 401) {
+                toast.current?.show({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: error.response?.data?.message || 'Failed to load campaigns',
+                    life: 3000
+                });
+            }
+            // Set empty array on error so UI shows "No campaigns"
+            setCampaigns([]);
         } finally {
             setLoading(false);
         }

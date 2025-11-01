@@ -5,7 +5,7 @@
 
 'use client';
 
-import Messages from '@/src/app/Messages';
+import Messages from '../../Messages';
 
 export default function MessagesPage() {
     return <Messages />;

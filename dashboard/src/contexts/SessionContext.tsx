@@ -191,22 +191,34 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
             }
         };
 
-        // Initial fetch
-        fetchSessionState();
+        // Only fetch if user is logged in (has token)
+        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
         
-        // Connect WebSocket
-        connectWebSocket();
+        if (token) {
+            // Initial fetch
+            fetchSessionState();
+            
+            // Connect WebSocket
+            connectWebSocket();
 
-        // Poll every 10 seconds as backup
-        const pollInterval = setInterval(fetchSessionState, 10000);
+            // Poll every 60 seconds as backup (reduced frequency)
+            const pollInterval = setInterval(fetchSessionState, 60000);
+            
+            return () => {
+                if (ws) {
+                    ws.close();
+                }
+                clearTimeout(reconnectTimeout);
+                clearInterval(pollInterval);
+            };
+        }
 
-        // Cleanup
+        // Cleanup for non-authenticated users
         return () => {
             if (ws) {
                 ws.close();
             }
             clearTimeout(reconnectTimeout);
-            clearInterval(pollInterval);
         };
     }, [fetchSessionState]);
 

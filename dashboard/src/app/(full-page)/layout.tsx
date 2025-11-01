@@ -7,8 +7,8 @@ interface SimpleLayoutProps {
 }
 
 export const metadata: Metadata = {
-    title: 'PrimeReact Sakai',
-    description: 'The ultimate collection of design-agnostic, flexible and accessible React UI Components.',
+    title: 'WaQtor - WhatsApp Marketing Platform',
+    description: 'Professional WhatsApp marketing and automation platform with campaigns, smart bot, and analytics.',
 };
 
 export default function SimpleLayout({ children }: SimpleLayoutProps) {

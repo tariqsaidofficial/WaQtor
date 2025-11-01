@@ -10,7 +10,7 @@
       "السلام عليكم"
     ],
     "replyMessage": "مرحباً بك! 👋\n\nكيف يمكنني مساعدتك اليوم؟",
-    "enabled": true,
+    "enabled": false,
     "matchType": "contains",
     "caseSensitive": false,
     "createdAt": "2025-10-29T20:34:40.105Z",

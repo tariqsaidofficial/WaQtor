@@ -40,9 +40,9 @@ export default function Settings() {
     // Branding settings
     const [brandingSettings, setBrandingSettings] = useState({
         logoUrl: '/layout/images/logo-dark.svg',
-        logoText: 'SAKAI',
+        logoText: 'WaQtor',
         showLogoText: true,
-        footerText: 'by PrimeReact'
+        footerText: 'WhatsApp Marketing Platform'
     });
 
     useEffect(() => {
@@ -60,9 +60,9 @@ export default function Settings() {
             
             setBrandingSettings({
                 logoUrl: savedLogoUrl || '/layout/images/logo-dark.svg',
-                logoText: savedLogoText || 'SAKAI',
+                logoText: savedLogoText || 'WaQtor',
                 showLogoText: savedShowLogoText !== 'false',
-                footerText: savedFooterText || 'by PrimeReact'
+                footerText: savedFooterText || 'WhatsApp Marketing Platform'
             });
         }
     };
@@ -708,7 +708,7 @@ export default function Settings() {
                                     <InputText
                                         value={brandingSettings.footerText}
                                         onChange={(e) => setBrandingSettings(prev => ({ ...prev, footerText: e.target.value }))}
-                                        placeholder="by PrimeReact"
+                                        placeholder="WhatsApp Marketing Platform"
                                         className="w-full mb-2"
                                     />
                                     <small className="text-500">Text displayed in footer</small>

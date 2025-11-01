@@ -37,6 +37,14 @@ export const api = axios.create({
  */
 api.interceptors.request.use(
     (config) => {
+        // Add JWT token if available
+        if (typeof window !== 'undefined') {
+            const token = localStorage.getItem('token');
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+        }
+        
         // Log request in development
         if (process.env.NODE_ENV === 'development') {
             console.log(`📤 ${config.method?.toUpperCase()} ${config.url}`, config.data);

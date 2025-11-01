@@ -7,7 +7,7 @@ import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
 import { Divider } from 'primereact/divider';
-import ProtectedPage from '@/src/components/BlockUI/ProtectedPage';
+import ProtectedPage from '../../../components/BlockUI/ProtectedPage';
 import './interactive.css';
 
 function InteractivePage() {

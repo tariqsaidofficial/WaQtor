@@ -5,8 +5,8 @@
 
 'use client';
 
-import Campaigns from '@/src/app/Campaigns';
-import ProtectedPage from '@/src/components/BlockUI/ProtectedPage';
+import Campaigns from '../../Campaigns';
+import ProtectedPage from '../../../components/BlockUI/ProtectedPage';
 
 export default function CampaignsPage() {
     return (

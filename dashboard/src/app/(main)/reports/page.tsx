@@ -10,7 +10,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ProgressBar } from 'primereact/progressbar';
 import { Tag } from 'primereact/tag';
-import ProtectedPage from '@/src/components/BlockUI/ProtectedPage';
+import ProtectedPage from '../../../components/BlockUI/ProtectedPage';
 import './reports.css';
 
 interface ReportData {
