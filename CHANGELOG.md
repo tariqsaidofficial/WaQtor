@@ -8,15 +8,108 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- Multi-session management
 - Template library with variables
 - Image compression before sending
 - Cloud storage integration (S3, GCS)
 - SmartBot AI v2 with Semantic Matching
+- System statistics dashboard UI
 
-## [2.3.0] - 2025-10-31
+## [2.3.0] - 2025-11-01
 
-### 🔔 Real-Time Notifications & Webhook System Release
+### 🎉 Complete Multi-User System with Admin Dashboard Release
+
+#### Added - Complete Backend Migration (100%)
+- 🗄️ **PostgreSQL Database** - Full migration from SQLite/JSON to PostgreSQL
+  - 8 tables with complete relationships
+  - User isolation and data ownership
+  - Sequelize ORM integration
+- 👥 **Multi-User Support** - Complete user management system
+  - User registration and authentication
+  - JWT-based authentication
+  - Role-based access control (Admin, User, Viewer)
+  - User ownership of all resources
+- 📱 **Multiple WhatsApp Accounts** - Per user account support
+  - WhatsAppClientManager for multi-account handling
+  - Session isolation per user
+  - Concurrent account management
+- 🎯 **46 API Endpoints** - Complete RESTful API
+  - Authentication: 6 endpoints (register, login, profile, etc.)
+  - Sessions: 6 endpoints (multi-account management)
+  - Messages: 4 endpoints
+  - Campaigns: 6 endpoints
+  - Recipients: 8 endpoints (CRUD, CSV import/export, bulk operations)
+  - Groups: 9 endpoints (contact groups with many-to-many relationships)
+  - Admin: 7 endpoints (user management, system stats, monitoring)
+- 🔄 **Data Migration Script** - Migrate from old system
+  - Backup functionality
+  - Message migration
+  - Campaign migration
+  - Recipient migration
+  - Data verification
+- ✅ **24/24 Integration Tests** - All tests passing
+
+#### Added - Admin Dashboard UI
+- 👥 **User Management Page** - `/admin/users`
+  - Full CRUD interface for users
+  - Search and filter functionality
+  - Role management (Admin, User, Viewer)
+  - Status management (Active/Inactive)
+  - Pagination support
+  - Edit modal with form validation
+  - Delete with confirmation
+  - Session count per user
+  - Last login tracking
+- 🎨 **Modern UI** - Beautiful interface with Tailwind CSS
+  - Lucide icons integration
+  - Responsive design
+  - Loading states
+  - Error handling
+  - Admin role protection
+
+#### Backend Files Added
+- `/runtime/server/models/` - Complete database models
+  - `User.js` - User accounts
+  - `WhatsAppSession.js` - WhatsApp sessions
+  - `Message.js` - Message history
+  - `Campaign.js` - Campaign data
+  - `Recipient.js` - Contact list
+  - `Group.js` - Contact groups
+  - `RecipientGroup.js` - Many-to-many relationships
+- `/runtime/server/routes/` - New API routes
+  - `auth.js` - Authentication endpoints
+  - `sessions.js` - Multi-session management
+  - `recipients.js` - Recipient management
+  - `groups.js` - Group management
+  - `admin.js` - Admin dashboard API
+- `/runtime/server/middlewares/jwtAuth.js` - JWT authentication
+- `/runtime/server/managers/WhatsAppClientManager.js` - Multi-account manager
+- `/runtime/server/scripts/migrate-data.js` - Data migration script
+
+#### Frontend Files Added
+- `/dashboard/src/app/admin/users.jsx` - User management page
+- `/dashboard/src/app/admin/UserManagement.jsx` - Alternative user management component
+
+#### Documentation Added/Updated
+- `PROJECT_STRUCTURE.md` - Complete project structure documentation
+  - Backend structure (`/runtime/server/`)
+  - Frontend structure (`/dashboard/src/`)
+  - Database schema and relationships
+  - API endpoints overview
+  - Environment variables guide
+  - Development workflow
+  - Best practices and common mistakes
+  - Critical rules for file creation (Next.js App Router)
+- `DATABASE_MIGRATION_STATUS.md` - Migration progress tracking
+- `README.md` - Updated with v2.3.0 features
+- `/dashboard/README.md` - Updated with backend integration
+
+#### Fixed
+- Message ACK status real-time updates (Phase 14)
+- Port 8080 EADDRINUSE error handling
+- Puppeteer browser cleanup
+- Next.js App Router file structure (moved from `/pages` to `/app`)
+
+### 🔔 Real-Time Notifications & Webhook System (from previous release)
 
 #### Added - Notification System (Phase 6)
 - 🔔 **Real-Time Notifications** - Instant updates via WebSocket
