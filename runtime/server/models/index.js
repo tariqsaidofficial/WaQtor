@@ -13,6 +13,8 @@ const MessageModel = require('./Message');
 const CampaignModel = require('./Campaign');
 const RecipientModel = require('./Recipient');
 const CampaignRecipientModel = require('./CampaignRecipient');
+const GroupModel = require('./Group');
+const RecipientGroupModel = require('./RecipientGroup');
 
 // Initialize models
 const User = UserModel(sequelize);
@@ -21,6 +23,8 @@ const Message = MessageModel(sequelize);
 const Campaign = CampaignModel(sequelize);
 const Recipient = RecipientModel(sequelize);
 const CampaignRecipient = CampaignRecipientModel(sequelize);
+const Group = GroupModel(sequelize);
+const RecipientGroup = RecipientGroupModel(sequelize);
 
 // Define relationships
 // User has many WhatsApp Sessions
@@ -121,6 +125,31 @@ CampaignRecipient.belongsTo(Recipient, {
     as: 'recipient'
 });
 
+// User has many Groups
+User.hasMany(Group, {
+    foreignKey: 'user_id',
+    as: 'groups',
+    onDelete: 'CASCADE'
+});
+Group.belongsTo(User, {
+    foreignKey: 'user_id',
+    as: 'user'
+});
+
+// Recipient and Group many-to-many through RecipientGroup
+Recipient.belongsToMany(Group, {
+    through: RecipientGroup,
+    foreignKey: 'recipient_id',
+    otherKey: 'group_id',
+    as: 'groups'
+});
+Group.belongsToMany(Recipient, {
+    through: RecipientGroup,
+    foreignKey: 'group_id',
+    otherKey: 'recipient_id',
+    as: 'recipients'
+});
+
 // Export models and sequelize instance
 const db = {
     sequelize,
@@ -130,7 +159,9 @@ const db = {
     Message,
     Campaign,
     Recipient,
-    CampaignRecipient
+    CampaignRecipient,
+    Group,
+    RecipientGroup
 };
 
 // Initialize database

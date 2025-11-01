@@ -20,7 +20,7 @@ const {
     notFoundHandler, 
     handleUnhandledRejection, 
     handleUncaughtException 
-} = require('./middleware/errorHandler');
+} = require('./middlewares/errorHandler');
 
 // Bull Board for Queue Monitoring
 const { createBullBoard } = require('@bull-board/api');
