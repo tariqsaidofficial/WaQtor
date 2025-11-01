@@ -101,3 +101,20 @@ typings/
 # IDE's
 .idea
 .vscodechrome/
+
+# Admin scripts and documentation (sensitive)
+create_superadmin.js
+check_users_db.js
+CREATE_SUPERADMIN_README.md
+USER_MANAGEMENT_REVIEW.md
+test_button_logic.js
+test_api_flow.js
+
+# Temporary documentation files
+BLOCK_UI_IMPLEMENTATION.md
+BROWSER_LOCK_FIX.md
+DEPLOYMENT_READY.md
+FINAL_SUMMARY.md
+MIGRATION_COMPLETE.md
+TESTING_REPORT.md
+*.bak
